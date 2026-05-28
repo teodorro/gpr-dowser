@@ -8,40 +8,35 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { GB, RU } from "country-flag-icons/react/3x2";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
 
 export function Languages() {
   const { t, i18n } = useTranslation();
 
-  const [language, setLanguage] = useState<"en" | "ru">("en");
-
   const handleChangeLanguage = (language: "en" | "ru") => {
-    setLanguage(language);
     i18n.changeLanguage(language);
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button
+          variant="link"
+          className="px-1.5 outline-none focus-visible:outline-none focus-visible:ring-0"
+        >
           <GlobeIcon />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem
           onClick={() => handleChangeLanguage("en")}
-          className={
-            language === "en" ? "bg-primary text-primary-foreground" : ""
-          }
+          className={i18n.language === "en" ? "border border-ring" : ""}
         >
           <GB title="United Kingdom" className="h-4 w-6" />
           {t("English")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleChangeLanguage("ru")}
-          className={
-            language === "ru" ? "bg-primary text-primary-foreground" : ""
-          }
+          className={i18n.language === "ru" ? "border border-ring" : ""}
         >
           <RU title="Russia" className="h-4 w-6" />
           {t("Russian")}

@@ -1,16 +1,20 @@
 import "./App.css";
-import MainMenu from "./features/MainMenu";
+import MainMenu from "./features/main-menu/MainMenu";
 import FileTabs from "./features/FileTabs";
 import Sidebar from "./features/sidebar/Sidebar";
-import ButtonsBar from "./features/ButtonsBar";
+import ButtonsBar from "./features/buttons-bar/ButtonsBar";
 import StatusBar from "./features/StatusBar";
 import AScan from "./features/AScan";
 import BScan from "./features/BScan";
+import SettingsButtonsBar from "./features/settings-buttons-bar/SettingsButtonsBar";
 
 function App() {
   return (
     <div className="flex flex-col h-screen">
-      <MainMenu />
+      <div className="flex flex-row gap-2 justify-between">
+        <MainMenu />
+        <SettingsButtonsBar />
+      </div>
 
       <div className="flex flex-row flex-1 min-h-0 border-red-500 border-solid border-2">
         <Sidebar />
