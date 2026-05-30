@@ -7,6 +7,7 @@ import StatusBar from "./features/StatusBar";
 import AScan from "./features/AScan";
 import BScan from "./features/BScan";
 import SettingsButtonsBar from "./features/settings-buttons-bar/SettingsButtonsBar";
+import { Toaster } from "@/components/ui/sonner";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <SettingsButtonsBar />
       </div>
 
+      <Toaster />
       <div className="flex flex-row flex-1 min-h-0 border-red-500 border-solid border-2">
         <Sidebar />
         <div className="flex flex-col flex-1 min-w-0 border-blue-500 border-solid border-2">

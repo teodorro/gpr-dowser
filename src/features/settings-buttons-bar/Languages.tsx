@@ -8,12 +8,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { GB, RU } from "country-flag-icons/react/3x2";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export function Languages() {
   const { t, i18n } = useTranslation();
 
   const handleChangeLanguage = (language: "en" | "ru") => {
     i18n.changeLanguage(language);
+    toast.success("Event has been created", { position: "bottom-center" });
   };
 
   return (

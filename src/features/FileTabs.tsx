@@ -5,10 +5,6 @@ import { useTranslation } from "react-i18next";
 export default function FileTabs() {
   const { t } = useTranslation();
 
-  // useEffect(() => {
-  //   i18n.changeLanguage('en-US');
-  // }, []);
-
   const tabs = [
     { label: t("file_1"), value: "file_1" },
     { label: t("file_2"), value: "file_2" },
