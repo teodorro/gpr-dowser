@@ -7,21 +7,17 @@ import {
 } from "@/components/ui/menubar";
 import { MenubarContent } from "@/components/ui/menubar";
 import { useTranslation } from "react-i18next";
-import { loadDataFile } from "@/file-parsers/load-data-file";
+import { loadFileHandler } from "./shared-file";
 
 export default function FileMenu() {
   const { t } = useTranslation();
-
-  const loadFileHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] as File;
-    loadDataFile(file);
-  };
 
   return (
     <>
       <input
         id="file-input"
         type="file"
+        multiple
         className="hidden"
         accept=".txt, .geo, .gem"
         onChange={(e) => loadFileHandler(e)}

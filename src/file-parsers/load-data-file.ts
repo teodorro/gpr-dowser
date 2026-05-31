@@ -57,6 +57,7 @@ const loadTxtFile = async (file: File) => {
       }),
     );
     useFileRegistry.getState().addFile(id);
+    console.log("txt file loaded");
   } catch (err) {
     toast.error(
       `Failed to read file:
@@ -92,6 +93,7 @@ const loadGemFile = async (file: File) => {
       }),
     );
     useFileRegistry.getState().addFile(id);
+    console.log("loaded gem file");
   };
 
   reader.onerror = (err: ProgressEvent<FileReader>) => {
