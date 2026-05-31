@@ -14,9 +14,9 @@ export default function FileMenu() {
 
   const loadFileHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] as File;
-    console.log(file); // TODO: remove this
     loadDataFile(file);
   };
+
   return (
     <>
       <input

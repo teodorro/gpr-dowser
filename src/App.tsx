@@ -1,6 +1,6 @@
 import "./App.css";
 import MainMenu from "./features/main-menu/MainMenu";
-import FileTabs from "./features/FileTabs";
+import FileTabs from "./features/file-tabs/FileTabs";
 import Sidebar from "./features/sidebar/Sidebar";
 import ButtonsBar from "./features/buttons-bar/ButtonsBar";
 import StatusBar from "./features/StatusBar";

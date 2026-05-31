@@ -7,6 +7,7 @@ import {
 } from "@/stores/data-slice-stores";
 import { toast } from "sonner";
 import { readGemFile } from "./read-gem-file";
+import useFileRegistry from "@/stores/file-registry-store";
 
 type FileExtension = "txt" | "geo" | "gem";
 
@@ -41,7 +42,7 @@ const loadTxtFile = async (file: File) => {
     const data = readKrotTxtFile(raw);
     const id = crypto.randomUUID();
     dataSliceStores.set(
-      file.name,
+      id,
       createDataSliceStore(id, {
         name: file.name,
         path: file.name,
@@ -55,6 +56,7 @@ const loadTxtFile = async (file: File) => {
         displayBuffer: new Grid2D(0, 0),
       }),
     );
+    useFileRegistry.getState().addFile(id);
   } catch (err) {
     toast.error(
       `Failed to read file:
@@ -75,7 +77,7 @@ const loadGemFile = async (file: File) => {
     const data = readGemFile(uint8);
     const id = crypto.randomUUID();
     dataSliceStores.set(
-      file.name,
+      id,
       createDataSliceStore(id, {
         name: file.name,
         path: file.name,
@@ -89,6 +91,7 @@ const loadGemFile = async (file: File) => {
         displayBuffer: new Grid2D(0, 0),
       }),
     );
+    useFileRegistry.getState().addFile(id);
   };
 
   reader.onerror = (err: ProgressEvent<FileReader>) => {
