@@ -17,7 +17,7 @@ export default function BScan() {
 
   if (!store) {
     return (
-      <div className="flex flex-col flex-1 border-orange-500 border-solid border-2 bg-background text-foreground" />
+      <div className="flex flex-col flex-1 min-w-0 min-h-0 border-orange-500 border-solid border-2 bg-background text-foreground" />
     );
   }
 
@@ -124,8 +124,8 @@ function BScanCanvas({ store }: { store: DataStore }) {
         return;
       }
 
-      let min = valueRange.length > 0 ? valueRange[0] : Infinity;
-      let max = valueRange.length > 0 ? valueRange[1] : -Infinity;
+      const min = valueRange.length > 0 ? valueRange[0] : Infinity;
+      const max = valueRange.length > 0 ? valueRange[1] : -Infinity;
       if (
         !Number.isFinite(min) ||
         !Number.isFinite(max) ||
@@ -133,20 +133,6 @@ function BScanCanvas({ store }: { store: DataStore }) {
         max == null
       )
         return;
-      if (!valueRange) {
-        for (let y = 0; y < cols; y++) {
-          const col = displayBuffer.getColumn(y);
-          for (let x = 0; x < rows; x++) {
-            const v = col[x];
-            if (v < min) min = v;
-            if (v > max) max = v;
-          }
-        }
-        if (!Number.isFinite(min) || !Number.isFinite(max) || min === max) {
-          min = 0;
-          max = 1;
-        }
-      }
 
       const inv = 1 / (max - min);
 
@@ -194,10 +180,10 @@ function BScanCanvas({ store }: { store: DataStore }) {
   }, [dims.rows, dims.cols, valueRange, palette]);
 
   return (
-    <div className="flex flex-col flex-1 border-orange-500 border-solid border-2 bg-background text-foreground">
+    <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden border-orange-500 border-solid border-2 bg-background text-foreground">
       <canvas
         ref={canvasRef}
-        className="border-white border-solid border-2 w-full h-full"
+        className="absolute inset-0 block w-full h-full"
       />
     </div>
   );

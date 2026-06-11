@@ -23,7 +23,7 @@ function App() {
         <div className="flex flex-col flex-1 min-w-0 border-blue-500 border-solid border-2">
           <ButtonsBar />
           <FileTabs />
-          <div className="flex flex-row flex-1 border-green-500 border-solid border-2">
+          <div className="flex flex-row flex-1 min-w-0 min-h-0 border-green-500 border-solid border-2">
             <BScan />
             <AScan />
           </div>
