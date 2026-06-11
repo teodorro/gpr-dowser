@@ -53,7 +53,7 @@ const loadTxtFile = async (file: File) => {
         dx: 0.1,
         velocity: 0.1,
         epsilon: 9,
-        displayBuffer: new Grid2D(0, 0),
+        displayBuffer: Grid2D.fromArray(data),
       }),
     );
     useFileRegistry.getState().addFile(id);
@@ -89,7 +89,7 @@ const loadGemFile = async (file: File) => {
         dx: 0.1,
         velocity: 0.1,
         epsilon: 9,
-        displayBuffer: new Grid2D(0, 0),
+        displayBuffer: Grid2D.fromArray(data),
       }),
     );
     useFileRegistry.getState().addFile(id);
