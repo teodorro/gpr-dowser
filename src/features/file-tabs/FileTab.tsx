@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import useFileRegistry from "@/stores/file-registry-store";
+import useFileRegistryStore from "@/stores/file-registry-store";
 import { XIcon } from "lucide-react";
 
 type Props = {
@@ -9,15 +9,15 @@ type Props = {
 };
 
 export default function FileTab({ id, label }: Props) {
-  const closeTab = useFileRegistry.use.removeFile();
-  const selectedFileId = useFileRegistry.use.selectedFileId();
+  const closeTab = useFileRegistryStore.use.removeFile();
+  const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const isSelected = id === selectedFileId;
 
   const getShortLabel = (label: string, maxLength: number) => {
     return label.length > maxLength ? label.slice(0, maxLength) + "..." : label;
   };
 
-  const selectFile = useFileRegistry.use.selectFile();
+  const selectFile = useFileRegistryStore.use.selectFile();
 
   return (
     <div

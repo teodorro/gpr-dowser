@@ -1,8 +1,13 @@
 import { Button } from "@/components/ui/button";
 import NavItem from "./NavItem";
 import { BookIcon, BotIcon, SettingsIcon, TerminalIcon } from "lucide-react";
+import { useUiStore } from "@/stores/ui-store";
 
 const Sidebar = () => {
+  const { sideBarVisible } = useUiStore();
+
+  if (!sideBarVisible) return null;
+
   return (
     <div className="flex flex-col min-h-0 min-w-sm border-purple-500 border-solid border-2">
       <nav className="flex flex-col flex-1 gap-1 p-2 overflow-y-auto">

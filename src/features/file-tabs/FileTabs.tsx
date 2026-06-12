@@ -1,11 +1,11 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import useFileRegistry from "@/stores/file-registry-store";
+import useFileRegistryStore from "@/stores/file-registry-store";
 import { useMemo } from "react";
 import FileTab from "./FileTab";
 import { dataSliceStores } from "@/stores/data-slice-stores";
 
 export default function FileTabs() {
-  const fileIds = useFileRegistry.use.fileIds();
+  const fileIds = useFileRegistryStore.use.fileIds();
 
   const tabs = useMemo(() => {
     const vals = fileIds.map((id) => ({

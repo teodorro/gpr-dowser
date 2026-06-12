@@ -2,7 +2,7 @@ import {
   createDataSliceStore,
   dataSliceStores,
 } from "@/stores/data-slice-stores";
-import useFileRegistry from "@/stores/file-registry-store";
+import useFileRegistryStore from "@/stores/file-registry-store";
 import clamp from "@/visual/clamp";
 import getPalette from "@/visual/get-palette";
 import * as d3 from "d3";
@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
 
 export default function BScan() {
-  const selectedFileId = useFileRegistry.use.selectedFileId();
+  const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const store = selectedFileId
     ? dataSliceStores.get(selectedFileId)
     : undefined;

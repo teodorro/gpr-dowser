@@ -7,7 +7,7 @@ import {
 } from "@/stores/data-slice-stores";
 import { toast } from "sonner";
 import { readGemFile } from "./read-gem-file";
-import useFileRegistry from "@/stores/file-registry-store";
+import useFileRegistryStore from "@/stores/file-registry-store";
 
 type FileExtension = "txt" | "geo" | "gem";
 
@@ -56,7 +56,7 @@ const loadTxtFile = async (file: File) => {
         displayBuffer: Grid2D.fromArray(data),
       }),
     );
-    useFileRegistry.getState().addFile(id);
+    useFileRegistryStore.getState().addFile(id);
     console.log("txt file loaded");
   } catch (err) {
     toast.error(
@@ -92,7 +92,7 @@ const loadGemFile = async (file: File) => {
         displayBuffer: Grid2D.fromArray(data),
       }),
     );
-    useFileRegistry.getState().addFile(id);
+    useFileRegistryStore.getState().addFile(id);
     console.log("loaded gem file");
   };
 

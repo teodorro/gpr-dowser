@@ -43,6 +43,6 @@ const useFileRegistryBase = create<FileRegistry>((set, get) => ({
     set((s) => ({ ...s, selectedFileId: s.fileIds.includes(id) ? id : null })),
 }));
 
-const useFileRegistry = createSelectors(useFileRegistryBase);
+const useFileRegistryStore = createSelectors(useFileRegistryBase);
 
-export default useFileRegistry;
+export default useFileRegistryStore;
