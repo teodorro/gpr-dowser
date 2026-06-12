@@ -6,7 +6,7 @@ import useFileRegistry from "@/stores/file-registry-store";
 import clamp from "@/visual/clamp";
 import getPalette from "@/visual/get-palette";
 import * as d3 from "d3";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
 
 export default function BScan() {
@@ -41,6 +41,12 @@ function BScanCanvas({ store }: { store: DataStore }) {
   const scale = useStore(store, (s) => s.scale);
   const tx = useStore(store, (s) => s.tx);
   const ty = useStore(store, (s) => s.ty);
+  const setScale = useStore(store, (s) => s.setScale);
+  const setPosition = useStore(store, (s) => s.setPosition);
+
+  const dragging = useRef<boolean>(false);
+  const lastX = useRef<number>(0);
+  const lastY = useRef<number>(0);
 
   const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
 
@@ -61,7 +67,7 @@ function BScanCanvas({ store }: { store: DataStore }) {
     return () => ro.disconnect();
   }, []);
 
-  const redraw = () => {
+  const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -107,55 +113,60 @@ function BScanCanvas({ store }: { store: DataStore }) {
       ctx.restore();
     }
     ctx.restore();
-
-    // drawRulers(ctx, bscanToShow, vpRef, tx, ty, scale, dx, dt, velocity, ruler);
-  };
+  }, [scale, tx, ty, bitmapRef]);
 
   const redrawRef = useRef<() => void>(redraw);
+
+  const convertDisplayBufferToImageData = useCallback((): ImageData | null => {
+    const { rows, cols } = dims;
+    const min = valueRange.length > 0 ? valueRange[0] : Infinity;
+    const max = valueRange.length > 0 ? valueRange[1] : -Infinity;
+    if (
+      !rows ||
+      !cols ||
+      !Number.isFinite(min) ||
+      !Number.isFinite(max) ||
+      min == null ||
+      max == null
+    ) {
+      return null;
+    }
+
+    const inv = 1 / (max - min);
+
+    const img = new ImageData(cols, rows);
+    const data = img.data;
+    let p = 0;
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const v = displayBuffer.buffer[x * rows + y];
+        const t = clamp((v - min) * inv, 0, 1);
+        const idx = (t * 255) | 0;
+        const o = idx * 4;
+        data[p++] = palette[o + 0];
+        data[p++] = palette[o + 1];
+        data[p++] = palette[o + 2];
+        data[p++] = 255;
+      }
+    }
+    return img;
+  }, [displayBuffer.buffer, dims, valueRange, palette]);
 
   useEffect(() => {
     let cancelled = false;
 
     async function buildBitmap() {
-      const { rows, cols } = dims;
-      if (!rows || !cols) {
+      const img = convertDisplayBufferToImageData();
+
+      if (!img) {
         bitmapRef.current = null;
         redraw();
         return;
       }
 
-      const min = valueRange.length > 0 ? valueRange[0] : Infinity;
-      const max = valueRange.length > 0 ? valueRange[1] : -Infinity;
-      if (
-        !Number.isFinite(min) ||
-        !Number.isFinite(max) ||
-        min == null ||
-        max == null
-      )
-        return;
-
-      const inv = 1 / (max - min);
-
-      const img = new ImageData(cols, rows);
-      const data = img.data;
-      let p = 0;
-
-      for (let y = 0; y < rows; y++) {
-        for (let x = 0; x < cols; x++) {
-          const v = displayBuffer.buffer[x * rows + y];
-          const t = clamp((v - min) * inv, 0, 1);
-          const idx = (t * 255) | 0;
-          const o = idx * 4;
-          data[p++] = palette[o + 0];
-          data[p++] = palette[o + 1];
-          data[p++] = palette[o + 2];
-          data[p++] = 255;
-        }
-      }
-
       const off = document.createElement("canvas");
-      off.width = cols;
-      off.height = rows;
+      off.width = dims.cols;
+      off.height = dims.rows;
       const offCtx = off.getContext("2d");
       if (!offCtx) return;
       offCtx.putImageData(img, 0, 0);
@@ -176,8 +187,83 @@ function BScanCanvas({ store }: { store: DataStore }) {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dims.rows, dims.cols, valueRange, palette]);
+  }, [
+    dims.rows,
+    dims.cols,
+    valueRange,
+    palette,
+    scale,
+    tx,
+    ty,
+    setPosition,
+    setScale,
+    convertDisplayBufferToImageData,
+    redraw,
+  ]);
+
+  const toViewportLocal = (e: MouseEvent, canvas: HTMLCanvasElement) => {
+    const rect = canvas.getBoundingClientRect();
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+    return { sx: px - vpRef.current.x, sy: py - vpRef.current.y };
+  };
+
+  // Mouse interactions: pan + wheel zoom
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const onDown = (e: MouseEvent) => {
+      dragging.current = true;
+      const { sx, sy } = toViewportLocal(e, canvas);
+      lastX.current = sx;
+      lastY.current = sy;
+    };
+    const onMove = (e: MouseEvent) => {
+      const { sx, sy } = toViewportLocal(e, canvas);
+      if (!dragging.current) return;
+      const dx = sx - lastX.current;
+      const dy = sy - lastY.current;
+      lastX.current = sx;
+      lastY.current = sy;
+      setPosition(tx + dx, ty + dy);
+    };
+    const onUp = () => {
+      dragging.current = false;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      const rect = canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left; // mouse in CSS px
+      const py = e.clientY - rect.top;
+      const mx = px - vpRef.current.x; // viewport-local
+      const my = py - vpRef.current.y; // viewport-local
+
+      // Zoom factor
+      const zoom = Math.exp(-e.deltaY * 0.001);
+      const next = clamp(scale * zoom, 0.1, 40);
+
+      // Zoom around cursor: adjust tx/ty so the point under cursor stays put
+      const wx = (mx - tx) / scale;
+      const wy = (my - ty) / scale;
+      setPosition(mx - wx * next, my - wy * next);
+      setScale(next);
+    };
+
+    canvas.addEventListener("mousedown", onDown);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    canvas.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      canvas.removeEventListener("mousedown", onDown);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      canvas.removeEventListener("wheel", onWheel);
+    };
+  }, [scale, tx, ty, dims, setPosition, setScale]);
 
   return (
     <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden border-orange-500 border-solid border-2 bg-background text-foreground">
