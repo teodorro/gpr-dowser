@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/menubar";
 import { MenubarContent } from "@/components/ui/menubar";
 import { useTranslation } from "react-i18next";
-import { loadFileHandler } from "./shared-file";
+import { loadFileHandler } from "./shared-handlers";
 
 export default function FileMenu() {
   const { t } = useTranslation();

@@ -1,10 +1,17 @@
-import { Button } from "@/components/ui/button";
 import NavItem from "./NavItem";
-import { BookIcon, BotIcon, SettingsIcon, TerminalIcon } from "lucide-react";
+import {
+  BookIcon,
+  BotIcon,
+  RulerDimensionLineIcon,
+  SettingsIcon,
+} from "lucide-react";
 import { useUiStore } from "@/stores/ui-store";
+import UnitsMeasurement from "./units-of-measurement/UnitsMeasurement";
+import { useTranslation } from "react-i18next";
 
 const Sidebar = () => {
   const { sideBarVisible } = useUiStore();
+  const { t } = useTranslation();
 
   if (!sideBarVisible) return null;
 
@@ -13,10 +20,11 @@ const Sidebar = () => {
       <nav className="flex flex-col flex-1 gap-1 p-2 overflow-y-auto">
         <p className="text-xs text-muted-foreground px-3 pb-1">Processing</p>
 
-        <NavItem icon={<TerminalIcon />} label="Units of measurement">
-          <Button>Do smth</Button>
-          <a href="#">Starred</a>
-          <a href="#">Settings</a>
+        <NavItem
+          icon={<RulerDimensionLineIcon />}
+          label={t("UnitsOfMeasurement")}
+        >
+          <UnitsMeasurement />
         </NavItem>
 
         <NavItem icon={<BotIcon />} label="Processing">

@@ -36,12 +36,12 @@ export const createDataSliceStore = (
     // UnitSlice
     dt: (options.dt as number) ?? 0,
     dx: (options.dx as number) ?? 0,
-    velocity: (options.velocity as number) ?? 0,
-    epsilon: (options.epsilon as number) ?? 0,
+    velocity: (options.velocity as number) ?? 0.1,
+    permittivity: (options.permittivity as number) ?? 9,
     setDt: (dt) => set({ dt }),
     setDx: (dx) => set({ dx }),
     setVelocity: (velocity) => set({ velocity }),
-    setEpsilon: (epsilon) => set({ epsilon }),
+    setPermittivity: (permittivity) => set({ permittivity }),
 
     // VisualSlice
     displayBuffer: (options.displayBuffer as Grid2D) ?? new Grid2D(0, 0),
@@ -60,3 +60,5 @@ export const dataSliceStores = new Map<
   string,
   ReturnType<typeof createDataSliceStore>
 >();
+
+export type DataStore = ReturnType<typeof createDataSliceStore>;

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { FolderOpenIcon, PanelLeftIcon, PanelRightIcon } from "lucide-react";
-import { loadFileHandler } from "../main-menu/shared-file";
+import { loadFileHandler } from "../main-menu/shared-handlers";
 import { useUiStore } from "@/stores/ui-store";
 
 export default function ButtonsBar() {

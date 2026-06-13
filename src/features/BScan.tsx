@@ -1,7 +1,4 @@
-import {
-  createDataSliceStore,
-  dataSliceStores,
-} from "@/stores/data-slice-stores";
+import { dataSliceStores, type DataStore } from "@/stores/data-slice-stores";
 import useFileRegistryStore from "@/stores/file-registry-store";
 import clamp from "@/visual/clamp";
 import getPalette from "@/visual/get-palette";
@@ -21,12 +18,10 @@ export default function BScan() {
     );
   }
 
-  return <BScanCanvas store={store} />;
+  return <BScanInternal store={store} />;
 }
 
-type DataStore = ReturnType<typeof createDataSliceStore>;
-
-function BScanCanvas({ store }: { store: DataStore }) {
+function BScanInternal({ store }: { store: DataStore }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const bitmapRef = useRef<ImageBitmap | null>(null);
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
