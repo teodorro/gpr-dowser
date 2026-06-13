@@ -24,12 +24,6 @@ export default function BScan() {
 function BScanInternal({ store }: { store: DataStore }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const bitmapRef = useRef<ImageBitmap | null>(null);
-  const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
-    x: 0,
-    y: 0,
-    w: 0,
-    h: 0,
-  });
 
   const selectedPalette = useStore(store, (s) => s.selectedPalette);
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
@@ -39,9 +33,16 @@ function BScanInternal({ store }: { store: DataStore }) {
   const setScale = useStore(store, (s) => s.setScale);
   const setShift = useStore(store, (s) => s.setShift);
 
+  const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
+    x: shiftX,
+    y: shiftY,
+    w: 0,
+    h: 0,
+  });
+
   const dragging = useRef<boolean>(false);
-  const lastX = useRef<number>(0);
-  const lastY = useRef<number>(0);
+  const lastX = useRef<number>(shiftX);
+  const lastY = useRef<number>(shiftY);
 
   const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
 
@@ -147,6 +148,10 @@ function BScanInternal({ store }: { store: DataStore }) {
   };
 
   useEffect(() => {
+    redrawRef.current = redraw;
+  }, [redraw]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ro = new ResizeObserver(() => redrawRef.current());
@@ -240,7 +245,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       const zoom = Math.exp(-e.deltaY * 0.001);
       const next = clamp(scale * zoom, 0.1, 40);
 
-      // Zoom around cursor: adjust tx/ty so the point under cursor stays put
+      // Zoom around cursor: adjust shiftX/shiftY so the point under cursor stays put
       const wx = (mx - shiftX) / scale;
       const wy = (my - shiftY) / scale;
       setShift(mx - wx * next, my - wy * next);
