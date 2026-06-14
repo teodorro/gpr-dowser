@@ -5,6 +5,7 @@ import getPalette from "@/visual/get-palette";
 import * as d3 from "d3";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
+import { drawAxes } from "./draw-axes";
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -24,24 +25,33 @@ export default function BScan() {
 function BScanInternal({ store }: { store: DataStore }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const bitmapRef = useRef<ImageBitmap | null>(null);
-  const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
-    x: 0,
-    y: 0,
-    w: 0,
-    h: 0,
-  });
 
   const selectedPalette = useStore(store, (s) => s.selectedPalette);
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
-  const tx = useStore(store, (s) => s.tx);
-  const ty = useStore(store, (s) => s.ty);
+  const shiftX = useStore(store, (s) => s.shiftX);
+  const shiftY = useStore(store, (s) => s.shiftY);
   const setScale = useStore(store, (s) => s.setScale);
-  const setPosition = useStore(store, (s) => s.setPosition);
+  const setShift = useStore(store, (s) => s.setShift);
+  const dx = useStore(store, (s) => s.dx);
+  const dt = useStore(store, (s) => s.dt);
+  const velocity = useStore(store, (s) => s.velocity);
+
+  const axisBorders = useMemo(
+    () => ({ left: 56, top: 46, right: 66, bottom: 0 }),
+    [],
+  );
+
+  const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
+    x: shiftX,
+    y: shiftY,
+    w: 0,
+    h: 0,
+  });
 
   const dragging = useRef<boolean>(false);
-  const lastX = useRef<number>(0);
-  const lastY = useRef<number>(0);
+  const lastX = useRef<number>(shiftX);
+  const lastY = useRef<number>(shiftY);
 
   const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
 
@@ -54,19 +64,18 @@ function BScanInternal({ store }: { store: DataStore }) {
     return { rows: displayBuffer.rows, cols: displayBuffer.cols };
   }, [displayBuffer]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ro = new ResizeObserver(() => redrawRef.current());
-    ro.observe(canvas);
-    return () => ro.disconnect();
-  }, []);
-
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    const backgroundColor = getComputedStyle(canvas)
+      .getPropertyValue("--background")
+      .trim();
+    const foregroundColor = getComputedStyle(canvas)
+      .getPropertyValue("--foreground")
+      .trim();
 
     const dpr = window.devicePixelRatio || 1;
     const cssW = canvas.clientWidth;
@@ -101,14 +110,39 @@ function BScanInternal({ store }: { store: DataStore }) {
       ctx.imageSmoothingEnabled = false;
 
       ctx.save();
-      ctx.translate(vp.x + tx, vp.y + ty);
+      ctx.translate(vp.x + shiftX, vp.y + shiftY);
       ctx.scale(scale, scale);
       // Draw the “image” at world origin (0,0)
       ctx.drawImage(bmp, 0, 0);
       ctx.restore();
     }
     ctx.restore();
-  }, [scale, tx, ty, bitmapRef]);
+
+    drawAxes(
+      ctx,
+      displayBuffer,
+      vpRef,
+      shiftX,
+      shiftY,
+      scale,
+      dx,
+      dt,
+      velocity,
+      axisBorders,
+      backgroundColor,
+      foregroundColor,
+    );
+  }, [
+    scale,
+    shiftX,
+    shiftY,
+    bitmapRef,
+    dx,
+    dt,
+    velocity,
+    axisBorders,
+    displayBuffer,
+  ]);
 
   const redrawRef = useRef<() => void>(redraw);
 
@@ -146,6 +180,34 @@ function BScanInternal({ store }: { store: DataStore }) {
     }
     return img;
   }, [displayBuffer.buffer, dims, valueRange, palette]);
+
+  const toViewportLocal = (e: MouseEvent, canvas: HTMLCanvasElement) => {
+    const rect = canvas.getBoundingClientRect();
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+    return { sx: px - vpRef.current.x, sy: py - vpRef.current.y };
+  };
+
+  useEffect(() => {
+    redrawRef.current = redraw;
+  }, [redraw]);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => redrawRef.current());
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ro = new ResizeObserver(() => redrawRef.current());
+    ro.observe(canvas);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -188,20 +250,13 @@ function BScanInternal({ store }: { store: DataStore }) {
     valueRange,
     palette,
     scale,
-    tx,
-    ty,
-    setPosition,
+    shiftX,
+    shiftY,
+    setShift,
     setScale,
     convertDisplayBufferToImageData,
     redraw,
   ]);
-
-  const toViewportLocal = (e: MouseEvent, canvas: HTMLCanvasElement) => {
-    const rect = canvas.getBoundingClientRect();
-    const px = e.clientX - rect.left;
-    const py = e.clientY - rect.top;
-    return { sx: px - vpRef.current.x, sy: py - vpRef.current.y };
-  };
 
   // Mouse interactions: pan + wheel zoom
   useEffect(() => {
@@ -221,7 +276,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       const dy = sy - lastY.current;
       lastX.current = sx;
       lastY.current = sy;
-      setPosition(tx + dx, ty + dy);
+      setShift(shiftX + dx, shiftY + dy);
     };
     const onUp = () => {
       dragging.current = false;
@@ -240,10 +295,10 @@ function BScanInternal({ store }: { store: DataStore }) {
       const zoom = Math.exp(-e.deltaY * 0.001);
       const next = clamp(scale * zoom, 0.1, 40);
 
-      // Zoom around cursor: adjust tx/ty so the point under cursor stays put
-      const wx = (mx - tx) / scale;
-      const wy = (my - ty) / scale;
-      setPosition(mx - wx * next, my - wy * next);
+      // Zoom around cursor: adjust shiftX/shiftY so the point under cursor stays put
+      const wx = (mx - shiftX) / scale;
+      const wy = (my - shiftY) / scale;
+      setShift(mx - wx * next, my - wy * next);
       setScale(next);
     };
 
@@ -258,7 +313,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       window.removeEventListener("mouseup", onUp);
       canvas.removeEventListener("wheel", onWheel);
     };
-  }, [scale, tx, ty, dims, setPosition, setScale]);
+  }, [scale, shiftX, shiftY, dims, setShift, setScale]);
 
   return (
     <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden border-orange-500 border-solid border-2 bg-background text-foreground">

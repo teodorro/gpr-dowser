@@ -47,12 +47,12 @@ export const createDataSliceStore = (
     displayBuffer: (options.displayBuffer as Grid2D) ?? new Grid2D(0, 0),
     selectedPalette: (options.selectedPalette as string) ?? "greys",
     scale: (options.scale as number) ?? 1,
-    tx: (options.tx as number) ?? 0,
-    ty: (options.ty as number) ?? 0,
+    shiftX: (options.shiftX as number) ?? 0,
+    shiftY: (options.shiftY as number) ?? 0,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
     setSelectedPalette: (selectedPalette) => set({ selectedPalette }),
     setScale: (scale) => set({ scale }),
-    setPosition: (tx, ty) => set({ tx, ty }),
+    setShift: (shiftX, shiftY) => set({ shiftX, shiftY }),
   }));
 
 // Registry of stores
