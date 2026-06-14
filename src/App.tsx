@@ -5,7 +5,7 @@ import Sidebar from "./features/sidebar/Sidebar";
 import ButtonsBar from "./features/buttons-bar/ButtonsBar";
 import StatusBar from "./features/StatusBar";
 import AScan from "./features/AScan";
-import BScan from "./features/BScan";
+import BScan from "./features/b-scan/BScan";
 import SettingsButtonsBar from "./features/settings-buttons-bar/SettingsButtonsBar";
 import { Toaster } from "@/components/ui/sonner";
 

@@ -5,6 +5,7 @@ import getPalette from "@/visual/get-palette";
 import * as d3 from "d3";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
+import { drawAxes } from "./draw-axes";
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -32,6 +33,14 @@ function BScanInternal({ store }: { store: DataStore }) {
   const shiftY = useStore(store, (s) => s.shiftY);
   const setScale = useStore(store, (s) => s.setScale);
   const setShift = useStore(store, (s) => s.setShift);
+  const dx = useStore(store, (s) => s.dx);
+  const dt = useStore(store, (s) => s.dt);
+  const velocity = useStore(store, (s) => s.velocity);
+
+  const axisBorders = useMemo(
+    () => ({ left: 56, top: 46, right: 66, bottom: 0 }),
+    [],
+  );
 
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
     x: shiftX,
@@ -60,6 +69,13 @@ function BScanInternal({ store }: { store: DataStore }) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    const backgroundColor = getComputedStyle(canvas)
+      .getPropertyValue("--background")
+      .trim();
+    const foregroundColor = getComputedStyle(canvas)
+      .getPropertyValue("--foreground")
+      .trim();
 
     const dpr = window.devicePixelRatio || 1;
     const cssW = canvas.clientWidth;
@@ -101,7 +117,32 @@ function BScanInternal({ store }: { store: DataStore }) {
       ctx.restore();
     }
     ctx.restore();
-  }, [scale, shiftX, shiftY, bitmapRef]);
+
+    drawAxes(
+      ctx,
+      displayBuffer,
+      vpRef,
+      shiftX,
+      shiftY,
+      scale,
+      dx,
+      dt,
+      velocity,
+      axisBorders,
+      backgroundColor,
+      foregroundColor,
+    );
+  }, [
+    scale,
+    shiftX,
+    shiftY,
+    bitmapRef,
+    dx,
+    dt,
+    velocity,
+    axisBorders,
+    displayBuffer,
+  ]);
 
   const redrawRef = useRef<() => void>(redraw);
 
@@ -150,6 +191,15 @@ function BScanInternal({ store }: { store: DataStore }) {
   useEffect(() => {
     redrawRef.current = redraw;
   }, [redraw]);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => redrawRef.current());
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
