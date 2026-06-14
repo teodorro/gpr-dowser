@@ -1,9 +1,6 @@
 import { convertIndToAmp } from "./convert-ind-to-amp";
 
 export const readGeoFile = (raw: Uint8Array): number[][] => {
-  // const bscanLengthArray = Array.from(raw.slice(13, 16));
-  // const bscanLength =
-  //   bscanLengthArray[2] + bscanLengthArray[1] * 8 + bscanLengthArray[0] * 64;
   const aScanHeaderPart = new Uint8Array([0xa1, 0x00]);
   const indices: number[] = [];
   const bScan: number[][] = [];

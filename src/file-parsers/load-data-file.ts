@@ -8,6 +8,8 @@ import {
 import { toast } from "sonner";
 import { readGemFile } from "./read-gem-file";
 import useFileRegistryStore from "@/stores/file-registry-store";
+import { readGeoFile } from "./read-geo-file";
+import i18n from "@/i18n";
 
 type FileExtension = "txt" | "geo" | "gem";
 
@@ -60,7 +62,7 @@ const loadTxtFile = async (file: File) => {
     console.log("txt file loaded");
   } catch (err) {
     toast.error(
-      `Failed to read file:
+      `${i18n.t("FailedToReadFile")}:
       ${err}`,
       {
         position: "bottom-center",
@@ -73,7 +75,7 @@ const loadGemFile = async (file: File) => {
   const reader = new FileReader();
 
   reader.onload = () => {
-    const buffer = reader.result as ArrayBuffer; // FileReader gives ArrayBuffer here
+    const buffer = reader.result as ArrayBuffer;
     const uint8 = new Uint8Array(buffer);
     const data = readGemFile(uint8);
     const id = crypto.randomUUID();
@@ -98,7 +100,7 @@ const loadGemFile = async (file: File) => {
 
   reader.onerror = (err: ProgressEvent<FileReader>) => {
     toast.error(
-      `Failed to read file:
+      `${i18n.t("FailedToReadFile")}:
       ${err}`,
       {
         position: "bottom-center",
@@ -110,12 +112,41 @@ const loadGemFile = async (file: File) => {
 };
 
 const loadGeoFile = async (file: File) => {
-  console.log(file);
-  // const reader = new FileReader();
+  const reader = new FileReader();
 
-  // reader.onload = () => {
-  // const buffer = reader.result as ArrayBuffer; // FileReader gives ArrayBuffer here
-  // const uint8 = new Uint8Array(buffer);
-  // const data = readGeoFile(uint8);
-  // };
+  reader.onload = () => {
+    const buffer = reader.result as ArrayBuffer;
+    const uint8 = new Uint8Array(buffer);
+    const data = readGeoFile(uint8);
+    const id = crypto.randomUUID();
+    dataSliceStores.set(
+      id,
+      createDataSliceStore(id, {
+        name: file.name,
+        path: file.name,
+        type: "geo",
+        bScanInitial: Grid2D.fromArray(data),
+        bScan: Grid2D.fromArray(data),
+        dt: 1,
+        dx: 0.1,
+        velocity: 0.1,
+        epsilon: 9,
+        displayBuffer: Grid2D.fromArray(data),
+      }),
+    );
+    useFileRegistryStore.getState().addFile(id);
+    console.log("loaded geo file");
+  };
+
+  reader.onerror = (err: ProgressEvent<FileReader>) => {
+    toast.error(
+      `${i18n.t("FailedToReadFile")}:
+      ${err}`,
+      {
+        position: "bottom-center",
+      },
+    );
+  };
+
+  reader.readAsArrayBuffer(file);
 };

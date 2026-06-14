@@ -38,6 +38,7 @@ i18n
           EnterVelocity: "Enter velocity",
           Permittivity: "Permittivity",
           EnterPermittivity: "Enter permittivity",
+          FailedToReadFile: "Failed to read file",
         },
       },
       ru: {
@@ -71,6 +72,7 @@ i18n
           EnterVelocity: "Введите скорость",
           Permittivity: "Диэлектрическая проницаемость",
           EnterPermittivity: "Введите диэлектрическую проницаемость",
+          FailedToReadFile: "Не удалось прочитать файл",
         },
       },
     },
