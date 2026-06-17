@@ -1,4 +1,11 @@
-import { dataSliceStores, type DataStore } from "@/stores/data-slice-stores";
+import {
+  BOTTOM_BORDER_HEIGHT,
+  dataSliceStores,
+  LEFT_BORDER_WIDTH,
+  RIGHT_BORDER_WIDTH,
+  TOP_BORDER_HEIGHT,
+  type DataStore,
+} from "@/stores/data-slice-stores";
 import useFileRegistryStore from "@/stores/file-registry-store";
 import clamp from "@/visual/clamp";
 import getPalette from "@/visual/get-palette";
@@ -38,7 +45,12 @@ function BScanInternal({ store }: { store: DataStore }) {
   const velocity = useStore(store, (s) => s.velocity);
 
   const axisBorders = useMemo(
-    () => ({ left: 56, top: 46, right: 66, bottom: 0 }),
+    () => ({
+      left: LEFT_BORDER_WIDTH,
+      top: TOP_BORDER_HEIGHT,
+      right: RIGHT_BORDER_WIDTH,
+      bottom: BOTTOM_BORDER_HEIGHT,
+    }),
     [],
   );
 

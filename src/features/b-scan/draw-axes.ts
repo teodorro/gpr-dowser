@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import type { RefObject } from "react";
 import type Grid2D from "@/shared/grid2d";
 import clamp from "@/visual/clamp";
+import { LEFT_BORDER_WIDTH } from "@/stores/data-slice-stores";
 
 export const drawAxes = (
   ctx: CanvasRenderingContext2D,
@@ -35,6 +36,7 @@ export const drawAxes = (
     displayBuffer,
     vpRef,
     axisBorders,
+    shiftX,
     shiftY,
     dt,
     scale,
@@ -63,6 +65,7 @@ const drawTimeAxis = (
   displayBuffer: Grid2D,
   vpRef: RefObject<{ x: number; y: number; w: number; h: number }>,
   axisBorders: { left: number; top: number; right: number; bottom: number },
+  shiftX: number,
   shiftY: number,
   dt: number,
   scale: number,
@@ -73,8 +76,9 @@ const drawTimeAxis = (
   const vp = vpRef.current;
   const tVisMin = wyMin * dt;
   const tVisMax = wyMax * dt;
+  const axisShift = Math.max(0, shiftX - LEFT_BORDER_WIDTH);
 
-  const minLabelPx = 24;
+  const minLabelPx = 36;
   let maxTicks = Math.max(2, Math.floor(vp.h / minLabelPx));
   if (scale < 1) {
     maxTicks = Math.floor(maxTicks * scale);
@@ -88,7 +92,7 @@ const drawTimeAxis = (
   const fmt = d3.format(`.${decimals}f`);
 
   ctx.fillStyle = backgroundColor;
-  ctx.fillRect(0, vp.y, axisBorders.left, vp.h);
+  ctx.fillRect(axisShift, vp.y, axisBorders.left, vp.h);
 
   ctx.strokeStyle = foregroundColor;
   ctx.lineWidth = 1;
@@ -99,12 +103,12 @@ const drawTimeAxis = (
     .range([0, rows]);
 
   ctx.beginPath();
-  ctx.moveTo(axisBorders.left - 3, wyMin * scale + shiftY);
-  ctx.lineTo(axisBorders.left - 3, wyMax * scale + shiftY);
+  ctx.moveTo(axisShift + axisBorders.left - 3, wyMin * scale + shiftY);
+  ctx.lineTo(axisShift + axisBorders.left - 3, wyMax * scale + shiftY);
   ctx.stroke();
 
   ctx.save();
-  const x = 12;
+  const x = axisShift + 12;
   const y = ((wyMax - wyMin) / 2 + wyMin) * scale - 40 + shiftY;
   ctx.translate(x, y);
   ctx.font = "12px Arial";
@@ -123,14 +127,14 @@ const drawTimeAxis = (
     if (y < vp.y || y > vp.y + vp.h) continue;
 
     ctx.beginPath();
-    ctx.moveTo(axisBorders.left - 8, y);
-    ctx.lineTo(axisBorders.left - 3, y);
+    ctx.moveTo(axisShift + axisBorders.left - 8, y);
+    ctx.lineTo(axisShift + axisBorders.left - 3, y);
     ctx.stroke();
 
     ctx.font = "12px Arial";
     ctx.fillStyle = foregroundColor;
     ctx.textBaseline = "middle";
     ctx.textAlign = "end";
-    ctx.fillText(label, axisBorders.left - 10, y);
+    ctx.fillText(label, axisShift + axisBorders.left - 10, y);
   }
 };

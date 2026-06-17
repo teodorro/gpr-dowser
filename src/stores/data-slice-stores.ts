@@ -10,6 +10,11 @@ type DataSliceStore = { id: string } & FileSlice &
   UnitSlice &
   VisualSlice;
 
+export const LEFT_BORDER_WIDTH = 56;
+export const TOP_BORDER_HEIGHT = 46;
+export const RIGHT_BORDER_WIDTH = 66;
+export const BOTTOM_BORDER_HEIGHT = 0;
+
 export const createDataSliceStore = (
   id: string,
   options: {
@@ -47,7 +52,7 @@ export const createDataSliceStore = (
     displayBuffer: (options.displayBuffer as Grid2D) ?? new Grid2D(0, 0),
     selectedPalette: (options.selectedPalette as string) ?? "greys",
     scale: (options.scale as number) ?? 1,
-    shiftX: (options.shiftX as number) ?? 0,
+    shiftX: (options.shiftX as number) ?? LEFT_BORDER_WIDTH,
     shiftY: (options.shiftY as number) ?? 0,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
     setSelectedPalette: (selectedPalette) => set({ selectedPalette }),
