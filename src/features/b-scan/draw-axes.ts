@@ -8,6 +8,7 @@ import {
   TOP_BORDER_HEIGHT,
   BOTTOM_BORDER_HEIGHT,
 } from "@/stores/data-slice-stores";
+import { t } from "i18next";
 
 export const drawAxes = (
   ctx: CanvasRenderingContext2D,
@@ -62,20 +63,35 @@ export const drawAxes = (
     backgroundColor,
     foregroundColor,
   );
+  drawDepthAxis(
+    ctx,
+    wxMax,
+    wxMin,
+    wyMin,
+    wyMax,
+    displayBuffer,
+    vpRef,
+    axisBorders,
+    shiftX,
+    shiftY,
+    dt,
+    velocity,
+    scale,
+    backgroundColor,
+    foregroundColor,
+  );
   drawLeftTopSquare(ctx, axisBorders, vpRef, shiftX, shiftY, backgroundColor);
-  // drawDepthAxis(
-  //   ctx,
-  //   wyMin,
-  //   wyMax,
-  //   displayBuffer,
-  //   vpRef,
-  //   axisBorders,
-  //   shiftX,
-  //   shiftY,
-  //   dt,
-  //   velocity,
-  //   scale,
-  // );
+  drawRightTopSquare(
+    ctx,
+    axisBorders,
+    vpRef,
+    wxMax,
+    wxMin,
+    scale,
+    shiftX,
+    shiftY,
+    backgroundColor,
+  );
 };
 
 const drawLeftTopSquare = (
@@ -104,6 +120,46 @@ const drawLeftTopSquare = (
 
   ctx.fillStyle = backgroundColor;
   ctx.fillRect(axisXShift, axisYShift, axisBorders.left, axisBorders.top);
+};
+
+const drawRightTopSquare = (
+  ctx: CanvasRenderingContext2D,
+  axisBorders: { left: number; top: number; right: number; bottom: number },
+  vpRef: RefObject<{ x: number; y: number; w: number; h: number }>,
+  wxMax: number,
+  wxMin: number,
+  scale: number,
+  shiftX: number,
+  shiftY: number,
+  backgroundColor: string,
+) => {
+  const vp = vpRef.current;
+  const visibleBscanWidth = (wxMax - wxMin) * scale;
+  const axisXShift = Math.max(
+    0,
+    Math.min(
+      Math.max(
+        visibleBscanWidth - LEFT_BORDER_WIDTH,
+        shiftX + visibleBscanWidth - LEFT_BORDER_WIDTH,
+      ),
+      vpRef.current.w - LEFT_BORDER_WIDTH - RIGHT_BORDER_WIDTH,
+    ),
+  );
+  const axisYShift = Math.max(
+    0,
+    Math.min(
+      shiftY - TOP_BORDER_HEIGHT,
+      vp.h - TOP_BORDER_HEIGHT - BOTTOM_BORDER_HEIGHT,
+    ),
+  );
+
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(
+    axisXShift + axisBorders.left,
+    axisYShift,
+    axisBorders.right,
+    axisBorders.top,
+  );
 };
 
 const drawLengthAxis = (
@@ -171,7 +227,7 @@ const drawLengthAxis = (
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
   ctx.fillText(
-    "Длина, м",
+    t("Length"),
     ((wxMax - wxMin) / 2 + wxMin) * scale + shiftX,
     axisYShift + axisBorders.top - 35,
   );
@@ -264,7 +320,7 @@ const drawTimeAxis = (
   ctx.textBaseline = "middle";
   ctx.textAlign = "end";
   ctx.rotate(-Math.PI / 2);
-  ctx.fillText("Время, нс", 0, 0);
+  ctx.fillText(t("Time"), 0, 0);
   ctx.restore();
 
   for (const t of ticks) {
@@ -287,85 +343,101 @@ const drawTimeAxis = (
   }
 };
 
-// const drawDepthAxis = (
-//   ctx: CanvasRenderingContext2D,
-//   wyMin: number,
-//   wyMax: number,
-//   displayBuffer: Grid2D,
-//   vpRef: RefObject<{ x: number; y: number; w: number; h: number }>,
-//   axisBorders: { left: number; top: number; right: number; bottom: number },
-//   shiftX: number,
-//   shiftY: number,
-//   dt: number,
-//   velocity: number,
-//   scale: number,
-// ) => {
-//   const rows = displayBuffer.rows;
-//   const vp = vpRef.current;
-//   const tVisMin = (wyMin * dt * velocity) / 2;
-//   const tVisMax = (wyMax * dt * velocity) / 2;
+const drawDepthAxis = (
+  ctx: CanvasRenderingContext2D,
+  wxMax: number,
+  wxMin: number,
+  wyMin: number,
+  wyMax: number,
+  displayBuffer: Grid2D,
+  vpRef: RefObject<{ x: number; y: number; w: number; h: number }>,
+  axisBorders: { left: number; top: number; right: number; bottom: number },
+  shiftX: number,
+  shiftY: number,
+  dt: number,
+  velocity: number,
+  scale: number,
+  backgroundColor: string,
+  foregroundColor: string,
+) => {
+  const rows = displayBuffer.rows;
+  const vp = vpRef.current;
+  const tVisMin = (wyMin * dt * velocity) / 2;
+  const tVisMax = (wyMax * dt * velocity) / 2;
+  const visibleBscanWidth = (wxMax - wxMin) * scale;
+  const axisXShift = Math.max(
+    0,
+    Math.min(
+      Math.max(
+        visibleBscanWidth - LEFT_BORDER_WIDTH,
+        shiftX + visibleBscanWidth - LEFT_BORDER_WIDTH,
+      ),
+      vpRef.current.w - LEFT_BORDER_WIDTH - RIGHT_BORDER_WIDTH,
+    ),
+  );
 
-//   const minLabelPx = 34;
-//   const maxTicks = Math.max(2, Math.floor(vp.h / minLabelPx));
-//   const ticks = d3.ticks(tVisMin, tVisMax, maxTicks);
-//   const step = d3.tickStep(tVisMin, tVisMax, maxTicks);
-//   let decimals = Math.max(0, -Math.floor(Math.log10(step)));
-//   if (!Number.isFinite(decimals)) {
-//     decimals = 1;
-//   }
-//   const fmt = d3.format(`.${decimals}f`);
+  const minLabelPx = 36;
+  let maxTicks = Math.max(2, Math.floor(vp.h / minLabelPx));
+  if (scale < 1) {
+    maxTicks = Math.floor(maxTicks * scale);
+  }
+  const ticks = d3.ticks(tVisMin, tVisMax, maxTicks);
+  const step = d3.tickStep(tVisMin, tVisMax, maxTicks);
+  let decimals = Math.max(0, -Math.floor(Math.log10(step)));
+  if (!Number.isFinite(decimals)) {
+    decimals = 1;
+  }
+  const fmt = d3.format(`.${decimals}f`);
 
-//   ctx.fillStyle = '#fff';
-//   ctx.fillRect(vp.x + vp.w, vp.y, axisBorders.right, vp.h);
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(
+    axisXShift + axisBorders.left,
+    wyMin * scale + shiftY,
+    axisBorders.right,
+    (wyMax - wyMin) * scale,
+  );
 
-//   ctx.strokeStyle = '#444';
-//   ctx.lineWidth = 1;
+  ctx.strokeStyle = foregroundColor;
+  ctx.lineWidth = 1;
 
-//   const tToWy = d3
-//     .scaleLinear()
-//     .domain([0, (rows * dt * velocity) / 2])
-//     .range([0, rows]);
+  const tToWy = d3
+    .scaleLinear()
+    .domain([0, (rows * dt * velocity) / 2])
+    .range([0, rows]);
 
-//   ctx.beginPath();
-//   ctx.moveTo(
-//     vp.w + axisBorders.left + 3,
-//     wyMin * scale + shiftY + axisBorders.top,
-//   );
-//   ctx.lineTo(
-//     vp.w + axisBorders.left + 3,
-//     wyMax * scale + shiftY + axisBorders.top,
-//   );
-//   ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(axisXShift + axisBorders.left + 3, wyMin * scale + shiftY);
+  ctx.lineTo(axisXShift + axisBorders.left + 3, wyMax * scale + shiftY);
+  ctx.stroke();
 
-//   ctx.save();
-//   const x = vp.w + axisBorders.left + 50;
-//   const y =
-//     ((wyMax - wyMin) / 2 + wyMin) * scale - 40 + shiftY + axisBorders.top;
-//   ctx.translate(x, y);
-//   ctx.font = '12px Arial';
-//   ctx.fillStyle = '#444';
-//   ctx.textBaseline = 'middle';
-//   ctx.textAlign = 'end';
-//   ctx.rotate(-Math.PI / 2);
-//   ctx.fillText('Глубина, м', 0, 0);
-//   ctx.restore();
+  ctx.save();
+  const x = axisXShift + axisBorders.left + 50;
+  const y = ((wyMax - wyMin) / 2 + wyMin) * scale - 40 + shiftY;
+  ctx.translate(x, y);
+  ctx.font = "12px Arial";
+  ctx.fillStyle = foregroundColor;
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "end";
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(t("Depth"), 0, 0);
+  ctx.restore();
 
-//   for (const t of ticks) {
-//     const wy = tToWy(t);
-//     const y = vp.y + (wy * scale + shiftY);
-//     const label = fmt(t);
+  for (const t of ticks) {
+    const wy = tToWy(t);
+    const y = vp.y + (wy * scale + shiftY);
+    const label = fmt(t);
 
-//     if (y < vp.y || y > vp.y + vp.h) continue;
+    if (y < vp.y || y > vp.y + vp.h) continue;
 
-//     ctx.beginPath();
-//     ctx.moveTo(vp.w + axisBorders.left + 8, y);
-//     ctx.lineTo(vp.w + axisBorders.left + 3, y);
-//     ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(axisXShift + axisBorders.left + 8, y);
+    ctx.lineTo(axisXShift + axisBorders.left + 3, y);
+    ctx.stroke();
 
-//     ctx.font = '12px Arial';
-//     ctx.fillStyle = '#444';
-//     ctx.textBaseline = 'middle';
-//     ctx.textAlign = 'start';
-//     ctx.fillText(label, vp.w + axisBorders.left + 15, y);
-//   }
-// };
+    ctx.font = "12px Arial";
+    ctx.fillStyle = foregroundColor;
+    ctx.textBaseline = "top";
+    ctx.textAlign = "start";
+    ctx.fillText(label, axisXShift + axisBorders.left + 15, y);
+  }
+};
