@@ -1,10 +1,26 @@
 import { Button } from '@/components/ui/button';
-import { FolderOpenIcon, PanelLeftIcon, PanelRightIcon } from 'lucide-react';
+import {
+  FolderOpenIcon,
+  PaletteIcon,
+  PanelLeftIcon,
+  PanelRightIcon,
+} from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
+import useVisualStore from '@/stores/visual-store';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useTranslation } from 'react-i18next';
 
 export default function ButtonsBar() {
+  const { t } = useTranslation();
   const { sideBarVisible, setSideBarVisible, aScanVisible, setAScanVisible } =
     useUiStore();
+  const selectedPalette = useVisualStore.use.selectedPalette();
+  const setSelectedPalette = useVisualStore.use.setSelectedPalette();
   return (
     <div className="flex flex-row gap-1 p-1">
       <div
@@ -29,6 +45,69 @@ export default function ButtonsBar() {
       >
         <PanelRightIcon className="w-4 h-4" />
       </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSelectedPalette('greys')}
+          >
+            <PaletteIcon className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            className={selectedPalette === 'greys' ? 'border border-ring' : ''}
+            onClick={() => setSelectedPalette('greys')}
+          >
+            {t('Greys')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'viridis' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('viridis')}
+          >
+            {t('Viridis')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={selectedPalette === 'turbo' ? 'border border-ring' : ''}
+            onClick={() => setSelectedPalette('turbo')}
+          >
+            {t('Turbo')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'spectral' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('spectral')}
+          >
+            {t('Spectral')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'cubehelix' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('cubehelix')}
+          >
+            {t('Cubehelix')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={selectedPalette === 'magma' ? 'border border-ring' : ''}
+            onClick={() => setSelectedPalette('magma')}
+          >
+            {t('Magma')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'rainbow' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('rainbow')}
+          >
+            {t('Rainbow')}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

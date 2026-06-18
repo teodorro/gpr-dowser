@@ -5,14 +5,15 @@ import {
   RIGHT_BORDER_WIDTH,
   TOP_BORDER_HEIGHT,
   type DataStore,
-} from "@/stores/data-slice-stores";
-import useFileRegistryStore from "@/stores/file-registry-store";
-import clamp from "@/visual/clamp";
-import getPalette from "@/visual/get-palette";
-import * as d3 from "d3";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { useStore } from "zustand";
-import { drawAxes } from "./draw-axes";
+} from '@/stores/data-slice-stores';
+import useFileRegistryStore from '@/stores/file-registry-store';
+import clamp from '@/visual/clamp';
+import getPalette from '@/visual/get-palette';
+import * as d3 from 'd3';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useStore } from 'zustand';
+import { drawAxes } from './draw-axes';
+import useVisualStore from '@/stores/visual-store';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -33,7 +34,7 @@ function BScanInternal({ store }: { store: DataStore }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const bitmapRef = useRef<ImageBitmap | null>(null);
 
-  const selectedPalette = useStore(store, (s) => s.selectedPalette);
+  const selectedPalette = useVisualStore.use.selectedPalette();
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
   const shiftX = useStore(store, (s) => s.shiftX);
@@ -79,14 +80,14 @@ function BScanInternal({ store }: { store: DataStore }) {
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const backgroundColor = getComputedStyle(canvas)
-      .getPropertyValue("--background")
+      .getPropertyValue('--background')
       .trim();
     const foregroundColor = getComputedStyle(canvas)
-      .getPropertyValue("--foreground")
+      .getPropertyValue('--foreground')
       .trim();
 
     const dpr = window.devicePixelRatio || 1;
@@ -208,7 +209,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     const observer = new MutationObserver(() => redrawRef.current());
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ['class'],
     });
     return () => observer.disconnect();
   }, []);
@@ -233,10 +234,10 @@ function BScanInternal({ store }: { store: DataStore }) {
         return;
       }
 
-      const off = document.createElement("canvas");
+      const off = document.createElement('canvas');
       off.width = dims.cols;
       off.height = dims.rows;
-      const offCtx = off.getContext("2d");
+      const offCtx = off.getContext('2d');
       if (!offCtx) return;
       offCtx.putImageData(img, 0, 0);
 
@@ -314,16 +315,16 @@ function BScanInternal({ store }: { store: DataStore }) {
       setScale(next);
     };
 
-    canvas.addEventListener("mousedown", onDown);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-    canvas.addEventListener("wheel", onWheel, { passive: false });
+    canvas.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
 
     return () => {
-      canvas.removeEventListener("mousedown", onDown);
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-      canvas.removeEventListener("wheel", onWheel);
+      canvas.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      canvas.removeEventListener('wheel', onWheel);
     };
   }, [scale, shiftX, shiftY, dims, setShift, setScale]);
 

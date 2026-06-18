@@ -50,12 +50,10 @@ export const createDataSliceStore = (
 
     // VisualSlice
     displayBuffer: (options.displayBuffer as Grid2D) ?? new Grid2D(0, 0),
-    selectedPalette: (options.selectedPalette as string) ?? 'greys',
     scale: (options.scale as number) ?? 1,
     shiftX: (options.shiftX as number) ?? LEFT_BORDER_WIDTH,
     shiftY: (options.shiftY as number) ?? TOP_BORDER_HEIGHT,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
-    setSelectedPalette: (selectedPalette) => set({ selectedPalette }),
     setScale: (scale) => set({ scale }),
     setShift: (shiftX, shiftY) => set({ shiftX, shiftY }),
   }));
