@@ -1,10 +1,10 @@
-import { Field, FieldLabel } from "@/components/ui/field";
-import { dataSliceStores, type DataStore } from "@/stores/data-slice-stores";
-import { Input } from "@/components/ui/input";
-import { useTranslation } from "react-i18next";
-import useFileRegistryStore from "@/stores/file-registry-store";
-import { useStore } from "zustand";
-import { useEffect, useState } from "react";
+import { Field, FieldLabel } from '@/components/ui/field';
+import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
+import { Input } from '@/components/ui/input';
+import { useTranslation } from 'react-i18next';
+import useFileRegistryStore from '@/stores/file-registry-store';
+import { useStore } from 'zustand';
+import { useEffect, useState } from 'react';
 
 export default function XStep() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -15,7 +15,7 @@ export default function XStep() {
   if (!store) {
     return null;
   }
-  return <XStepInternal store={store} />;
+  return <XStepInternal key={selectedFileId} store={store} />;
 }
 
 function XStepInternal({ store }: { store: DataStore }) {
@@ -23,30 +23,30 @@ function XStepInternal({ store }: { store: DataStore }) {
   const dx = useStore(store, (state) => state.dx);
   const setDx = useStore(store, (state) => state.setDx);
 
-  const [internalDx, setInternalDx] = useState<string>(dx.toString());
+  const [internalDx, setInternalDx] = useState<string>(dx?.toString() ?? '');
 
   useEffect(() => {
-    if (internalDx !== "") {
+    if (internalDx !== '') {
       setDx(Number(internalDx));
     }
   }, [internalDx, setDx]);
 
   return (
     <Field>
-      <FieldLabel htmlFor="x-step">{t("XStep")}</FieldLabel>
+      <FieldLabel htmlFor="x-step">{t('XStep')}</FieldLabel>
       <Input
         id="x-step"
         type="number"
         min={0}
-        step="any"
-        placeholder={t("EnterXStep")}
+        step="0.1"
+        placeholder={t('EnterXStep')}
         value={internalDx}
         onChange={(e) => {
           const v = e.target.value;
-          if (v === "" || Number(v) >= 0) setInternalDx(v);
+          if (v === '' || Number(v) >= 0) setInternalDx(v);
         }}
         onBlur={() => {
-          setInternalDx(dx.toString());
+          setInternalDx(dx?.toString() ?? '');
         }}
       />
     </Field>

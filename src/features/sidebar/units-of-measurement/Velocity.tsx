@@ -1,11 +1,11 @@
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { LIGHT_VELOCITY } from "@/shared/constants";
-import { dataSliceStores, type DataStore } from "@/stores/data-slice-stores";
-import useFileRegistryStore from "@/stores/file-registry-store";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useStore } from "zustand";
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { LIGHT_VELOCITY } from '@/shared/constants';
+import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
+import useFileRegistryStore from '@/stores/file-registry-store';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useStore } from 'zustand';
 
 export default function Velocity() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -17,7 +17,7 @@ export default function Velocity() {
     return null;
   }
 
-  return <VelocityInternal store={store} />;
+  return <VelocityInternal key={selectedFileId} store={store} />;
 }
 
 function VelocityInternal({ store }: { store: DataStore }) {
@@ -35,13 +35,13 @@ function VelocityInternal({ store }: { store: DataStore }) {
   );
 
   useEffect(() => {
-    if (internalVelocity !== "") {
+    if (internalVelocity !== '') {
       setVelocity(Number(internalVelocity));
     }
   }, [internalVelocity, setVelocity]);
 
   useEffect(() => {
-    if (internalPermittivity !== "") {
+    if (internalPermittivity !== '') {
       setPermittivity(Number(internalPermittivity));
     }
   }, [internalPermittivity, setPermittivity]);
@@ -55,10 +55,10 @@ function VelocityInternal({ store }: { store: DataStore }) {
 
   const handleVelocityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
-    if (v === "" || Number(v) >= 0) {
+    if (v === '' || Number(v) >= 0) {
       setInternalVelocity(v);
     }
-    if (v !== "" || Number(v) > 0) {
+    if (v !== '' || Number(v) > 0) {
       setInternalPermittivity(
         convertVelocityToPermittivity(Number(v)).toString(),
       );
@@ -67,8 +67,8 @@ function VelocityInternal({ store }: { store: DataStore }) {
 
   const handlePermittivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const p = e.target.value;
-    if (p === "" || Number(p) >= 0) setInternalPermittivity(p);
-    if (p !== "" || Number(p) > 0) {
+    if (p === '' || Number(p) >= 0) setInternalPermittivity(p);
+    if (p !== '' || Number(p) > 0) {
       setInternalVelocity(convertPermittivityToVelocity(Number(p)).toString());
     }
   };
@@ -86,14 +86,14 @@ function VelocityInternal({ store }: { store: DataStore }) {
   return (
     <div className="flex flex-col gap-2">
       <Field>
-        <FieldLabel htmlFor="velocity">{t("Velocity")}</FieldLabel>
+        <FieldLabel htmlFor="velocity">{t('Velocity')}</FieldLabel>
         <Input
           id="velocity"
           type="number"
           max={0.3}
           min={0.00000001}
-          step="any"
-          placeholder={t("EnterVelocity")}
+          step="0.005"
+          placeholder={t('EnterVelocity')}
           value={internalVelocity}
           onChange={handleVelocityChange}
           onBlur={handleVelocityBlur}
@@ -101,13 +101,13 @@ function VelocityInternal({ store }: { store: DataStore }) {
       </Field>
 
       <Field>
-        <FieldLabel htmlFor="permittivity">{t("Permittivity")}</FieldLabel>
+        <FieldLabel htmlFor="permittivity">{t('Permittivity')}</FieldLabel>
         <Input
           id="permittivity"
           type="number"
           min={1}
-          step="any"
-          placeholder={t("EnterPermittivity")}
+          step="1"
+          placeholder={t('EnterPermittivity')}
           value={internalPermittivity}
           onChange={handlePermittivityChange}
           onBlur={handlePermittivityBlur}

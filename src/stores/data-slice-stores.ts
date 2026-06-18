@@ -39,8 +39,8 @@ export const createDataSliceStore = (
     setBScan: (bScan) => set({ bScan }),
 
     // UnitSlice
-    dt: (options.dt as number) ?? 0,
-    dx: (options.dx as number) ?? 0,
+    dt: (options.dt as number) ?? 1,
+    dx: (options.dx as number) ?? 0.1,
     velocity: (options.velocity as number) ?? 0.1,
     permittivity: (options.permittivity as number) ?? 9,
     setDt: (dt) => set({ dt }),
