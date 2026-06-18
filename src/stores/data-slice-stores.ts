@@ -1,9 +1,9 @@
-import { create } from "zustand";
-import Grid2D from "@/shared/grid2d";
-import type { VisualSlice } from "./visual-slice";
-import type { UnitSlice } from "./unit-slice";
-import type { DataSlice } from "./data-slice";
-import type { FileSlice } from "./file-slice";
+import { create } from 'zustand';
+import Grid2D from '@/shared/grid2d';
+import type { VisualSlice } from './visual-slice';
+import type { UnitSlice } from './unit-slice';
+import type { DataSlice } from './data-slice';
+import type { FileSlice } from './file-slice';
 
 type DataSliceStore = { id: string } & FileSlice &
   DataSlice &
@@ -25,9 +25,9 @@ export const createDataSliceStore = (
     id,
 
     // FileSlice
-    name: (options.name as string) ?? "",
-    path: (options.path as string) ?? "",
-    type: (options.type as string) ?? "",
+    name: (options.name as string) ?? '',
+    path: (options.path as string) ?? '',
+    type: (options.type as string) ?? '',
     setName: (name) => set({ name }),
     setPath: (path) => set({ path }),
     setType: (type) => set({ type }),
@@ -50,10 +50,10 @@ export const createDataSliceStore = (
 
     // VisualSlice
     displayBuffer: (options.displayBuffer as Grid2D) ?? new Grid2D(0, 0),
-    selectedPalette: (options.selectedPalette as string) ?? "greys",
+    selectedPalette: (options.selectedPalette as string) ?? 'greys',
     scale: (options.scale as number) ?? 1,
     shiftX: (options.shiftX as number) ?? LEFT_BORDER_WIDTH,
-    shiftY: (options.shiftY as number) ?? 0,
+    shiftY: (options.shiftY as number) ?? TOP_BORDER_HEIGHT,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
     setSelectedPalette: (selectedPalette) => set({ selectedPalette }),
     setScale: (scale) => set({ scale }),

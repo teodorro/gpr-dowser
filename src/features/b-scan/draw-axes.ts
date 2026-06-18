@@ -1,14 +1,14 @@
-import * as d3 from "d3";
-import type { RefObject } from "react";
-import type Grid2D from "@/shared/grid2d";
-import clamp from "@/visual/clamp";
+import * as d3 from 'd3';
+import type { RefObject } from 'react';
+import type Grid2D from '@/shared/grid2d';
+import clamp from '@/visual/clamp';
 import {
   LEFT_BORDER_WIDTH,
   RIGHT_BORDER_WIDTH,
   TOP_BORDER_HEIGHT,
   BOTTOM_BORDER_HEIGHT,
-} from "@/stores/data-slice-stores";
-import { t } from "i18next";
+} from '@/stores/data-slice-stores';
+import { t } from 'i18next';
 
 export const drawAxes = (
   ctx: CanvasRenderingContext2D,
@@ -29,7 +29,6 @@ export const drawAxes = (
   const rows = displayBuffer.rows;
   const cols = displayBuffer.cols;
 
-  console.log(shiftX, dx, velocity);
   const wyMin = clamp((0 - shiftY) / scale, 0, rows);
   const wyMax = clamp((vp.h - shiftY) / scale, 0, rows);
   const wxMin = clamp((0 - shiftX) / scale, 0, cols);
@@ -219,12 +218,12 @@ const drawLengthAxis = (
   ctx.lineTo(wxMax * scale + shiftX, axisYShift + axisBorders.top - 3);
   ctx.stroke();
 
-  ctx.font = "12px Arial";
+  ctx.font = '12px Arial';
   ctx.fillStyle = foregroundColor;
-  ctx.textBaseline = "middle";
-  ctx.textAlign = "center";
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
   ctx.fillText(
-    t("Length"),
+    t('Length'),
     ((wxMax - wxMin) / 2 + wxMin) * scale + shiftX,
     axisYShift + axisBorders.top - 35,
   );
@@ -240,10 +239,10 @@ const drawLengthAxis = (
     ctx.lineTo(x, axisYShift + axisBorders.top - 3);
     ctx.stroke();
 
-    ctx.font = "12px Arial";
+    ctx.font = '12px Arial';
     ctx.fillStyle = foregroundColor;
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "left";
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
     ctx.fillText(label, x, axisYShift + axisBorders.top - 16);
   }
 };
@@ -309,12 +308,12 @@ const drawTimeAxis = (
   const x = axisXShift + 12;
   const y = ((wyMax - wyMin) / 2 + wyMin) * scale - 40 + shiftY;
   ctx.translate(x, y);
-  ctx.font = "12px Arial";
+  ctx.font = '12px Arial';
   ctx.fillStyle = foregroundColor;
-  ctx.textBaseline = "middle";
-  ctx.textAlign = "end";
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'end';
   ctx.rotate(-Math.PI / 2);
-  ctx.fillText(t("Time"), 0, 0);
+  ctx.fillText(t('Time'), 0, 0);
   ctx.restore();
 
   for (const t of ticks) {
@@ -329,10 +328,10 @@ const drawTimeAxis = (
     ctx.lineTo(axisXShift + axisBorders.left - 3, y);
     ctx.stroke();
 
-    ctx.font = "12px Arial";
+    ctx.font = '12px Arial';
     ctx.fillStyle = foregroundColor;
-    ctx.textBaseline = "top";
-    ctx.textAlign = "end";
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'end';
     ctx.fillText(label, axisXShift + axisBorders.left - 10, y);
   }
 };
@@ -405,12 +404,12 @@ const drawDepthAxis = (
   const x = axisXShift + axisBorders.left + 50;
   const y = ((wyMax - wyMin) / 2 + wyMin) * scale - 40 + shiftY;
   ctx.translate(x, y);
-  ctx.font = "12px Arial";
+  ctx.font = '12px Arial';
   ctx.fillStyle = foregroundColor;
-  ctx.textBaseline = "middle";
-  ctx.textAlign = "end";
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'end';
   ctx.rotate(-Math.PI / 2);
-  ctx.fillText(t("Depth"), 0, 0);
+  ctx.fillText(t('Depth'), 0, 0);
   ctx.restore();
 
   for (const t of ticks) {
@@ -425,10 +424,10 @@ const drawDepthAxis = (
     ctx.lineTo(axisXShift + axisBorders.left + 3, y);
     ctx.stroke();
 
-    ctx.font = "12px Arial";
+    ctx.font = '12px Arial';
     ctx.fillStyle = foregroundColor;
-    ctx.textBaseline = "top";
-    ctx.textAlign = "start";
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'start';
     ctx.fillText(label, axisXShift + axisBorders.left + 15, y);
   }
 };
