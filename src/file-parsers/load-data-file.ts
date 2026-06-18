@@ -13,6 +13,12 @@ import i18n from '@/i18n';
 
 type FileExtension = 'txt' | 'geo' | 'gem';
 
+const logTransform = (data: number[][]): number[][] => {
+  return data.map((row) =>
+    row.map((cell) => Math.sign(cell) * Math.log(Math.abs(cell) + 1)),
+  );
+};
+
 export const loadDataFile = (file: File) => {
   const extension = file.name.split('.')[
     file.name.split('.').length - 1
@@ -54,7 +60,7 @@ const loadTxtFile = async (file: File) => {
         dx: 0.1,
         velocity: 0.1,
         epsilon: 9,
-        displayBuffer: Grid2D.fromArray(data),
+        displayBuffer: Grid2D.fromArray(logTransform(data)),
       }),
     );
     useFileRegistryStore.getState().addFile(id);
@@ -71,7 +77,6 @@ const loadTxtFile = async (file: File) => {
 
 const loadGemFile = async (file: File) => {
   const reader = new FileReader();
-
   reader.onload = () => {
     const buffer = reader.result as ArrayBuffer;
     const uint8 = new Uint8Array(buffer);
@@ -89,7 +94,7 @@ const loadGemFile = async (file: File) => {
         dx: 0.1,
         velocity: 0.1,
         epsilon: 9,
-        displayBuffer: Grid2D.fromArray(data),
+        displayBuffer: Grid2D.fromArray(logTransform(data)),
       }),
     );
     useFileRegistryStore.getState().addFile(id);
@@ -128,7 +133,7 @@ const loadGeoFile = async (file: File) => {
         dx: 0.1,
         velocity: 0.1,
         epsilon: 9,
-        displayBuffer: Grid2D.fromArray(data),
+        displayBuffer: Grid2D.fromArray(logTransform(data)),
       }),
     );
     useFileRegistryStore.getState().addFile(id);
