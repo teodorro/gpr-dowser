@@ -41,6 +41,8 @@ function BScanInternal({ store }: { store: DataStore }) {
   const shiftY = useStore(store, (s) => s.shiftY);
   const setScale = useStore(store, (s) => s.setScale);
   const setShift = useStore(store, (s) => s.setShift);
+  const setIndexX = useStore(store, (s) => s.setIndexX);
+  const setIndexY = useStore(store, (s) => s.setIndexY);
   const dx = useStore(store, (s) => s.dx);
   const dt = useStore(store, (s) => s.dt);
   const velocity = useStore(store, (s) => s.velocity);
@@ -198,6 +200,10 @@ function BScanInternal({ store }: { store: DataStore }) {
     const rect = canvas.getBoundingClientRect();
     const px = e.clientX - rect.left;
     const py = e.clientY - rect.top;
+    console.log('viewPortLocal', {
+      sx: px - vpRef.current.x,
+      sy: py - vpRef.current.y,
+    });
     return { sx: px - vpRef.current.x, sy: py - vpRef.current.y };
   };
 
@@ -271,6 +277,35 @@ function BScanInternal({ store }: { store: DataStore }) {
     redraw,
   ]);
 
+  const getBscanIndexFromMouse = (e: MouseEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+
+    const rect = canvas.getBoundingClientRect();
+    console.log('rect', rect);
+    const px = e.clientX - rect.left; // canvas-local CSS px
+    const py = e.clientY - rect.top;
+
+    // viewport-local screen
+    const sx = px - vpRef.current.x;
+    const sy = py - vpRef.current.y;
+
+    const wx = (sx - shiftX) / scale;
+    const wy = (sy - shiftY) / scale;
+    console.log('wx', wx);
+    console.log('wy', wy);
+
+    const col = Math.floor(wx);
+    const row = Math.floor(wy);
+
+    const { rows, cols } = dims; // rows = bitmap height, cols = bitmap width
+    if (col < 0 || col >= cols || row < 0 || row >= rows) return null;
+    if (sx < 0 || sy < 0 || sx > vpRef.current.w || sy > vpRef.current.h) {
+      return null;
+    }
+    return { col, row, wx, wy, px, py };
+  };
+
   // Mouse interactions: pan + wheel zoom
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -282,15 +317,24 @@ function BScanInternal({ store }: { store: DataStore }) {
       lastX.current = sx;
       lastY.current = sy;
     };
+
     const onMove = (e: MouseEvent) => {
       const { sx, sy } = toViewportLocal(e, canvas);
+      const { col, row } = getBscanIndexFromMouse(e) ?? {
+        col: undefined,
+        row: undefined,
+      };
+      setIndexX(col);
+      setIndexY(row);
       if (!dragging.current) return;
+
       const dx = sx - lastX.current;
       const dy = sy - lastY.current;
       lastX.current = sx;
       lastY.current = sy;
       setShift(shiftX + dx, shiftY + dy);
     };
+
     const onUp = () => {
       dragging.current = false;
     };

@@ -53,9 +53,13 @@ export const createDataSliceStore = (
     scale: (options.scale as number) ?? 1,
     shiftX: (options.shiftX as number) ?? LEFT_BORDER_WIDTH,
     shiftY: (options.shiftY as number) ?? TOP_BORDER_HEIGHT,
+    indexX: (options.indexX as number | undefined) ?? undefined,
+    indexY: (options.indexY as number | undefined) ?? undefined,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
     setScale: (scale) => set({ scale }),
     setShift: (shiftX, shiftY) => set({ shiftX, shiftY }),
+    setIndexX: (indexX) => set({ indexX }),
+    setIndexY: (indexY) => set({ indexY }),
   }));
 
 // Registry of stores

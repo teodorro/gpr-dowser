@@ -5,12 +5,16 @@ type VisualState = {
   scale: number;
   shiftX: number;
   shiftY: number;
+  indexX: number | undefined;
+  indexY: number | undefined;
 };
 
 type VisualActions = {
   setDisplayBuffer: (displayBuffer: Grid2D) => void;
   setScale: (scale: number) => void;
   setShift: (shiftX: number, shiftY: number) => void;
+  setIndexX: (indexX: number | undefined) => void;
+  setIndexY: (indexY: number | undefined) => void;
 };
 
 export type VisualSlice = VisualState & VisualActions;
