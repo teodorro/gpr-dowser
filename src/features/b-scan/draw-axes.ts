@@ -188,13 +188,10 @@ const drawLengthAxis = (
     ),
   );
 
-  const minLabelPx = 80;
-  let maxTicks = Math.max(2, Math.floor(vp.w / minLabelPx));
-  if (scale < 1) {
-    maxTicks = Math.floor(maxTicks * scale);
-  }
-  const ticks = d3.ticks(xVisMin, xVisMax, maxTicks);
-  const step = d3.tickStep(xVisMin, xVisMax, maxTicks);
+  const minLabelPx = 64;
+  const ticksDensity = Math.floor(((wxMax - wxMin) / minLabelPx) * scale);
+  const ticks = d3.ticks(xVisMin, xVisMax, ticksDensity);
+  const step = d3.tickStep(xVisMin, xVisMax, ticksDensity);
   let decimals = Math.max(0, -Math.floor(Math.log10(step)));
   if (!Number.isFinite(decimals)) {
     decimals = 1;
@@ -277,13 +274,10 @@ const drawTimeAxis = (
     ),
   );
 
-  const minLabelPx = 36;
-  let maxTicks = Math.max(2, Math.floor(vp.h / minLabelPx));
-  if (scale < 1) {
-    maxTicks = Math.floor(maxTicks * scale);
-  }
-  const ticks = d3.ticks(tVisMin, tVisMax, maxTicks);
-  const step = d3.tickStep(tVisMin, tVisMax, maxTicks);
+  const minLabelPx = 32;
+  const ticksDensity = Math.floor(((wyMax - wyMin) / minLabelPx) * scale);
+  const ticks = d3.ticks(tVisMin, tVisMax, ticksDensity);
+  const step = d3.tickStep(tVisMin, tVisMax, ticksDensity);
   let decimals = Math.max(0, -Math.floor(Math.log10(step)));
   if (!Number.isFinite(decimals)) {
     decimals = 1;
@@ -376,13 +370,10 @@ const drawDepthAxis = (
     ),
   );
 
-  const minLabelPx = 36;
-  let maxTicks = Math.max(2, Math.floor(vp.h / minLabelPx));
-  if (scale < 1) {
-    maxTicks = Math.floor(maxTicks * scale);
-  }
-  const ticks = d3.ticks(tVisMin, tVisMax, maxTicks);
-  const step = d3.tickStep(tVisMin, tVisMax, maxTicks);
+  const minLabelPx = 32;
+  const ticksDensity = Math.floor(((wyMax - wyMin) / minLabelPx) * scale);
+  const ticks = d3.ticks(tVisMin, tVisMax, ticksDensity);
+  const step = d3.tickStep(tVisMin, tVisMax, ticksDensity);
   let decimals = Math.max(0, -Math.floor(Math.log10(step)));
   if (!Number.isFinite(decimals)) {
     decimals = 1;
