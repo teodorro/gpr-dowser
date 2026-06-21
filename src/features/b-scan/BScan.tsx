@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useStore } from 'zustand';
 import { drawAxes } from './draw-axes';
 import useVisualStore from '@/stores/visual-store';
+import { logTransformGrid2D } from '@/shared/log-transform';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -46,6 +47,8 @@ function BScanInternal({ store }: { store: DataStore }) {
   const dx = useStore(store, (s) => s.dx);
   const dt = useStore(store, (s) => s.dt);
   const velocity = useStore(store, (s) => s.velocity);
+  const setDisplayBuffer = useStore(store, (s) => s.setDisplayBuffer);
+  const bScan = useStore(store, (s) => s.bScan);
 
   const axisBorders = useMemo(
     () => ({
@@ -200,10 +203,6 @@ function BScanInternal({ store }: { store: DataStore }) {
     const rect = canvas.getBoundingClientRect();
     const px = e.clientX - rect.left;
     const py = e.clientY - rect.top;
-    console.log('viewPortLocal', {
-      sx: px - vpRef.current.x,
-      sy: py - vpRef.current.y,
-    });
     return { sx: px - vpRef.current.x, sy: py - vpRef.current.y };
   };
 
@@ -282,7 +281,6 @@ function BScanInternal({ store }: { store: DataStore }) {
     if (!canvas) return null;
 
     const rect = canvas.getBoundingClientRect();
-    console.log('rect', rect);
     const px = e.clientX - rect.left; // canvas-local CSS px
     const py = e.clientY - rect.top;
 
@@ -292,8 +290,6 @@ function BScanInternal({ store }: { store: DataStore }) {
 
     const wx = (sx - shiftX) / scale;
     const wy = (sy - shiftY) / scale;
-    console.log('wx', wx);
-    console.log('wy', wy);
 
     const col = Math.floor(wx);
     const row = Math.floor(wy);
@@ -370,7 +366,21 @@ function BScanInternal({ store }: { store: DataStore }) {
       window.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('wheel', onWheel);
     };
-  }, [scale, shiftX, shiftY, dims, setShift, setScale]);
+  }, [
+    scale,
+    shiftX,
+    shiftY,
+    dims,
+    setShift,
+    setScale,
+    getBscanIndexFromMouse,
+    setIndexX,
+    setIndexY,
+  ]);
+
+  useEffect(() => {
+    setDisplayBuffer(logTransformGrid2D(bScan));
+  }, [bScan, setDisplayBuffer]);
 
   return (
     <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden border-orange-500 border-solid border-2 bg-background text-foreground">

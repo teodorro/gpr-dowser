@@ -1,4 +1,4 @@
-import { Field, FieldLabel } from '@/components/ui/field';
+import { FieldLabel } from '@/components/ui/field';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from 'react-i18next';
@@ -32,8 +32,10 @@ function TimeStepInternal({ store }: { store: DataStore }) {
   }, [internalDt, setDt]);
 
   return (
-    <Field>
-      <FieldLabel htmlFor="time-step">{t('TimeStep')}</FieldLabel>
+    <div className="flex min-w-0 flex-row gap-2 justify-between">
+      <FieldLabel className="shrink-0 w-24" htmlFor="time-step">
+        {t('TimeStep')}
+      </FieldLabel>
       <Input
         id="time-step"
         type="number"
@@ -48,7 +50,8 @@ function TimeStepInternal({ store }: { store: DataStore }) {
         onBlur={() => {
           setInternalDt(dt.toString());
         }}
+        className="flex-1 max-w-24"
       />
-    </Field>
+    </div>
   );
 }

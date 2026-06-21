@@ -10,14 +10,9 @@ import { readGemFile } from './read-gem-file';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { readGeoFile } from './read-geo-file';
 import i18n from '@/i18n';
+import { logTransform } from '@/shared/log-transform';
 
 type FileExtension = 'txt' | 'geo' | 'gem';
-
-const logTransform = (data: number[][]): number[][] => {
-  return data.map((row) =>
-    row.map((cell) => Math.sign(cell) * Math.log(Math.abs(cell) + 1)),
-  );
-};
 
 export const loadDataFile = (file: File) => {
   const extension = file.name.split('.')[

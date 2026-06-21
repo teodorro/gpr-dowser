@@ -28,21 +28,28 @@ function StatusBarInternal({ store }: { store: DataStore }) {
   const velocity = useStore(store, (s) => s.velocity);
 
   return (
-    <div className="flex flex-row gap-3 p-1 min-h-6">
+    <div className="flex flex-row gap-3 p-1 min-h-8">
       {indexX !== undefined && (
-        <TypographySmall>
-          x: {parseFloat((indexX * dx).toFixed(2)).toString()}
-        </TypographySmall>
+        <div className="w-16">
+          <TypographySmall>
+            x: {parseFloat((indexX * dx).toFixed(2)).toString()}
+          </TypographySmall>
+        </div>
       )}
       {indexY !== undefined && (
-        <TypographySmall>
-          t: {parseFloat((indexY * dt).toFixed(2)).toString()}
-        </TypographySmall>
+        <div className="w-16">
+          <TypographySmall>
+            t: {parseFloat((indexY * dt).toFixed(2)).toString()}
+          </TypographySmall>
+        </div>
       )}
       {indexY !== undefined && (
-        <TypographySmall>
-          z: {parseFloat(((velocity * indexY * dt) / 2).toFixed(4)).toString()}
-        </TypographySmall>
+        <div className="w-16">
+          <TypographySmall>
+            z:{' '}
+            {parseFloat(((velocity * indexY * dt) / 2).toFixed(4)).toString()}
+          </TypographySmall>
+        </div>
       )}
     </div>
   );

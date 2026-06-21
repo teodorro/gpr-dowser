@@ -1,4 +1,4 @@
-import { Field, FieldLabel } from '@/components/ui/field';
+import { FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { LIGHT_VELOCITY } from '@/shared/constants';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
@@ -85,8 +85,10 @@ function VelocityInternal({ store }: { store: DataStore }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <Field>
-        <FieldLabel htmlFor="velocity">{t('Velocity')}</FieldLabel>
+      <div className="flex min-w-0 flex-row gap-2 justify-between">
+        <FieldLabel className="shrink-0 w-24" htmlFor="velocity">
+          {t('Velocity')}
+        </FieldLabel>
         <Input
           id="velocity"
           type="number"
@@ -97,11 +99,14 @@ function VelocityInternal({ store }: { store: DataStore }) {
           value={internalVelocity}
           onChange={handleVelocityChange}
           onBlur={handleVelocityBlur}
+          className="flex-1 max-w-24"
         />
-      </Field>
+      </div>
 
-      <Field>
-        <FieldLabel htmlFor="permittivity">{t('Permittivity')}</FieldLabel>
+      <div className="flex min-w-0 flex-row gap-2 justify-between">
+        <FieldLabel className="shrink-0 w-24" htmlFor="permittivity">
+          {t('Permittivity')}
+        </FieldLabel>
         <Input
           id="permittivity"
           type="number"
@@ -111,8 +116,9 @@ function VelocityInternal({ store }: { store: DataStore }) {
           value={internalPermittivity}
           onChange={handlePermittivityChange}
           onBlur={handlePermittivityBlur}
+          className="flex-1 max-w-24"
         />
-      </Field>
+      </div>
     </div>
   );
 }

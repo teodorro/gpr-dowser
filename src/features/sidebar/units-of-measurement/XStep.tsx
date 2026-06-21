@@ -1,4 +1,4 @@
-import { Field, FieldLabel } from '@/components/ui/field';
+import { FieldLabel } from '@/components/ui/field';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from 'react-i18next';
@@ -32,8 +32,10 @@ function XStepInternal({ store }: { store: DataStore }) {
   }, [internalDx, setDx]);
 
   return (
-    <Field>
-      <FieldLabel htmlFor="x-step">{t('XStep')}</FieldLabel>
+    <div className="flex min-w-0 flex-row gap-2 justify-between">
+      <FieldLabel className="shrink-0 w-24" htmlFor="x-step">
+        {t('XStep')}
+      </FieldLabel>
       <Input
         id="x-step"
         type="number"
@@ -48,7 +50,8 @@ function XStepInternal({ store }: { store: DataStore }) {
         onBlur={() => {
           setInternalDx(dx?.toString() ?? '');
         }}
+        className="flex-1 max-w-24"
       />
-    </Field>
+    </div>
   );
 }

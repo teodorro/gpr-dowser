@@ -51,6 +51,10 @@ i18n
           Cubehelix: 'Cubehelix',
           Magma: 'Magma',
           Rainbow: 'Rainbow',
+          Dewow: 'Dewow',
+          EnterWindowSizeDewow: 'Enter window size (uneven)',
+          DewowWindowSizeInvalid:
+            'Window size must be an odd number ≥ 3 and ≤ trace length',
         },
       },
       ru: {
@@ -97,6 +101,10 @@ i18n
           Cubehelix: 'Кубхел',
           Magma: 'Магма',
           Rainbow: 'Радуга',
+          Dewow: 'Dewow',
+          EnterWindowSizeDewow: 'Введите размер окна (нечётный)',
+          DewowWindowSizeInvalid:
+            'Размер окна должен быть нечётным ≥ 3 и ≤ длины волновой формы',
         },
       },
     },
