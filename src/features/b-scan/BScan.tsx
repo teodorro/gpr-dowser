@@ -1,10 +1,11 @@
 import {
   BOTTOM_BORDER_HEIGHT,
   dataSliceStores,
-  LEFT_BORDER_WIDTH,
-  RIGHT_BORDER_WIDTH,
-  TOP_BORDER_HEIGHT,
+  TIME_AXIS_WIDTH,
+  DEPTH_AXIS_WIDTH,
+  LENGTH_AXIS_HEIGHT,
   type DataStore,
+  PALLETTE_WIDTH,
 } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import clamp from '@/visual/clamp';
@@ -15,6 +16,7 @@ import { useStore } from 'zustand';
 import { drawAxes } from './draw-axes';
 import useVisualStore from '@/stores/visual-store';
 import { logTransformGrid2D } from '@/shared/log-transform';
+import { useTranslation } from 'react-i18next';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -35,6 +37,8 @@ function BScanInternal({ store }: { store: DataStore }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const bitmapRef = useRef<ImageBitmap | null>(null);
 
+  const { i18n } = useTranslation();
+
   const selectedPalette = useVisualStore.use.selectedPalette();
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
@@ -52,9 +56,9 @@ function BScanInternal({ store }: { store: DataStore }) {
 
   const axisBorders = useMemo(
     () => ({
-      left: LEFT_BORDER_WIDTH,
-      top: TOP_BORDER_HEIGHT,
-      right: RIGHT_BORDER_WIDTH,
+      left: TIME_AXIS_WIDTH,
+      top: LENGTH_AXIS_HEIGHT,
+      right: DEPTH_AXIS_WIDTH + PALLETTE_WIDTH,
       bottom: BOTTOM_BORDER_HEIGHT,
     }),
     [],
@@ -149,6 +153,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       axisBorders,
       backgroundColor,
       foregroundColor,
+      selectedPalette,
     );
   }, [
     scale,
@@ -160,6 +165,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     velocity,
     axisBorders,
     displayBuffer,
+    selectedPalette,
   ]);
 
   const redrawRef = useRef<() => void>(redraw);
@@ -274,33 +280,37 @@ function BScanInternal({ store }: { store: DataStore }) {
     setScale,
     convertDisplayBufferToImageData,
     redraw,
+    i18n.language,
   ]);
 
-  const getBscanIndexFromMouse = (e: MouseEvent) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return null;
+  const getBscanIndexFromMouse = useCallback(
+    (e: MouseEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
 
-    const rect = canvas.getBoundingClientRect();
-    const px = e.clientX - rect.left; // canvas-local CSS px
-    const py = e.clientY - rect.top;
+      const rect = canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left; // canvas-local CSS px
+      const py = e.clientY - rect.top;
 
-    // viewport-local screen
-    const sx = px - vpRef.current.x;
-    const sy = py - vpRef.current.y;
+      // viewport-local screen
+      const sx = px - vpRef.current.x;
+      const sy = py - vpRef.current.y;
 
-    const wx = (sx - shiftX) / scale;
-    const wy = (sy - shiftY) / scale;
+      const wx = (sx - shiftX) / scale;
+      const wy = (sy - shiftY) / scale;
 
-    const col = Math.floor(wx);
-    const row = Math.floor(wy);
+      const col = Math.floor(wx);
+      const row = Math.floor(wy);
 
-    const { rows, cols } = dims; // rows = bitmap height, cols = bitmap width
-    if (col < 0 || col >= cols || row < 0 || row >= rows) return null;
-    if (sx < 0 || sy < 0 || sx > vpRef.current.w || sy > vpRef.current.h) {
-      return null;
-    }
-    return { col, row, wx, wy, px, py };
-  };
+      const { rows, cols } = dims; // rows = bitmap height, cols = bitmap width
+      if (col < 0 || col >= cols || row < 0 || row >= rows) return null;
+      if (sx < 0 || sy < 0 || sx > vpRef.current.w || sy > vpRef.current.h) {
+        return null;
+      }
+      return { col, row, wx, wy, px, py };
+    },
+    [shiftX, shiftY, scale, dims],
+  );
 
   // Mouse interactions: pan + wheel zoom
   useEffect(() => {

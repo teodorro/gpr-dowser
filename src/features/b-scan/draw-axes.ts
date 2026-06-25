@@ -3,12 +3,14 @@ import type { RefObject } from 'react';
 import type Grid2D from '@/shared/grid2d';
 import clamp from '@/visual/clamp';
 import {
-  LEFT_BORDER_WIDTH,
-  RIGHT_BORDER_WIDTH,
-  TOP_BORDER_HEIGHT,
+  TIME_AXIS_WIDTH,
+  DEPTH_AXIS_WIDTH,
+  LENGTH_AXIS_HEIGHT,
   BOTTOM_BORDER_HEIGHT,
+  PALLETTE_WIDTH,
 } from '@/stores/data-slice-stores';
 import { t } from 'i18next';
+import { getPalette } from '@/visual/get-palette';
 
 export const drawAxes = (
   ctx: CanvasRenderingContext2D,
@@ -23,6 +25,7 @@ export const drawAxes = (
   axisBorders: { left: number; top: number; right: number; bottom: number },
   backgroundColor: string,
   foregroundColor: string,
+  palette: string,
 ) => {
   if (displayBuffer.buffer.length === 0) return;
   const vp = vpRef.current;
@@ -79,6 +82,35 @@ export const drawAxes = (
     backgroundColor,
     foregroundColor,
   );
+
+  drawLengthAxis(
+    ctx,
+    wxMin,
+    wxMax,
+    displayBuffer,
+    vpRef,
+    axisBorders,
+    shiftX,
+    shiftY,
+    dx,
+    scale,
+    backgroundColor,
+    foregroundColor,
+  );
+  drawAmplitudeAxis(
+    ctx,
+    wxMax,
+    wxMin,
+    wyMin,
+    wyMax,
+    displayBuffer,
+    vpRef,
+    axisBorders,
+    shiftX,
+    shiftY,
+    scale,
+    palette,
+  );
   drawLeftTopSquare(ctx, axisBorders, vpRef, shiftX, shiftY, backgroundColor);
   drawRightTopSquare(
     ctx,
@@ -105,20 +137,32 @@ const drawLeftTopSquare = (
   const axisXShift = Math.max(
     0,
     Math.min(
-      shiftX - LEFT_BORDER_WIDTH,
-      vp.w - LEFT_BORDER_WIDTH - RIGHT_BORDER_WIDTH,
+      shiftX - TIME_AXIS_WIDTH,
+      vp.w - TIME_AXIS_WIDTH - DEPTH_AXIS_WIDTH,
     ),
   );
   const axisYShift = Math.max(
     0,
     Math.min(
-      shiftY - TOP_BORDER_HEIGHT,
-      vp.h - TOP_BORDER_HEIGHT - BOTTOM_BORDER_HEIGHT,
+      shiftY - LENGTH_AXIS_HEIGHT,
+      vp.h - LENGTH_AXIS_HEIGHT - BOTTOM_BORDER_HEIGHT,
     ),
   );
 
   ctx.fillStyle = backgroundColor;
-  ctx.fillRect(axisXShift, axisYShift, axisBorders.left, axisBorders.top);
+  ctx.fillRect(
+    axisXShift,
+    axisYShift + axisBorders.top - 10,
+    axisBorders.left - 1,
+    9,
+  );
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(
+    axisXShift,
+    axisYShift,
+    axisBorders.left - 10,
+    axisBorders.top - 1,
+  );
 };
 
 const drawRightTopSquare = (
@@ -138,26 +182,33 @@ const drawRightTopSquare = (
     0,
     Math.min(
       Math.max(
-        visibleBscanWidth - LEFT_BORDER_WIDTH,
-        shiftX + visibleBscanWidth - LEFT_BORDER_WIDTH,
+        visibleBscanWidth - TIME_AXIS_WIDTH,
+        shiftX + visibleBscanWidth - TIME_AXIS_WIDTH,
       ),
-      vpRef.current.w - LEFT_BORDER_WIDTH - RIGHT_BORDER_WIDTH,
+      vpRef.current.w - TIME_AXIS_WIDTH - DEPTH_AXIS_WIDTH - PALLETTE_WIDTH,
     ),
   );
   const axisYShift = Math.max(
     0,
     Math.min(
-      shiftY - TOP_BORDER_HEIGHT,
-      vp.h - TOP_BORDER_HEIGHT - BOTTOM_BORDER_HEIGHT,
+      shiftY - LENGTH_AXIS_HEIGHT,
+      vp.h - LENGTH_AXIS_HEIGHT - BOTTOM_BORDER_HEIGHT,
     ),
   );
 
   ctx.fillStyle = backgroundColor;
   ctx.fillRect(
-    axisXShift + axisBorders.left,
+    axisXShift + axisBorders.left + 10,
     axisYShift,
     axisBorders.right,
-    axisBorders.top,
+    axisBorders.top - 11,
+  );
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(
+    axisXShift + axisBorders.left + 1,
+    axisYShift + axisBorders.top - 10,
+    axisBorders.right - 1,
+    9,
   );
 };
 
@@ -182,8 +233,8 @@ const drawLengthAxis = (
   const axisYShift = Math.max(
     0,
     Math.min(
-      shiftY - TOP_BORDER_HEIGHT,
-      vp.h - TOP_BORDER_HEIGHT - BOTTOM_BORDER_HEIGHT,
+      shiftY - LENGTH_AXIS_HEIGHT,
+      vp.h - LENGTH_AXIS_HEIGHT - BOTTOM_BORDER_HEIGHT,
     ),
   );
 
@@ -199,10 +250,10 @@ const drawLengthAxis = (
 
   ctx.fillStyle = backgroundColor;
   ctx.fillRect(
-    wxMin * scale + shiftX,
+    wxMin * scale + shiftX - 15,
     axisYShift,
-    (wxMax - wxMin) * scale,
-    axisBorders.top,
+    (wxMax - wxMin) * scale + 30,
+    axisBorders.top - 1,
   );
 
   ctx.strokeStyle = foregroundColor;
@@ -242,7 +293,7 @@ const drawLengthAxis = (
     ctx.font = '12px Arial';
     ctx.fillStyle = foregroundColor;
     ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
+    ctx.textAlign = 'center';
     ctx.fillText(label, x, axisYShift + axisBorders.top - 16);
   }
 };
@@ -268,8 +319,8 @@ const drawTimeAxis = (
   const axisXShift = Math.max(
     0,
     Math.min(
-      shiftX - LEFT_BORDER_WIDTH,
-      vpRef.current.w - LEFT_BORDER_WIDTH - RIGHT_BORDER_WIDTH,
+      shiftX - TIME_AXIS_WIDTH,
+      vpRef.current.w - TIME_AXIS_WIDTH - DEPTH_AXIS_WIDTH - PALLETTE_WIDTH,
     ),
   );
 
@@ -362,10 +413,10 @@ const drawDepthAxis = (
     0,
     Math.min(
       Math.max(
-        visibleBscanWidth - LEFT_BORDER_WIDTH,
-        shiftX + visibleBscanWidth - LEFT_BORDER_WIDTH,
+        visibleBscanWidth - TIME_AXIS_WIDTH,
+        shiftX + visibleBscanWidth - TIME_AXIS_WIDTH,
       ),
-      vpRef.current.w - LEFT_BORDER_WIDTH - RIGHT_BORDER_WIDTH,
+      vpRef.current.w - TIME_AXIS_WIDTH - DEPTH_AXIS_WIDTH - PALLETTE_WIDTH,
     ),
   );
 
@@ -430,4 +481,70 @@ const drawDepthAxis = (
     ctx.textAlign = 'start';
     ctx.fillText(label, axisXShift + axisBorders.left + 15, y);
   }
+};
+
+const drawAmplitudeAxis = (
+  ctx: CanvasRenderingContext2D,
+  wxMax: number,
+  wxMin: number,
+  wyMin: number,
+  wyMax: number,
+  displayBuffer: Grid2D,
+  vpRef: RefObject<{ x: number; y: number; w: number; h: number }>,
+  axisBorders: { left: number; top: number; right: number; bottom: number },
+  shiftX: number,
+  shiftY: number,
+  scale: number,
+  palette: string,
+) => {
+  const rows = displayBuffer.rows;
+  const vp = vpRef.current;
+  const visibleBscanWidth = (wxMax - wxMin) * scale;
+  const axisXShift = Math.max(
+    DEPTH_AXIS_WIDTH,
+    Math.min(
+      Math.max(
+        visibleBscanWidth - TIME_AXIS_WIDTH + DEPTH_AXIS_WIDTH,
+        shiftX + visibleBscanWidth - TIME_AXIS_WIDTH + DEPTH_AXIS_WIDTH,
+      ),
+      vpRef.current.w - TIME_AXIS_WIDTH - PALLETTE_WIDTH,
+    ),
+  );
+
+  ctx.save();
+  const x = axisXShift + axisBorders.left + 50;
+  const y = ((wyMax - wyMin) / 2 + wyMin) * scale - 40 + shiftY;
+  ctx.translate(x, y);
+  ctx.rotate(-Math.PI / 2);
+  ctx.restore();
+  const paletteLut = getPalette(palette);
+
+  // const yTop = vp.y + shiftY;
+  const yTop = Math.max(vp.y + shiftY, LENGTH_AXIS_HEIGHT);
+  const yBottom = Math.min(
+    vp.y + (rows * scale + shiftY),
+    vp.h - BOTTOM_BORDER_HEIGHT,
+  );
+  const gradient = ctx.createLinearGradient(0, yTop, 0, yBottom);
+  for (let i = 0; i < 256; i++) {
+    gradient.addColorStop(
+      i / 255,
+      `rgb(${paletteLut[i * 4]}, ${paletteLut[i * 4 + 1]}, ${paletteLut[i * 4 + 2]})`,
+    );
+  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(
+    axisXShift + axisBorders.left + 3,
+    yTop,
+    PALLETTE_WIDTH,
+    yBottom - yTop,
+  );
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(
+    axisXShift + axisBorders.left + 3,
+    yTop,
+    PALLETTE_WIDTH,
+    yBottom - yTop,
+  );
 };

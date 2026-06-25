@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { createSelectors } from "@/shared/create-selectors";
+import { create } from 'zustand';
+import { createSelectors } from '@/shared/create-selectors';
 
 type UiState = {
   sideBarVisible: boolean;
@@ -15,7 +15,7 @@ type Ui = UiState & UiActions;
 
 const INITIAL_STATE: UiState = {
   sideBarVisible: true,
-  aScanVisible: true,
+  aScanVisible: false,
 };
 
 const useUiBase = create<Ui>((set) => ({

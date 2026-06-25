@@ -1,21 +1,21 @@
-import * as d3 from "d3";
+import * as d3 from 'd3';
 
-export const getPalette = (palette: string | null) => {
+export const getPalette = (palette: string | null): Uint8ClampedArray => {
   if (palette == null) return makeLut256(d3.interpolateGreys);
   switch (palette) {
-    case "greys":
+    case 'greys':
       return makeLut256(d3.interpolateGreys);
-    case "viridis":
+    case 'viridis':
       return makeLut256(d3.interpolateViridis);
-    case "turbo":
+    case 'turbo':
       return makeLut256(d3.interpolateTurbo);
-    case "spectral":
+    case 'spectral':
       return makeLut256(d3.interpolateSpectral);
-    case "cubehelix":
+    case 'cubehelix':
       return makeLut256(d3.interpolateCubehelixDefault);
-    case "magma":
+    case 'magma':
       return makeLut256(d3.interpolateMagma);
-    case "rainbow":
+    case 'rainbow':
       return makeLut256(d3.interpolateRainbow);
     default:
       return makeLut256(d3.interpolateGreys);
@@ -37,19 +37,19 @@ const makeLut256 = (interp: (t: number) => string): Uint8ClampedArray => {
 
 export const getPaletteRaw = (palette: string): ((t: number) => string) => {
   switch (palette) {
-    case "greys":
+    case 'greys':
       return d3.interpolateGreys;
-    case "viridis":
+    case 'viridis':
       return d3.interpolateViridis;
-    case "turbo":
+    case 'turbo':
       return d3.interpolateTurbo;
-    case "spectral":
+    case 'spectral':
       return d3.interpolateSpectral;
-    case "cubehelix":
+    case 'cubehelix':
       return d3.interpolateCubehelixDefault;
-    case "magma":
+    case 'magma':
       return d3.interpolateMagma;
-    case "rainbow":
+    case 'rainbow':
       return d3.interpolateRainbow;
     default:
       return d3.interpolateGreys;

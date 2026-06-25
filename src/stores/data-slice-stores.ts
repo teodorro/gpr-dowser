@@ -10,10 +10,11 @@ type DataSliceStore = { id: string } & FileSlice &
   UnitSlice &
   VisualSlice;
 
-export const LEFT_BORDER_WIDTH = 56;
-export const TOP_BORDER_HEIGHT = 46;
-export const RIGHT_BORDER_WIDTH = 66;
+export const TIME_AXIS_WIDTH = 56;
+export const LENGTH_AXIS_HEIGHT = 46;
+export const DEPTH_AXIS_WIDTH = 66;
 export const BOTTOM_BORDER_HEIGHT = 0;
+export const PALLETTE_WIDTH = 30;
 
 export const createDataSliceStore = (
   id: string,
@@ -51,8 +52,8 @@ export const createDataSliceStore = (
     // VisualSlice
     displayBuffer: (options.displayBuffer as Grid2D) ?? new Grid2D(0, 0),
     scale: (options.scale as number) ?? 1,
-    shiftX: (options.shiftX as number) ?? LEFT_BORDER_WIDTH,
-    shiftY: (options.shiftY as number) ?? TOP_BORDER_HEIGHT,
+    shiftX: (options.shiftX as number) ?? TIME_AXIS_WIDTH,
+    shiftY: (options.shiftY as number) ?? LENGTH_AXIS_HEIGHT,
     indexX: (options.indexX as number | undefined) ?? undefined,
     indexY: (options.indexY as number | undefined) ?? undefined,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
