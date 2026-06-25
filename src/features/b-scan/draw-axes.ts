@@ -22,6 +22,7 @@ export const drawAxes = (
   dx: number,
   dt: number,
   velocity: number,
+  indexTimeZero: number,
   axisBorders: { left: number; top: number; right: number; bottom: number },
   backgroundColor: string,
   foregroundColor: string,
@@ -61,6 +62,7 @@ export const drawAxes = (
     shiftX,
     shiftY,
     dt,
+    indexTimeZero,
     scale,
     backgroundColor,
     foregroundColor,
@@ -78,6 +80,7 @@ export const drawAxes = (
     shiftY,
     dt,
     velocity,
+    indexTimeZero,
     scale,
     backgroundColor,
     foregroundColor,
@@ -308,6 +311,7 @@ const drawTimeAxis = (
   shiftX: number,
   shiftY: number,
   dt: number,
+  indexTimeZero: number,
   scale: number,
   backgroundColor: string,
   foregroundColor: string,
@@ -347,7 +351,7 @@ const drawTimeAxis = (
 
   const tToWy = d3
     .scaleLinear()
-    .domain([0, rows * dt])
+    .domain([-indexTimeZero * dt, (rows - indexTimeZero) * dt])
     .range([0, rows]);
 
   ctx.beginPath();
@@ -400,6 +404,7 @@ const drawDepthAxis = (
   shiftY: number,
   dt: number,
   velocity: number,
+  indexTimeZero: number,
   scale: number,
   backgroundColor: string,
   foregroundColor: string,
@@ -441,9 +446,10 @@ const drawDepthAxis = (
   ctx.strokeStyle = foregroundColor;
   ctx.lineWidth = 1;
 
+  const dz = (dt * velocity) / 2;
   const tToWy = d3
     .scaleLinear()
-    .domain([0, (rows * dt * velocity) / 2])
+    .domain([-indexTimeZero * dz, (rows - indexTimeZero) * dz])
     .range([0, rows]);
 
   ctx.beginPath();

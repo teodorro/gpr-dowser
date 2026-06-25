@@ -7,6 +7,7 @@ type VisualState = {
   shiftY: number;
   indexX: number | undefined;
   indexY: number | undefined;
+  indexTimeZero: number;
 };
 
 type VisualActions = {
@@ -15,6 +16,7 @@ type VisualActions = {
   setShift: (shiftX: number, shiftY: number) => void;
   setIndexX: (indexX: number | undefined) => void;
   setIndexY: (indexY: number | undefined) => void;
+  setIndexTimeZero: (indexTimeZero: number) => void;
 };
 
 export type VisualSlice = VisualState & VisualActions;

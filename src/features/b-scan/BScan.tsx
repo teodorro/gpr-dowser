@@ -53,6 +53,8 @@ function BScanInternal({ store }: { store: DataStore }) {
   const velocity = useStore(store, (s) => s.velocity);
   const setDisplayBuffer = useStore(store, (s) => s.setDisplayBuffer);
   const bScan = useStore(store, (s) => s.bScan);
+  const setIndexTimeZero = useStore(store, (s) => s.setIndexTimeZero);
+  const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
 
   const axisBorders = useMemo(
     () => ({
@@ -150,6 +152,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       dx,
       dt,
       velocity,
+      indexTimeZero,
       axisBorders,
       backgroundColor,
       foregroundColor,
@@ -163,6 +166,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     dx,
     dt,
     velocity,
+    indexTimeZero,
     axisBorders,
     displayBuffer,
     selectedPalette,
@@ -345,6 +349,31 @@ function BScanInternal({ store }: { store: DataStore }) {
       dragging.current = false;
     };
 
+    const onClick = (e: MouseEvent) => {
+      // console.log('canvas clicked', e.clientX, e.clientY);
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
+
+      const rect = canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+
+      // viewport-local screen
+      const sx = px - vpRef.current.x;
+      const sy = py - vpRef.current.y;
+
+      // world coordinates
+      const wx = (sx - shiftX) / scale;
+      const wy = (sy - shiftY) / scale;
+      const col = Math.floor(wx);
+      const row = Math.floor(wy);
+
+      if (col < 0 && row >= 0) {
+        setIndexTimeZero(row);
+        console.log('zero', row);
+      }
+    };
+
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
 
@@ -369,12 +398,14 @@ function BScanInternal({ store }: { store: DataStore }) {
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     canvas.addEventListener('wheel', onWheel, { passive: false });
+    canvas.addEventListener('click', onClick);
 
     return () => {
       canvas.removeEventListener('mousedown', onDown);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('wheel', onWheel);
+      canvas.removeEventListener('click', onClick);
     };
   }, [
     scale,

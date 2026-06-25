@@ -26,28 +26,35 @@ function StatusBarInternal({ store }: { store: DataStore }) {
   const dx = useStore(store, (s) => s.dx);
   const dt = useStore(store, (s) => s.dt);
   const velocity = useStore(store, (s) => s.velocity);
+  const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
+
+  const x = indexX !== undefined ? indexX * dx : undefined;
+  const t = indexY !== undefined ? (indexY - indexTimeZero) * dt : undefined;
+  const z =
+    indexY !== undefined
+      ? ((indexY - indexTimeZero) * velocity * dt) / 2
+      : undefined;
 
   return (
     <div className="flex flex-row gap-3 p-1 min-h-8">
-      {indexX !== undefined && (
+      {x !== undefined && (
         <div className="w-16">
           <TypographySmall>
-            x: {parseFloat((indexX * dx).toFixed(2)).toString()}
+            x: {parseFloat(x.toFixed(2)).toString()}
           </TypographySmall>
         </div>
       )}
-      {indexY !== undefined && (
+      {t !== undefined && t >= 0 && (
         <div className="w-16">
           <TypographySmall>
-            t: {parseFloat((indexY * dt).toFixed(2)).toString()}
+            t: {parseFloat(t.toFixed(2)).toString()}
           </TypographySmall>
         </div>
       )}
-      {indexY !== undefined && (
+      {z !== undefined && z >= 0 && (
         <div className="w-16">
           <TypographySmall>
-            z:{' '}
-            {parseFloat(((velocity * indexY * dt) / 2).toFixed(4)).toString()}
+            z: {parseFloat(z.toFixed(2)).toString()}
           </TypographySmall>
         </div>
       )}
