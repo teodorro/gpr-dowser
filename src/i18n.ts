@@ -55,6 +55,10 @@ i18n
           EnterWindowSizeDewow: 'Enter window size (uneven)',
           DewowWindowSizeInvalid:
             'Window size must be an odd number ≥ 3 and ≤ trace length',
+          subtractAvg: 'Subtract',
+          median: 'Median',
+          average: 'Average',
+          Processing: 'Processing',
         },
       },
       ru: {
@@ -105,6 +109,10 @@ i18n
           EnterWindowSizeDewow: 'Введите размер окна (нечётный)',
           DewowWindowSizeInvalid:
             'Размер окна должен быть нечётным ≥ 3 и ≤ длины волновой формы',
+          subtractAvg: 'Вычитание',
+          median: 'Медиана',
+          average: 'Среднее',
+          Processing: 'Обработка',
         },
       },
     },

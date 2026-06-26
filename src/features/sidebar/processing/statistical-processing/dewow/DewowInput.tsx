@@ -62,8 +62,14 @@ function DewowInternal({ store }: { store: DataStore }) {
       onSubmit={handleDewowSubmit}
     >
       <div className="flex flex-col gap-2">
-        <div className="flex flex-row">
-          <Button variant="outline" disabled={!isWindowSizeValid} type="submit">
+        <div className="flex flex-row items-center">
+          <Button
+            variant="outline"
+            size="icon"
+            disabled={!isWindowSizeValid}
+            type="submit"
+            className="shrink-0"
+          >
             <WavesHorizontalIcon />
           </Button>
           <FieldLabel className="shrink-0 w-24 ml-2" htmlFor="dewow">
