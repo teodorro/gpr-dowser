@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
-export const getPalette = (palette: string | null): Uint8ClampedArray => {
-  if (palette == null) return makeLut256(d3.interpolateGreys);
+export const getPalette = (palette: string | undefined): Uint8ClampedArray => {
+  if (palette == undefined) return makeLut256(d3.interpolateGreys);
   switch (palette) {
     case 'greys':
       return makeLut256(d3.interpolateGreys);
@@ -17,6 +17,8 @@ export const getPalette = (palette: string | null): Uint8ClampedArray => {
       return makeLut256(d3.interpolateMagma);
     case 'rainbow':
       return makeLut256(d3.interpolateRainbow);
+    case 'sinebow':
+      return makeLut256(d3.interpolateSinebow);
     default:
       return makeLut256(d3.interpolateGreys);
   }
@@ -51,6 +53,8 @@ export const getPaletteRaw = (palette: string): ((t: number) => string) => {
       return d3.interpolateMagma;
     case 'rainbow':
       return d3.interpolateRainbow;
+    case 'sinebow':
+      return d3.interpolateSinebow;
     default:
       return d3.interpolateGreys;
   }

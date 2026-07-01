@@ -39,11 +39,11 @@ export default function ImageMenu() {
               </MenubarItem>
               <MenubarItem
                 className={
-                  selectedPalette === 'viridis' ? 'border border-ring' : ''
+                  selectedPalette === 'cubehelix' ? 'border border-ring' : ''
                 }
-                onClick={() => setSelectedPalette('viridis')}
+                onClick={() => setSelectedPalette('cubehelix')}
               >
-                {t('Viridis')}
+                {t('Cubehelix')}
               </MenubarItem>
               <MenubarItem
                 className={
@@ -63,11 +63,19 @@ export default function ImageMenu() {
               </MenubarItem>
               <MenubarItem
                 className={
-                  selectedPalette === 'cubehelix' ? 'border border-ring' : ''
+                  selectedPalette === 'sinebow' ? 'border border-ring' : ''
                 }
-                onClick={() => setSelectedPalette('cubehelix')}
+                onClick={() => setSelectedPalette('sinebow')}
               >
-                {t('Cubehelix')}
+                {t('Sinebow')}
+              </MenubarItem>
+              <MenubarItem
+                className={
+                  selectedPalette === 'viridis' ? 'border border-ring' : ''
+                }
+                onClick={() => setSelectedPalette('viridis')}
+              >
+                {t('Viridis')}
               </MenubarItem>
               <MenubarItem
                 className={
@@ -76,14 +84,6 @@ export default function ImageMenu() {
                 onClick={() => setSelectedPalette('magma')}
               >
                 {t('Magma')}
-              </MenubarItem>
-              <MenubarItem
-                className={
-                  selectedPalette === 'rainbow' ? 'border border-ring' : ''
-                }
-                onClick={() => setSelectedPalette('rainbow')}
-              >
-                {t('Rainbow')}
               </MenubarItem>
             </MenubarSubContent>
           </MenubarSub>

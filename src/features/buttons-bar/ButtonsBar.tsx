@@ -64,11 +64,11 @@ export default function ButtonsBar() {
           </DropdownMenuItem>
           <DropdownMenuItem
             className={
-              selectedPalette === 'viridis' ? 'border border-ring' : ''
+              selectedPalette === 'cubehelix' ? 'border border-ring' : ''
             }
-            onClick={() => setSelectedPalette('viridis')}
+            onClick={() => setSelectedPalette('cubehelix')}
           >
-            {t('Viridis')}
+            {t('Cubehelix')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className={selectedPalette === 'turbo' ? 'border border-ring' : ''}
@@ -86,25 +86,25 @@ export default function ButtonsBar() {
           </DropdownMenuItem>
           <DropdownMenuItem
             className={
-              selectedPalette === 'cubehelix' ? 'border border-ring' : ''
+              selectedPalette === 'sinebow' ? 'border border-ring' : ''
             }
-            onClick={() => setSelectedPalette('cubehelix')}
+            onClick={() => setSelectedPalette('sinebow')}
           >
-            {t('Cubehelix')}
+            {t('Sinebow')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'viridis' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('viridis')}
+          >
+            {t('Viridis')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className={selectedPalette === 'magma' ? 'border border-ring' : ''}
             onClick={() => setSelectedPalette('magma')}
           >
             {t('Magma')}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className={
-              selectedPalette === 'rainbow' ? 'border border-ring' : ''
-            }
-            onClick={() => setSelectedPalette('rainbow')}
-          >
-            {t('Rainbow')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

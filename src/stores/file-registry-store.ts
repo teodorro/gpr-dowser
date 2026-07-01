@@ -1,9 +1,9 @@
-import { createSelectors } from "@/shared/create-selectors";
-import { create } from "zustand";
+import { createSelectors } from '@/shared/create-selectors';
+import { create } from 'zustand';
 
 type FileRegistryState = {
   fileIds: string[];
-  selectedFileId: string | null;
+  selectedFileId: string | undefined;
 };
 
 type FileRegistryActions = {
@@ -16,7 +16,7 @@ type FileRegistry = FileRegistryState & FileRegistryActions;
 
 const INITIAL_STATE: FileRegistryState = {
   fileIds: [],
-  selectedFileId: null,
+  selectedFileId: undefined,
 };
 
 const useFileRegistryBase = create<FileRegistry>((set, get) => ({
@@ -34,13 +34,16 @@ const useFileRegistryBase = create<FileRegistry>((set, get) => ({
         index = index > 0 ? index - 1 : index + 1;
         set((s) => ({ ...s, selectedFileId: s.fileIds[index] }));
       } else {
-        set((s) => ({ ...s, selectedFileId: null }));
+        set((s) => ({ ...s, selectedFileId: undefined }));
       }
     }
     set((s) => ({ ...s, fileIds: s.fileIds.filter((f) => f !== id) }));
   },
   selectFile: (id) =>
-    set((s) => ({ ...s, selectedFileId: s.fileIds.includes(id) ? id : null })),
+    set((s) => ({
+      ...s,
+      selectedFileId: s.fileIds.includes(id) ? id : undefined,
+    })),
 }));
 
 const useFileRegistryStore = createSelectors(useFileRegistryBase);

@@ -514,7 +514,7 @@ const drawAmplitudeAxis = (
         shiftX + visibleBscanWidth - TIME_AXIS_WIDTH + DEPTH_AXIS_WIDTH,
       ),
       vpRef.current.w - TIME_AXIS_WIDTH - PALLETTE_WIDTH,
-    ),
+    ) - 5,
   );
 
   ctx.save();
@@ -525,7 +525,6 @@ const drawAmplitudeAxis = (
   ctx.restore();
   const paletteLut = getPalette(palette);
 
-  // const yTop = vp.y + shiftY;
   const yTop = Math.max(vp.y + shiftY, LENGTH_AXIS_HEIGHT);
   const yBottom = Math.min(
     vp.y + (rows * scale + shiftY),
