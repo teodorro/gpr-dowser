@@ -57,12 +57,16 @@ export const createDataSliceStore = (
     indexX: (options.indexX as number | undefined) ?? undefined,
     indexY: (options.indexY as number | undefined) ?? undefined,
     indexTimeZero: (options.indexTimeZero as number) ?? 0,
+    averageAscan: (options.averageAscan as number[]) ?? [],
+    indexSelectedAscan: (options.indexSelectedAscan as number) ?? 0,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
     setScale: (scale) => set({ scale }),
     setShift: (shiftX, shiftY) => set({ shiftX, shiftY }),
     setIndexX: (indexX) => set({ indexX }),
     setIndexY: (indexY) => set({ indexY }),
     setIndexTimeZero: (indexTimeZero) => set({ indexTimeZero }),
+    setAverageAscan: (averageAscan) => set({ averageAscan }),
+    setIndexSelectedAscan: (indexSelectedAscan) => set({ indexSelectedAscan }),
   }));
 
 // Registry of stores

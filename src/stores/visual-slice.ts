@@ -8,6 +8,8 @@ type VisualState = {
   indexX: number | undefined;
   indexY: number | undefined;
   indexTimeZero: number;
+  averageAscan: number[];
+  indexSelectedAscan: number | undefined;
 };
 
 type VisualActions = {
@@ -17,6 +19,8 @@ type VisualActions = {
   setIndexX: (indexX: number | undefined) => void;
   setIndexY: (indexY: number | undefined) => void;
   setIndexTimeZero: (indexTimeZero: number) => void;
+  setAverageAscan: (averageAscan: number[]) => void;
+  setIndexSelectedAscan: (indexSelectedAscan: number | undefined) => void;
 };
 
 export type VisualSlice = VisualState & VisualActions;

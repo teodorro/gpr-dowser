@@ -55,6 +55,7 @@ function BScanInternal({ store }: { store: DataStore }) {
   const bScan = useStore(store, (s) => s.bScan);
   const setIndexTimeZero = useStore(store, (s) => s.setIndexTimeZero);
   const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
+  const setIndexSelectedAscan = useStore(store, (s) => s.setIndexSelectedAscan);
 
   const axisBorders = useMemo(
     () => ({
@@ -306,6 +307,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
+      setIndexSelectedAscan(col < 0 || col >= dims.cols ? undefined : col);
       const { rows, cols } = dims; // rows = bitmap height, cols = bitmap width
       if (col < 0 || col >= cols || row < 0 || row >= rows) return null;
       if (sx < 0 || sy < 0 || sx > vpRef.current.w || sy > vpRef.current.h) {
@@ -313,7 +315,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
       return { col, row, wx, wy, px, py };
     },
-    [shiftX, shiftY, scale, dims],
+    [shiftX, shiftY, scale, dims, setIndexSelectedAscan],
   );
 
   // Mouse interactions: pan + wheel zoom
@@ -417,6 +419,8 @@ function BScanInternal({ store }: { store: DataStore }) {
     getBscanIndexFromMouse,
     setIndexX,
     setIndexY,
+    setIndexTimeZero,
+    setIndexSelectedAscan,
   ]);
 
   useEffect(() => {
