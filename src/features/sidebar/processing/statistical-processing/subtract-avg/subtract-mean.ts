@@ -1,6 +1,6 @@
 import Grid2D from '@/shared/grid2d';
 
-export const subtractAverage = (data: Grid2D): Grid2D => {
+export const subtractMean = (data: Grid2D): Grid2D => {
   if (data.cols === 0 || data.rows === 0) {
     return new Grid2D(data.cols, data.rows);
   }
@@ -24,4 +24,4 @@ export const subtractAverage = (data: Grid2D): Grid2D => {
   return result;
 };
 
-export default subtractAverage;
+export default subtractMean;

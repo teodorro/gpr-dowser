@@ -72,7 +72,7 @@ export const createDataSliceStore = (
     setIndexSelectedAscan: (indexSelectedAscan) => set({ indexSelectedAscan }),
 
     // UndoRedoSlice
-    history: (options.history as Operation[]) ?? [],
+    history: (options.history as Map<number, Operation>) ?? new Map(),
     position: (options.position as number) ?? 0,
     undo: () =>
       set((state) => ({
@@ -80,14 +80,17 @@ export const createDataSliceStore = (
       })),
     redo: () =>
       set((state) => ({
-        position: Math.min(state.history.length, state.position + 1),
+        position: Math.min(state.history.size, state.position + 1),
       })),
     addOperation: (operation: Operation) =>
       set((state) => {
-        const history = [...state.history.slice(0, state.position), operation];
+        const history = new Map(
+          [...state.history].filter(([key]) => key <= state.position),
+        );
+        history.set(state.position + 1, operation);
         return {
           history,
-          position: history.length,
+          position: state.position + 1,
         };
       }),
   }));

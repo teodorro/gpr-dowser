@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ListMinusIcon } from 'lucide-react';
 import { useState } from 'react';
 import type Grid2D from '@/shared/grid2d';
-import subtractAverage from './subtract-average';
+import subtractMean from './subtract-mean';
 import subtractMedian from './subtract-median';
 import { useStore } from 'zustand';
 
@@ -29,7 +29,7 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
   const setBScan = useStore(store, (state) => state.setBScan);
   const addOperation = useStore(store, (state) => state.addOperation);
 
-  const [selectedOption, setSelectedOption] = useState<'median' | 'average'>(
+  const [selectedOption, setSelectedOption] = useState<'median' | 'mean'>(
     'median',
   );
 
@@ -39,11 +39,11 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
     addOperation({ type: `subtract_${selectedOption}` });
   };
 
-  const subtractAvg = (bScan: Grid2D, option: 'median' | 'average'): Grid2D => {
+  const subtractAvg = (bScan: Grid2D, option: 'median' | 'mean'): Grid2D => {
     if (option === 'median') {
       return subtractMedian(bScan);
     } else {
-      return subtractAverage(bScan);
+      return subtractMean(bScan);
     }
   };
 
@@ -55,9 +55,7 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
       <Label className="flex-1 gap-2">{t('subtractAvg')}</Label>
       <RadioGroup
         value={selectedOption}
-        onValueChange={(value) =>
-          setSelectedOption(value as 'median' | 'average')
-        }
+        onValueChange={(value) => setSelectedOption(value as 'median' | 'mean')}
         className="flex flex-col gap-2 max-w-25"
       >
         <div className="flex items-center gap-2">
@@ -65,8 +63,8 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
           <Label htmlFor="median">{t('median')}</Label>
         </div>
         <div className="flex items-center gap-2">
-          <RadioGroupItem value="average" id="average" />
-          <Label htmlFor="average">{t('average')}</Label>
+          <RadioGroupItem value="mean" id="mean" />
+          <Label htmlFor="mean">{t('mean')}</Label>
         </div>
       </RadioGroup>
     </form>

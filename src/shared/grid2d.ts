@@ -30,7 +30,7 @@ class Grid2D {
 
   // Cheap copy for immutable store updates
   clone(): Grid2D {
-    const next = new Grid2D(this.rows, this.cols);
+    const next = new Grid2D(this.cols, this.rows);
     next.buf.set(this.buf);
     return next;
   }

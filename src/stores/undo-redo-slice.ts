@@ -1,7 +1,7 @@
 import type { Operation } from './undo-redo.types';
 
 type UndoRedoState = {
-  history: Operation[];
+  history: Map<number, Operation>;
   position: number;
 };
 

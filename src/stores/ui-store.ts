@@ -14,8 +14,8 @@ type UiActions = {
 type Ui = UiState & UiActions;
 
 const INITIAL_STATE: UiState = {
-  sideBarVisible: false,
-  aScanVisible: true,
+  sideBarVisible: true,
+  aScanVisible: false,
 };
 
 const useUiBase = create<Ui>((set) => ({

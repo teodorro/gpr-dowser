@@ -1,7 +1,7 @@
 export const OperationTypeList = {
   Dewow: 'dewow',
   SubtractMedian: 'subtract_median',
-  SubtractAverage: 'subtract_average',
+  SubtractMean: 'subtract_mean',
 } as const;
 
 export type OperationType =
@@ -16,7 +16,7 @@ export type Operation =
       type: typeof OperationTypeList.SubtractMedian;
     }
   | {
-      type: typeof OperationTypeList.SubtractAverage;
+      type: typeof OperationTypeList.SubtractMean;
     };
 
 export type OperationHistory = {
