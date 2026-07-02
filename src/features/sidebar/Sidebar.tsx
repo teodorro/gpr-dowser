@@ -1,9 +1,14 @@
 import NavItem from './NavItem';
-import { CalculatorIcon, RulerDimensionLineIcon } from 'lucide-react';
+import {
+  CalculatorIcon,
+  RecycleIcon,
+  RulerDimensionLineIcon,
+} from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import UnitsMeasurement from './units-of-measurement/UnitsMeasurement';
 import { useTranslation } from 'react-i18next';
 import Processing from './processing/Processing';
+import UndoRedo from './undo-redo/UndoRedo';
 
 const Sidebar = () => {
   const { sideBarVisible } = useUiStore();
@@ -23,6 +28,10 @@ const Sidebar = () => {
 
         <NavItem icon={<CalculatorIcon />} label={t('Processing')}>
           <Processing />
+        </NavItem>
+
+        <NavItem icon={<RecycleIcon />} label={t('UndoRedo')}>
+          <UndoRedo />
         </NavItem>
       </nav>
     </div>

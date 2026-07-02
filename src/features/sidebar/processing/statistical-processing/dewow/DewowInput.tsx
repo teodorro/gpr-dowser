@@ -37,6 +37,7 @@ function DewowInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
   const bScan = useStore(store, (state) => state.bScan);
   const setBScan = useStore(store, (state) => state.setBScan);
+  const addOperation = useStore(store, (state) => state.addOperation);
 
   const [internalWindowSize, setInternalWindowSize] =
     useState<string>(DEFAULT_WINDOW_SIZE);
@@ -54,6 +55,7 @@ function DewowInternal({ store }: { store: DataStore }) {
       return;
     }
     setBScan(dewow(bScan, Number(internalWindowSize)));
+    addOperation({ type: 'dewow', windowSize: Number(internalWindowSize) });
   };
 
   return (

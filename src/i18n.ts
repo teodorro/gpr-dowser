@@ -52,6 +52,7 @@ i18n
           Magma: 'Magma',
           Rainbow: 'Rainbow',
           Dewow: 'Dewow',
+          dewow: 'Dewow',
           EnterWindowSizeDewow: 'Enter window size (uneven)',
           DewowWindowSizeInvalid:
             'Window size must be an odd number ≥ 3 and ≤ trace length',
@@ -59,6 +60,9 @@ i18n
           median: 'Median',
           average: 'Average',
           Processing: 'Processing',
+          UndoRedo: 'Undo/Redo',
+          subtract_median: 'Subtract median',
+          subtract_average: 'Subtract average',
         },
       },
       ru: {
@@ -106,6 +110,7 @@ i18n
           Magma: 'Магма',
           Rainbow: 'Радуга',
           Dewow: 'Dewow',
+          dewow: 'Dewow',
           EnterWindowSizeDewow: 'Введите размер окна (нечётный)',
           DewowWindowSizeInvalid:
             'Размер окна должен быть нечётным ≥ 3 и ≤ длины волновой формы',
@@ -113,6 +118,9 @@ i18n
           median: 'Медиана',
           average: 'Среднее',
           Processing: 'Обработка',
+          UndoRedo: 'Отменить/повторить',
+          subtract_median: 'Вычитание медианы',
+          subtract_average: 'Вычитание среднего',
         },
       },
     },

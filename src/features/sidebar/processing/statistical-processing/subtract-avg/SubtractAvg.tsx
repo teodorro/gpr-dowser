@@ -27,6 +27,8 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
   const bScan = useStore(store, (state) => state.bScan);
   const setBScan = useStore(store, (state) => state.setBScan);
+  const addOperation = useStore(store, (state) => state.addOperation);
+
   const [selectedOption, setSelectedOption] = useState<'median' | 'average'>(
     'median',
   );
@@ -34,6 +36,7 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
   const handleSubtractAvgSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setBScan(subtractAvg(bScan, selectedOption));
+    addOperation({ type: `subtract_${selectedOption}` });
   };
 
   const subtractAvg = (bScan: Grid2D, option: 'median' | 'average'): Grid2D => {

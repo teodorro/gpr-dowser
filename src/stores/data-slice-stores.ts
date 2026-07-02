@@ -4,11 +4,14 @@ import type { VisualSlice } from './visual-slice';
 import type { UnitSlice } from './unit-slice';
 import type { DataSlice } from './data-slice';
 import type { FileSlice } from './file-slice';
+import type { UndoRedoSlice } from './undo-redo-slice';
+import type { Operation } from './undo-redo.types';
 
 type DataSliceStore = { id: string } & FileSlice &
   DataSlice &
   UnitSlice &
-  VisualSlice;
+  VisualSlice &
+  UndoRedoSlice;
 
 export const TIME_AXIS_WIDTH = 56;
 export const LENGTH_AXIS_HEIGHT = 46;
@@ -67,6 +70,26 @@ export const createDataSliceStore = (
     setIndexTimeZero: (indexTimeZero) => set({ indexTimeZero }),
     setAverageAscan: (averageAscan) => set({ averageAscan }),
     setIndexSelectedAscan: (indexSelectedAscan) => set({ indexSelectedAscan }),
+
+    // UndoRedoSlice
+    history: (options.history as Operation[]) ?? [],
+    position: (options.position as number) ?? 0,
+    undo: () =>
+      set((state) => ({
+        position: Math.max(0, state.position - 1),
+      })),
+    redo: () =>
+      set((state) => ({
+        position: Math.min(state.history.length, state.position + 1),
+      })),
+    addOperation: (operation: Operation) =>
+      set((state) => {
+        const history = [...state.history.slice(0, state.position), operation];
+        return {
+          history,
+          position: history.length,
+        };
+      }),
   }));
 
 // Registry of stores
