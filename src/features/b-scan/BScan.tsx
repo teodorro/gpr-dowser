@@ -26,7 +26,7 @@ export default function BScan() {
 
   if (!store) {
     return (
-      <div className="flex flex-col flex-1 min-w-0 min-h-0 border-orange-500 border-solid border-2 bg-background text-foreground" />
+      <div className="flex flex-col flex-1 min-w-0 min-h-0 rounded-lg bg-scan text-scan-foreground" />
     );
   }
 
@@ -96,10 +96,10 @@ function BScanInternal({ store }: { store: DataStore }) {
     if (!ctx) return;
 
     const backgroundColor = getComputedStyle(canvas)
-      .getPropertyValue('--background')
+      .getPropertyValue('--scan')
       .trim();
     const foregroundColor = getComputedStyle(canvas)
-      .getPropertyValue('--foreground')
+      .getPropertyValue('--scan-foreground')
       .trim();
 
     const dpr = window.devicePixelRatio || 1;
@@ -428,7 +428,7 @@ function BScanInternal({ store }: { store: DataStore }) {
   }, [bScan, setDisplayBuffer]);
 
   return (
-    <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden border-orange-500 border-solid border-2 bg-background text-foreground">
+    <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-scan text-scan-foreground shadow-sm">
       <canvas
         ref={canvasRef}
         className="absolute inset-0 block w-full h-full"
