@@ -33,7 +33,7 @@ function XStepInternal({ store }: { store: DataStore }) {
 
   return (
     <div className="flex min-w-0 flex-row gap-2 justify-between">
-      <FieldLabel className="shrink-0 w-24" htmlFor="x-step">
+      <FieldLabel className="shrink-0 w-40" htmlFor="x-step">
         {t('XStep')}
       </FieldLabel>
       <Input

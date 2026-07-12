@@ -86,7 +86,7 @@ function VelocityInternal({ store }: { store: DataStore }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex min-w-0 flex-row gap-2 justify-between">
-        <FieldLabel className="shrink-0 w-24" htmlFor="velocity">
+        <FieldLabel className="shrink-0 w-40" htmlFor="velocity">
           {t('Velocity')}
         </FieldLabel>
         <Input
@@ -104,7 +104,7 @@ function VelocityInternal({ store }: { store: DataStore }) {
       </div>
 
       <div className="flex min-w-0 flex-row gap-2 justify-between">
-        <FieldLabel className="shrink-0 w-24" htmlFor="permittivity">
+        <FieldLabel className="shrink-0 w-30" htmlFor="permittivity">
           {t('Permittivity')}
         </FieldLabel>
         <Input

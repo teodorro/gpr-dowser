@@ -33,7 +33,7 @@ function TimeStepInternal({ store }: { store: DataStore }) {
 
   return (
     <div className="flex min-w-0 flex-row gap-2 justify-between">
-      <FieldLabel className="shrink-0 w-24" htmlFor="time-step">
+      <FieldLabel className="shrink-0 w-40" htmlFor="time-step">
         {t('TimeStep')}
       </FieldLabel>
       <Input
