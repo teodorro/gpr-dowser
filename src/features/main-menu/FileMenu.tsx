@@ -2,7 +2,6 @@ import {
   MenubarGroup,
   MenubarItem,
   MenubarMenu,
-  MenubarShortcut,
   MenubarTrigger,
 } from '@/components/ui/menubar';
 import { MenubarContent } from '@/components/ui/menubar';
@@ -20,14 +19,9 @@ export default function FileMenu() {
             <MenubarItem
               onClick={() => document.getElementById('file-input')?.click()}
             >
-              {t('OpenFile')} <MenubarShortcut>"Ctrl + O"</MenubarShortcut>
+              {t('OpenFile')}
             </MenubarItem>
           </MenubarGroup>
-          {/* <MenubarSeparator />
-          <MenubarGroup>
-            <MenubarItem>Share</MenubarItem>
-            <MenubarItem>Print</MenubarItem>
-          </MenubarGroup> */}
         </MenubarContent>
       </MenubarMenu>
     </>

@@ -9,8 +9,11 @@ import BScan from './features/b-scan/BScan';
 import SettingsButtonsBar from './features/settings-buttons-bar/SettingsButtonsBar';
 import { Toaster } from '@/components/ui/sonner';
 import { loadFileHandler } from './features/main-menu/shared-handlers';
+import useFileRegistryStore from './stores/file-registry-store';
 
 function App() {
+  const fileIds = useFileRegistryStore.use.fileIds();
+
   return (
     <div className="flex flex-col h-screen">
       <input
@@ -31,7 +34,7 @@ function App() {
         <Sidebar />
         <div className="flex flex-col flex-1 min-w-0 gap-2">
           <ButtonsBar />
-          <FileTabs />
+          {fileIds.length > 0 && <FileTabs />}
           <div className="flex flex-row flex-1 min-w-0 min-h-0 gap-2">
             <BScan />
             <AScan />
