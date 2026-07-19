@@ -370,7 +370,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
-      if (col < 0 && row >= 0) {
+      if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
         setIndexTimeZero(row);
         console.log('zero', row);
       }

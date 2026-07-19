@@ -137,13 +137,14 @@ const drawLeftTopSquare = (
   backgroundColor: string,
 ) => {
   const vp = vpRef.current;
-  const axisXShift = Math.max(
-    0,
-    Math.min(
-      shiftX - TIME_AXIS_WIDTH,
-      vp.w - TIME_AXIS_WIDTH - DEPTH_AXIS_WIDTH,
-    ),
-  );
+  const axisXShift =
+    Math.max(
+      0,
+      Math.min(
+        shiftX - TIME_AXIS_WIDTH,
+        vp.w - TIME_AXIS_WIDTH - DEPTH_AXIS_WIDTH,
+      ),
+    ) - 12;
   const axisYShift = Math.max(
     0,
     Math.min(
@@ -156,14 +157,14 @@ const drawLeftTopSquare = (
   ctx.fillRect(
     axisXShift,
     axisYShift + axisBorders.top - 10,
-    axisBorders.left - 1,
+    axisBorders.left - 1 + 12,
     9,
   );
   ctx.fillStyle = backgroundColor;
   ctx.fillRect(
     axisXShift,
     axisYShift,
-    axisBorders.left - 10,
+    axisBorders.left - 10 + 12,
     axisBorders.top - 1,
   );
 };
@@ -204,14 +205,14 @@ const drawRightTopSquare = (
     axisXShift + axisBorders.left + 10,
     axisYShift,
     axisBorders.right,
-    axisBorders.top - 11,
+    axisBorders.top - 10,
   );
   ctx.fillStyle = backgroundColor;
   ctx.fillRect(
     axisXShift + axisBorders.left + 1,
     axisYShift + axisBorders.top - 10,
-    axisBorders.right - 1,
-    9,
+    axisBorders.right - 1 + 10,
+    10,
   );
 };
 
