@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { dewow } from './dewow';
 import { useStore } from 'zustand';
 
-const DEFAULT_WINDOW_SIZE = '11';
+const DEFAULT_WINDOW_SIZE = '15';
 
 const isIntegerInput = (value: string): boolean => {
   return value === '' || /^\d+$/.test(value);

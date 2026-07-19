@@ -10,9 +10,28 @@ import SettingsButtonsBar from './features/settings-buttons-bar/SettingsButtonsB
 import { Toaster } from '@/components/ui/sonner';
 import { loadFileHandler } from './features/main-menu/shared-handlers';
 import useFileRegistryStore from './stores/file-registry-store';
+import { loadDataFile } from './file-parsers/load-data-file';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 function App() {
   const fileIds = useFileRegistryStore.use.fileIds();
+
+  useEffect(() => {
+    const loadExample = async () => {
+      const name = 'river-ВБ_13_1.gem';
+      const url = `${import.meta.env.BASE_URL}data-examples/loza/${encodeURIComponent(name)}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        toast.error(`Failed to load ${url}: ${res.status}`);
+        return;
+      }
+      const blob = await res.blob();
+      const file = new File([blob], name, { type: blob.type });
+      loadDataFile(file);
+    };
+    void loadExample();
+  }, []);
 
   return (
     <div className="flex flex-col h-screen">
