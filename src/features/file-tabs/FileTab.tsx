@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import useFileRegistryStore from "@/stores/file-registry-store";
-import { XIcon } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import useFileRegistryStore from '@/stores/file-registry-store';
+import { XIcon } from 'lucide-react';
 
 type Props = {
   id: string;
@@ -14,7 +14,7 @@ export default function FileTab({ id, label }: Props) {
   const isSelected = id === selectedFileId;
 
   const getShortLabel = (label: string, maxLength: number) => {
-    return label.length > maxLength ? label.slice(0, maxLength) + "..." : label;
+    return label.length > maxLength ? label.slice(0, maxLength) + '...' : label;
   };
 
   const selectFile = useFileRegistryStore.use.selectFile();
@@ -22,8 +22,8 @@ export default function FileTab({ id, label }: Props) {
   return (
     <div
       className={cn(
-        "flex items-center rounded-md border border-ring",
-        isSelected ? "border-destructive border-2" : "bg-secondary",
+        'flex items-center rounded-md border border-ring',
+        isSelected ? 'border-primary border-2' : 'bg-secondary',
       )}
     >
       <Button

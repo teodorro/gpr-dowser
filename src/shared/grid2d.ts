@@ -43,6 +43,25 @@ class Grid2D {
   static fromArray(array: number[][]): Grid2D {
     return new Grid2D(array.length, array[0].length, array);
   }
+
+  split(index: number): [Grid2D, Grid2D] {
+    if (index < 0 || index > this.cols) {
+      throw new RangeError('Split index is out of bounds');
+    }
+
+    const left = new Grid2D(index, this.rows);
+    const right = new Grid2D(this.cols - index, this.rows);
+    for (let col = 0; col < this.cols; col++) {
+      for (let row = 0; row < this.rows; row++) {
+        if (col < index) {
+          left.set(col, row, this.get(col, row));
+        } else {
+          right.set(col - index, row, this.get(col, row));
+        }
+      }
+    }
+    return [left, right];
+  }
 }
 
 export default Grid2D;

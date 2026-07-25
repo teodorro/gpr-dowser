@@ -4,6 +4,7 @@ import {
   PaletteIcon,
   PanelLeftIcon,
   PanelRightIcon,
+  SquareSplitHorizontalIcon,
 } from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import useVisualStore from '@/stores/visual-store';
@@ -21,6 +22,9 @@ export default function ButtonsBar() {
     useUiStore();
   const selectedPalette = useVisualStore.use.selectedPalette();
   const setSelectedPalette = useVisualStore.use.setSelectedPalette();
+  const splitBscanMode = useUiStore.use.splitBscanMode();
+  const setSplitBscanMode = useUiStore.use.setSplitBscanMode();
+
   return (
     <div className="flex flex-row gap-1 p-1">
       <div
@@ -108,6 +112,15 @@ export default function ButtonsBar() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setSplitBscanMode(!splitBscanMode)}
+        className={splitBscanMode ? 'border-primary border-2' : ''}
+      >
+        <SquareSplitHorizontalIcon className="w-4 h-4" />
+      </Button>
     </div>
   );
 }
