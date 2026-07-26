@@ -18,6 +18,7 @@ import subtractMedian from '../processing/statistical-processing/subtract-avg/su
 import dewow from '../processing/statistical-processing/dewow/dewow';
 import { unreachable } from '@/shared/unreachable';
 import { splitBscan } from '@/features/b-scan/splitBscan';
+import { alignSignal } from '../сmp/align-signal';
 
 export default function UndoRedo() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -66,6 +67,9 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
             operation.leftDataSliceId,
             operation.rightDataSliceId,
           );
+          break;
+        case OperationTypeList.CmpAlignSignal:
+          bScan = alignSignal(bScan, operation.ampBreakpoint);
           break;
         default:
           unreachable(operation);

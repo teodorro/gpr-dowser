@@ -3,6 +3,7 @@ export const OperationTypeList = {
   SubtractMedian: 'subtract_median',
   SubtractMean: 'subtract_mean',
   SplitBscan: 'split_bscan',
+  CmpAlignSignal: 'cmp_align_signal',
 } as const;
 
 export type OperationType =
@@ -24,6 +25,10 @@ export type Operation =
       splitIndex: number;
       leftDataSliceId: string;
       rightDataSliceId: string;
+    }
+  | {
+      type: typeof OperationTypeList.CmpAlignSignal;
+      ampBreakpoint: number;
     };
 
 export type OperationHistory = {
