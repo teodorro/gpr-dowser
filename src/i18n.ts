@@ -64,6 +64,7 @@ i18n
           UndoRedo: 'Undo/Redo',
           subtract_median: 'Subtract median',
           subtract_mean: 'Subtract mean',
+          CMP: 'Common Mid Point',
         },
       },
       ru: {
@@ -123,6 +124,7 @@ i18n
           UndoRedo: 'Отменить/повторить',
           subtract_median: 'Вычитание медианы',
           subtract_mean: 'Вычитание среднего',
+          CMP: 'Общая средняя точка',
         },
       },
     },

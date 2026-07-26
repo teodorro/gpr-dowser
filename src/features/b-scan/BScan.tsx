@@ -20,6 +20,8 @@ import { useTranslation } from 'react-i18next';
 import { useUiStore } from '@/stores/ui-store';
 import { splitBscan } from './splitBscan';
 import { OperationTypeList } from '@/stores/undo-redo.types';
+import { drawCurves } from './draw-curves';
+import CmpChart from './CmpChart';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -45,6 +47,7 @@ function BScanInternal({ store }: { store: DataStore }) {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const selectedPalette = useVisualStore.use.selectedPalette();
   const splitBscanMode = useUiStore.use.splitBscanMode();
+  const cmpMode = useUiStore.use.cmpMode();
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
   const shiftX = useStore(store, (s) => s.shiftX);
@@ -166,6 +169,18 @@ function BScanInternal({ store }: { store: DataStore }) {
       foregroundColor,
       selectedPalette,
     );
+    if (cmpMode) {
+      drawCurves(
+        ctx,
+        displayBuffer,
+        vpRef,
+        shiftX,
+        shiftY,
+        scale,
+        indexTimeZero,
+        foregroundColor,
+      );
+    }
   }, [
     scale,
     shiftX,
@@ -178,6 +193,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     axisBorders,
     displayBuffer,
     selectedPalette,
+    cmpMode,
   ]);
 
   const redrawRef = useRef<() => void>(redraw);
@@ -460,6 +476,7 @@ function BScanInternal({ store }: { store: DataStore }) {
         ref={canvasRef}
         className="absolute inset-0 block w-full h-full"
       />
+      {cmpMode && <CmpChart />}
     </div>
   );
 }

@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import {
+  ArrowUpWideNarrowIcon,
   FolderOpenIcon,
   PaletteIcon,
   PanelLeftIcon,
   PanelRightIcon,
-  SquareSplitHorizontalIcon,
+  UnfoldHorizontalIcon,
 } from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import useVisualStore from '@/stores/visual-store';
@@ -24,6 +25,8 @@ export default function ButtonsBar() {
   const setSelectedPalette = useVisualStore.use.setSelectedPalette();
   const splitBscanMode = useUiStore.use.splitBscanMode();
   const setSplitBscanMode = useUiStore.use.setSplitBscanMode();
+  const cmpMode = useUiStore.use.cmpMode();
+  const setCmpMode = useUiStore.use.setCmpMode();
 
   return (
     <div className="flex flex-row gap-1 p-1">
@@ -119,7 +122,15 @@ export default function ButtonsBar() {
         onClick={() => setSplitBscanMode(!splitBscanMode)}
         className={splitBscanMode ? 'border-primary border-2' : ''}
       >
-        <SquareSplitHorizontalIcon className="w-4 h-4" />
+        <UnfoldHorizontalIcon className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setCmpMode(!cmpMode)}
+        className={cmpMode ? 'border-primary border-2' : ''}
+      >
+        <ArrowUpWideNarrowIcon className="w-4 h-4" />
       </Button>
     </div>
   );
