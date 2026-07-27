@@ -17,7 +17,7 @@ import { drawAxes } from './draw-axes';
 import useVisualStore from '@/stores/visual-store';
 import { logTransformGrid2D } from '@/shared/log-transform';
 import { useTranslation } from 'react-i18next';
-import { useUiStore } from '@/stores/ui-store';
+import { BScanMode, useUiStore } from '@/stores/ui-store';
 import { splitBscan } from './splitBscan';
 import { OperationTypeList } from '@/stores/undo-redo.types';
 import { drawCurves } from './draw-curves';
@@ -46,8 +46,8 @@ function BScanInternal({ store }: { store: DataStore }) {
 
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const selectedPalette = useVisualStore.use.selectedPalette();
-  const splitBscanMode = useUiStore.use.splitBscanMode();
-  const setSplitBscanMode = useUiStore.use.setSplitBscanMode();
+  const splitBscanMode = useUiStore.use.splitBScanMode();
+  const setBScanMode = useUiStore.use.setBScanMode();
   const cmpMode = useUiStore.use.cmpMode();
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
@@ -407,7 +407,7 @@ function BScanInternal({ store }: { store: DataStore }) {
           leftDataSliceId: selectedFileId,
           rightDataSliceId: rightBscanId,
         });
-        setSplitBscanMode(!splitBscanMode);
+        setBScanMode(splitBscanMode ? BScanMode.none : BScanMode.split);
       }
 
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
@@ -466,7 +466,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     bScan,
     setBScan,
     addOperation,
-    setSplitBscanMode,
+    setBScanMode,
   ]);
 
   useEffect(() => {

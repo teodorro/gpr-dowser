@@ -7,7 +7,7 @@ import {
   PanelRightIcon,
   UnfoldHorizontalIcon,
 } from 'lucide-react';
-import { useUiStore } from '@/stores/ui-store';
+import { BScanMode, useUiStore } from '@/stores/ui-store';
 import useVisualStore from '@/stores/visual-store';
 import {
   DropdownMenu,
@@ -23,10 +23,9 @@ export default function ButtonsBar() {
     useUiStore();
   const selectedPalette = useVisualStore.use.selectedPalette();
   const setSelectedPalette = useVisualStore.use.setSelectedPalette();
-  const splitBscanMode = useUiStore.use.splitBscanMode();
-  const setSplitBscanMode = useUiStore.use.setSplitBscanMode();
+  const splitBscanMode = useUiStore.use.splitBScanMode();
+  const setBScanMode = useUiStore.use.setBScanMode();
   const cmpMode = useUiStore.use.cmpMode();
-  const setCmpMode = useUiStore.use.setCmpMode();
 
   return (
     <div className="flex flex-row gap-1 p-1">
@@ -119,7 +118,9 @@ export default function ButtonsBar() {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setSplitBscanMode(!splitBscanMode)}
+        onClick={() =>
+          setBScanMode(splitBscanMode ? BScanMode.none : BScanMode.split)
+        }
         className={splitBscanMode ? 'border-primary border-2' : ''}
       >
         <UnfoldHorizontalIcon className="w-4 h-4" />
@@ -127,7 +128,7 @@ export default function ButtonsBar() {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setCmpMode(!cmpMode)}
+        onClick={() => setBScanMode(cmpMode ? BScanMode.none : BScanMode.cmp)}
         className={cmpMode ? 'border-primary border-2' : ''}
       >
         <ArrowUpWideNarrowIcon className="w-4 h-4" />
