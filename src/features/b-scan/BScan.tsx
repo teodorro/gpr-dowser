@@ -47,6 +47,7 @@ function BScanInternal({ store }: { store: DataStore }) {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const selectedPalette = useVisualStore.use.selectedPalette();
   const splitBscanMode = useUiStore.use.splitBscanMode();
+  const setSplitBscanMode = useUiStore.use.setSplitBscanMode();
   const cmpMode = useUiStore.use.cmpMode();
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
@@ -406,6 +407,7 @@ function BScanInternal({ store }: { store: DataStore }) {
           leftDataSliceId: selectedFileId,
           rightDataSliceId: rightBscanId,
         });
+        setSplitBscanMode(!splitBscanMode);
       }
 
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
@@ -464,6 +466,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     bScan,
     setBScan,
     addOperation,
+    setSplitBscanMode,
   ]);
 
   useEffect(() => {

@@ -15,6 +15,7 @@ import CmpSettings from './сmp/CmpSettings';
 const Sidebar = () => {
   const { sideBarVisible } = useUiStore();
   const { t } = useTranslation();
+  const cmpMode = useUiStore.use.cmpMode();
 
   if (!sideBarVisible) return null;
 
@@ -36,7 +37,12 @@ const Sidebar = () => {
           <UndoRedo />
         </NavItem>
 
-        <NavItem icon={<ArrowUpWideNarrowIcon />} label={t('CMP')}>
+        <NavItem
+          icon={<ArrowUpWideNarrowIcon />}
+          label={t('CMP')}
+          disabled={!cmpMode}
+          expanded={cmpMode}
+        >
           <CmpSettings />
         </NavItem>
       </nav>

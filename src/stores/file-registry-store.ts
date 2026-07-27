@@ -7,7 +7,7 @@ type FileRegistryState = {
 };
 
 type FileRegistryActions = {
-  addFile: (id: string) => void;
+  addFile: (id: string, select?: boolean) => void;
   removeFile: (id: string) => void;
   selectFile: (id: string) => void;
 };
@@ -22,9 +22,9 @@ const INITIAL_STATE: FileRegistryState = {
 const useFileRegistryBase = create<FileRegistry>((set, get) => ({
   ...INITIAL_STATE,
 
-  addFile: (id) => {
+  addFile: (id, select = true) => {
     set((s) => ({ ...s, fileIds: [...s.fileIds, id] }));
-    set((s) => ({ ...s, selectedFileId: id }));
+    set((s) => (select ? { ...s, selectedFileId: id } : s));
   },
   removeFile: (id) => {
     const { selectedFileId, fileIds } = get();
