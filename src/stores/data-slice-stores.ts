@@ -6,12 +6,14 @@ import type { DataSlice } from './data-slice';
 import type { FileSlice } from './file-slice';
 import type { UndoRedoSlice } from './undo-redo-slice';
 import type { Operation } from './undo-redo.types';
+import type { CmpSlice } from './cmp-slice';
 
 type DataSliceStore = { id: string } & FileSlice &
   DataSlice &
   UnitSlice &
   VisualSlice &
-  UndoRedoSlice;
+  UndoRedoSlice &
+  CmpSlice;
 
 export const TIME_AXIS_WIDTH = 56;
 export const LENGTH_AXIS_HEIGHT = 46;
@@ -93,6 +95,23 @@ export const createDataSliceStore = (
           position: state.position + 1,
         };
       }),
+
+    // CmpSlice
+    cmpData: (options.cmpData as Grid2D) ?? new Grid2D(0, 0),
+    cmpDisplayBuffer: (options.cmpDisplayBuffer as Grid2D) ?? new Grid2D(0, 0),
+    cmpScale: (options.cmpScale as number) ?? 1,
+    cmpShiftX: (options.cmpShiftX as number) ?? TIME_AXIS_WIDTH,
+    cmpShiftY: (options.cmpShiftY as number) ?? LENGTH_AXIS_HEIGHT,
+    cmpIndexX: (options.cmpIndexX as number | undefined) ?? undefined,
+    cmpIndexY: (options.cmpIndexY as number | undefined) ?? undefined,
+    cmpLayers: (options.cmpLayers as [number, number][]) ?? [],
+    setCmpData: (cmpData) => set({ cmpData }),
+    setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
+    setCmpScale: (cmpScale) => set({ cmpScale }),
+    setCmpShift: (cmpShiftX, cmpShiftY) => set({ cmpShiftX, cmpShiftY }),
+    setCmpIndexX: (cmpIndexX) => set({ cmpIndexX }),
+    setCmpIndexY: (cmpIndexY) => set({ cmpIndexY }),
+    setCmpLayers: (cmpLayers) => set({ cmpLayers }),
   }));
 
 // Registry of stores
