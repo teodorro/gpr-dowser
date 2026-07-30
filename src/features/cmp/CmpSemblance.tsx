@@ -55,6 +55,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
   const dx = useStore(store, (s) => s.dx);
   const dt = useStore(store, (s) => s.dt);
+  const addCmpLayer = useStore(store, (s) => s.addCmpLayer);
 
   const selectedPalette = useVisualStore.use.selectedPalette();
 
@@ -366,7 +367,11 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
-      console.log('cmp clicked', col, row);
+      const velocity =
+        (col * (VELOCITY_LIGHT - VELOCITY_WATER)) / bScan.cols + VELOCITY_WATER;
+      const time = row * dt - indexTimeZero * dt;
+
+      addCmpLayer(time, velocity);
     };
 
     const onWheel = (e: WheelEvent) => {

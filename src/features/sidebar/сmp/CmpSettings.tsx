@@ -1,6 +1,8 @@
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import SignalAligner from './SignalAligner';
+import CmpLayers from './CmpLayers';
+import { useStore } from 'zustand';
 
 export default function CmpSettings() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -15,9 +17,12 @@ export default function CmpSettings() {
 }
 
 function CmpSettingsInternal({ store }: { store: DataStore }) {
+  const cmpLayers = useStore(store, (state) => state.cmpLayers);
+
   return (
     <div>
       <SignalAligner store={store} />
+      {cmpLayers.length > 0 && <CmpLayers />}
     </div>
   );
 }

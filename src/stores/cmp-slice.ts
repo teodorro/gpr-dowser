@@ -1,4 +1,5 @@
 import type Grid2D from '@/shared/grid2d';
+import type { CmpLayer } from './data-slice-stores';
 
 type CmpState = {
   cmpData: Grid2D;
@@ -8,7 +9,7 @@ type CmpState = {
   cmpShiftY: number;
   cmpIndexX: number | undefined;
   cmpIndexY: number | undefined;
-  cmpLayers: [number, number][];
+  cmpLayers: CmpLayer[];
 };
 
 type CmpActions = {
@@ -18,7 +19,9 @@ type CmpActions = {
   setCmpShift: (cmpShiftX: number, cmpShiftY: number) => void;
   setCmpIndexX: (cmpIndexX: number | undefined) => void;
   setCmpIndexY: (cmpIndexY: number | undefined) => void;
-  setCmpLayers: (layers: [number, number][]) => void;
+  setCmpLayers: (layers: CmpLayer[]) => void;
+  addCmpLayer: (time: number, velocity: number) => void;
+  removeCmpLayer: (id: string) => void;
 };
 
 export type CmpSlice = CmpState & CmpActions;

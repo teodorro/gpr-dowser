@@ -21,6 +21,12 @@ export const DEPTH_AXIS_WIDTH = 66;
 export const BOTTOM_BORDER_HEIGHT = 0;
 export const PALLETTE_WIDTH = 30;
 
+export type CmpLayer = {
+  id: string;
+  velocity: number;
+  time: number;
+};
+
 export const createDataSliceStore = (
   id: string,
   options: {
@@ -104,7 +110,7 @@ export const createDataSliceStore = (
     cmpShiftY: (options.cmpShiftY as number) ?? LENGTH_AXIS_HEIGHT,
     cmpIndexX: (options.cmpIndexX as number | undefined) ?? undefined,
     cmpIndexY: (options.cmpIndexY as number | undefined) ?? undefined,
-    cmpLayers: (options.cmpLayers as [number, number][]) ?? [],
+    cmpLayers: (options.cmpLayers as CmpLayer[]) ?? [],
     setCmpData: (cmpData) => set({ cmpData }),
     setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
     setCmpScale: (cmpScale) => set({ cmpScale }),
@@ -112,6 +118,17 @@ export const createDataSliceStore = (
     setCmpIndexX: (cmpIndexX) => set({ cmpIndexX }),
     setCmpIndexY: (cmpIndexY) => set({ cmpIndexY }),
     setCmpLayers: (cmpLayers) => set({ cmpLayers }),
+    addCmpLayer: (time, velocity) =>
+      set((state) => {
+        const id = crypto.randomUUID();
+        return {
+          cmpLayers: [...state.cmpLayers, { id, time, velocity }],
+        };
+      }),
+    removeCmpLayer: (id) =>
+      set((state) => ({
+        cmpLayers: state.cmpLayers.filter((layer) => layer.id !== id),
+      })),
   }));
 
 // Registry of stores
