@@ -18,7 +18,7 @@ export const getPalette = (palette: string | undefined): Uint8ClampedArray => {
     case 'rainbow':
       return makeLut256(d3.interpolateRainbow);
     case 'sinebow':
-      return makeLut256(d3.interpolateSinebow);
+      return makeLut256(getSinebowPalette());
     default:
       return makeLut256(d3.interpolateGreys);
   }
@@ -54,10 +54,21 @@ export const getPaletteRaw = (palette: string): ((t: number) => string) => {
     case 'rainbow':
       return d3.interpolateRainbow;
     case 'sinebow':
-      return d3.interpolateSinebow;
+      return getSinebowPalette();
     default:
       return d3.interpolateGreys;
   }
+};
+
+const getSinebowPalette = (): ((t: number) => string) => {
+  const n = 16;
+  const colors = d3.quantize(d3.interpolateSinebow, n);
+  const tail = d3.quantize(d3.interpolateRgb('purple', 'black'), 5);
+  colors.splice(n - 5, 5, ...tail);
+  const head = d3.quantize(d3.interpolateRgb('red', 'lightgreen'), 5);
+  colors.splice(0, 5, ...head);
+  const custom = d3.interpolateRgbBasis(colors);
+  return (t) => custom(1 - t);
 };
 
 export default getPalette;
