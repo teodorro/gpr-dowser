@@ -148,7 +148,6 @@ function BScanInternal({ store }: { store: DataStore }) {
       ctx.save();
       ctx.translate(vp.x + shiftX, vp.y + shiftY);
       ctx.scale(scale, scale);
-      // Draw the “image” at world origin (0,0)
       ctx.drawImage(bmp, 0, 0);
       ctx.restore();
     }
@@ -481,6 +480,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     setBScan,
     addOperation,
     setBScanMode,
+    cmpMode,
   ]);
 
   useEffect(() => {

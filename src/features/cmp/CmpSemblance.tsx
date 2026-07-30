@@ -1,6 +1,13 @@
 import { VELOCITY_LIGHT, VELOCITY_WATER } from '@/shared/gpr-math';
 import { logTransformGrid2D } from '@/shared/log-transform';
-import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
+import {
+  BOTTOM_BORDER_HEIGHT,
+  dataSliceStores,
+  LENGTH_AXIS_HEIGHT,
+  PALLETTE_WIDTH,
+  TIME_AXIS_WIDTH,
+  type DataStore,
+} from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import useVisualStore from '@/stores/visual-store';
 import clamp from '@/visual/clamp';
@@ -10,6 +17,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import { getSemblanceData } from './get-semblance-data';
+import { drawSemblanceAxes } from './draw-semblance-axes';
 
 export default function CmpSemblance() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -52,6 +60,16 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
 
   const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
 
+  const axisBorders = useMemo(
+    () => ({
+      left: TIME_AXIS_WIDTH,
+      top: LENGTH_AXIS_HEIGHT,
+      right: PALLETTE_WIDTH,
+      bottom: BOTTOM_BORDER_HEIGHT,
+    }),
+    [],
+  );
+
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
     x: cmpShiftX,
     y: cmpShiftY,
@@ -77,6 +95,13 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    const backgroundColor = getComputedStyle(canvas)
+      .getPropertyValue('--scan')
+      .trim();
+    const foregroundColor = getComputedStyle(canvas)
+      .getPropertyValue('--scan-foreground')
+      .trim();
 
     const dpr = window.devicePixelRatio || 1;
     const cssW = canvas.clientWidth;
@@ -113,29 +138,37 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       ctx.save();
       ctx.translate(vp.x + cmpShiftX, vp.y + cmpShiftY);
       ctx.scale(cmpScale, cmpScale);
-      // Draw the “image” at world origin (0,0)
       ctx.drawImage(bmp, 0, 0);
       ctx.restore();
     }
     ctx.restore();
 
-    // drawAxes(
-    //   ctx,
-    //   displayBuffer,
-    //   vpRef,
-    //   shiftX,
-    //   shiftY,
-    //   scale,
-    //   dx,
-    //   dt,
-    //   velocity,
-    //   indexTimeZero,
-    //   axisBorders,
-    //   backgroundColor,
-    //   foregroundColor,
-    //   selectedPalette,
-    // );
-  }, [cmpScale, cmpShiftX, cmpShiftY, bitmapRef]);
+    drawSemblanceAxes(
+      ctx,
+      cmpDisplayBuffer,
+      vpRef,
+      cmpShiftX,
+      cmpShiftY,
+      cmpScale,
+      (VELOCITY_LIGHT - VELOCITY_WATER) / bScan.cols,
+      dt,
+      indexTimeZero,
+      axisBorders,
+      backgroundColor,
+      foregroundColor,
+      selectedPalette,
+    );
+  }, [
+    cmpDisplayBuffer,
+    cmpShiftX,
+    cmpShiftY,
+    cmpScale,
+    dt,
+    indexTimeZero,
+    selectedPalette,
+    axisBorders,
+    bScan.cols,
+  ]);
 
   const convertDisplayBufferToImageData = useCallback((): ImageData | null => {
     const { rows, cols } = dims;
