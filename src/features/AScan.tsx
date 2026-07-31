@@ -23,7 +23,7 @@ export default function AScan() {
   if (!aScanVisible || !store) return null;
 
   return (
-    <div className="flex flex-col w-2xs shrink-0">
+    <div className="flex flex-col w-[14rem] shrink-0">
       <AScanInternal store={store} />
     </div>
   );

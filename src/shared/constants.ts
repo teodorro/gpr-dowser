@@ -1,1 +1,1 @@
-export const LIGHT_VELOCITY = 0.3;
+export const CLICK_MOVE_THRESHOLD = 4; // px

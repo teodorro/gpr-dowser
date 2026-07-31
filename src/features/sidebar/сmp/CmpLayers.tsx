@@ -46,7 +46,10 @@ const CmpLayersInternal = ({ store }: { store: DataStore }) => {
         className="max-h-64 w-full rounded-md bg-secondary/20 border"
       >
         {sortedCmpLayers.map((layer) => (
-          <div key={layer.id} className="flex flex-col gap-2 bg-secondary/20">
+          <div
+            key={layer.id}
+            className="flex flex-col gap-2 bg-secondary/20 mr-2"
+          >
             <div className="relative text-sm border border-secondary rounded-md bg-sidebar p-1 m-1">
               <Button
                 variant="outline"

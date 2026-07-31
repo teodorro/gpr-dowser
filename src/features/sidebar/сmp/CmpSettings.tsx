@@ -3,6 +3,8 @@ import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import SignalAligner from './SignalAligner';
 import CmpLayers from './CmpLayers';
 import { useStore } from 'zustand';
+import CmpSemblanceLinesColor from './CmpSemblanceLinesColor';
+import CmpBscanLinesColor from './CmpBscanLinesColor';
 
 export default function CmpSettings() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -22,6 +24,8 @@ function CmpSettingsInternal({ store }: { store: DataStore }) {
   return (
     <div>
       <SignalAligner store={store} />
+      <CmpSemblanceLinesColor />
+      <CmpBscanLinesColor />
       {cmpLayers.length > 0 && <CmpLayers />}
     </div>
   );

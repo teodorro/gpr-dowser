@@ -8,6 +8,8 @@ type UiState = {
   splitBScanMode: boolean;
   cmpMode: boolean;
   hyperbolaMode: boolean;
+  cmpSemblanceLinesColor: string;
+  cmpBScanLinesColor: string;
 };
 
 export const BScanMode = {
@@ -23,6 +25,8 @@ type UiActions = {
   setSideBarVisible: (visible: boolean) => void;
   setAScanVisible: (visible: boolean) => void;
   setBScanMode: (mode: BScanMode) => void;
+  setCmpSemblanceLinesColor: (color: string) => void;
+  setCmpBScanLinesColor: (color: string) => void;
 };
 
 type Ui = UiState & UiActions;
@@ -33,6 +37,8 @@ const INITIAL_STATE: UiState = {
   splitBScanMode: false,
   cmpMode: false,
   hyperbolaMode: false,
+  cmpSemblanceLinesColor: '#000000',
+  cmpBScanLinesColor: '#000000',
 };
 
 const useUiBase = create<Ui>((set) => ({
@@ -81,6 +87,12 @@ const useUiBase = create<Ui>((set) => ({
       default:
         unreachable(mode);
     }
+  },
+  setCmpSemblanceLinesColor: (color: string) => {
+    set((s) => ({ ...s, cmpSemblanceLinesColor: color }));
+  },
+  setCmpBScanLinesColor: (color: string) => {
+    set((s) => ({ ...s, cmpBScanLinesColor: color }));
   },
 }));
 

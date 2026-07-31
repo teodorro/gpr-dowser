@@ -18,6 +18,8 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import { getSemblanceData } from './get-semblance-data';
 import { drawSemblanceAxes } from './draw-semblance-axes';
+import CmpSemblanceLines from './CmpSemblanceLines';
+import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
 
 export default function CmpSemblance() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -79,6 +81,9 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   });
 
   const dragging = useRef<boolean>(false);
+  const dragMoved = useRef<boolean>(false);
+  const downX = useRef<number>(0);
+  const downY = useRef<number>(0);
   const lastX = useRef<number>(cmpShiftX);
   const lastY = useRef<number>(cmpShiftY);
 
@@ -322,7 +327,10 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
 
     const onDown = (e: MouseEvent) => {
       dragging.current = true;
+      dragMoved.current = false;
       const { sx, sy } = toViewportLocal(e, canvas);
+      downX.current = sx;
+      downY.current = sy;
       lastX.current = sx;
       lastY.current = sy;
     };
@@ -337,6 +345,13 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       setCmpIndexY(row);
       if (!dragging.current) return;
 
+      if (
+        Math.hypot(sx - downX.current, sy - downY.current) >
+        CLICK_MOVE_THRESHOLD
+      ) {
+        dragMoved.current = true;
+      }
+
       const dx = sx - lastX.current;
       const dy = sy - lastY.current;
       lastX.current = sx;
@@ -344,14 +359,9 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       setCmpShift(cmpShiftX + dx, cmpShiftY + dy);
     };
 
-    const onUp = () => {
-      dragging.current = false;
-    };
-
     const onClick = (e: MouseEvent) => {
-      // console.log('canvas clicked', e.clientX, e.clientY);
       const canvas = canvasRef.current;
-      if (!canvas) return null;
+      if (!canvas) return;
 
       const rect = canvas.getBoundingClientRect();
       const px = e.clientX - rect.left;
@@ -367,11 +377,22 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
+      if (col < 0 || col >= bScan.cols || row < 0 || row >= bScan.rows) return;
       const velocity =
         (col * (VELOCITY_LIGHT - VELOCITY_WATER)) / bScan.cols + VELOCITY_WATER;
       const time = row * dt - indexTimeZero * dt;
 
       addCmpLayer(time, velocity);
+    };
+
+    const onUp = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      const wasDragging = dragMoved.current;
+      dragging.current = false;
+      dragMoved.current = false;
+      if (!wasDragging) {
+        onClick(e);
+      }
     };
 
     const onWheel = (e: WheelEvent) => {
@@ -398,14 +419,12 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     canvas.addEventListener('wheel', onWheel, { passive: false });
-    canvas.addEventListener('click', onClick);
 
     return () => {
       canvas.removeEventListener('mousedown', onDown);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('wheel', onWheel);
-      canvas.removeEventListener('click', onClick);
     };
   }, [
     cmpScale,
@@ -417,6 +436,11 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     getBscanIndexFromMouse,
     setCmpIndexX,
     setCmpIndexY,
+    bScan,
+    dt,
+    indexTimeZero,
+    dx,
+    addCmpLayer,
   ]);
 
   useEffect(() => {
@@ -442,6 +466,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
         ref={canvasRef}
         className="absolute inset-0 block w-full h-full"
       />
+      <CmpSemblanceLines />
     </div>
   );
 }
