@@ -14,6 +14,7 @@ import * as d3 from 'd3';
 import { VELOCITY_LIGHT, VELOCITY_WATER } from '@/shared/gpr-math';
 import getPalette from '@/visual/get-palette';
 import useVisualStore from '@/stores/visual-store';
+import { useTranslation } from 'react-i18next';
 
 export default function CmpSemblanceAxes() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -42,6 +43,8 @@ function CmpSemblanceAxesInternal({ store }: { store: DataStore }) {
   const dt = useStore(store, (s) => s.dt);
 
   const palette = useVisualStore.use.selectedPalette();
+
+  const { t } = useTranslation();
 
   const setContainer = useCallback((node: HTMLDivElement | null) => {
     roRef.current?.disconnect();
@@ -104,6 +107,11 @@ function CmpSemblanceAxesInternal({ store }: { store: DataStore }) {
     );
   }, [cmpShiftY, size.height]);
 
+  const timeLabelY = useMemo(() => {
+    const [r0, r1] = tDomainRange.range();
+    return (r0 + r1) / 2;
+  }, [tDomainRange]);
+
   const paletteLut = useMemo(() => getPalette(palette), [palette]);
 
   const paletteStops = useMemo(() => {
@@ -122,6 +130,11 @@ function CmpSemblanceAxesInternal({ store }: { store: DataStore }) {
       ),
     [cmpShiftX, size.width],
   );
+
+  const velocityLabelX = useMemo(() => {
+    const [r0, r1] = vDomainRange.range();
+    return (r0 + r1) / 2;
+  }, [vDomainRange]);
 
   const velocityAxisRef = useRef<SVGGElement | null>(null);
 
@@ -214,6 +227,18 @@ function CmpSemblanceAxesInternal({ store }: { store: DataStore }) {
           className="text-scan-foreground"
           transform={`translate(${axisXShift}, 0)`}
         ></g>
+        <text
+          x={axisXShift - TIME_AXIS_WIDTH + 12}
+          y={timeLabelY}
+          className="text-scan-foreground"
+          fill="currentColor"
+          fontSize={12}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          transform={`rotate(-90, ${axisXShift - TIME_AXIS_WIDTH + 12}, ${timeLabelY})`}
+        >
+          {t('Time')}
+        </text>
         <rect
           x={TIME_AXIS_WIDTH + axisXAmpShift - 3}
           y={axisVelocityYShift - 2}
@@ -255,6 +280,17 @@ function CmpSemblanceAxesInternal({ store }: { store: DataStore }) {
           className="text-scan-foreground"
           transform={`translate(0, ${axisVelocityYShift + LENGTH_AXIS_HEIGHT - 2})`}
         ></g>
+        <text
+          x={velocityLabelX}
+          y={axisVelocityYShift + LENGTH_AXIS_HEIGHT - 35}
+          className="text-scan-foreground"
+          fill="currentColor"
+          fontSize={12}
+          textAnchor="middle"
+          dominantBaseline="middle"
+        >
+          {t('Velocity')}
+        </text>
         <rect
           x={0}
           y={axisVelocityYShift + LENGTH_AXIS_HEIGHT - 8}
