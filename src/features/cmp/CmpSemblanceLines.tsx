@@ -109,10 +109,6 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
                   l.time,
                   l.velocity,
                 ]),
-                [
-                  (cmpData.rows - indexTimeZero) * dt,
-                  sortedCmpLayers?.[sortedCmpLayers.length - 1]?.velocity ?? 0,
-                ],
               ]) ?? ''
             }
             clipPath="url(#cmp-chart)"
