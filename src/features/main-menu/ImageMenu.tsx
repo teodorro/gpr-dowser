@@ -55,6 +55,14 @@ export default function ImageMenu() {
               </MenubarItem>
               <MenubarItem
                 className={
+                  selectedPalette === 'rainbow' ? 'border border-ring' : ''
+                }
+                onClick={() => setSelectedPalette('rainbow')}
+              >
+                {t('Rainbow')}
+              </MenubarItem>
+              <MenubarItem
+                className={
                   selectedPalette === 'cubehelix' ? 'border border-ring' : ''
                 }
                 onClick={() => setSelectedPalette('cubehelix')}

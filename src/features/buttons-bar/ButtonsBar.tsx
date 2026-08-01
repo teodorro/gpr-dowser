@@ -84,6 +84,14 @@ export default function ButtonsBar() {
           </DropdownMenuItem>
           <DropdownMenuItem
             className={
+              selectedPalette === 'rainbow' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('rainbow')}
+          >
+            {t('Rainbow')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
               selectedPalette === 'cubehelix' ? 'border border-ring' : ''
             }
             onClick={() => setSelectedPalette('cubehelix')}

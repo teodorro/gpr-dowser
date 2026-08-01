@@ -19,7 +19,7 @@ export const TIME_AXIS_WIDTH = 56;
 export const LENGTH_AXIS_HEIGHT = 46;
 export const DEPTH_AXIS_WIDTH = 66;
 export const BOTTOM_BORDER_HEIGHT = 0;
-export const PALLETTE_WIDTH = 30;
+export const PALLETTE_WIDTH = 20;
 
 export type CmpLayer = {
   id: string;
