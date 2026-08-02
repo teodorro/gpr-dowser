@@ -9,14 +9,12 @@ import getPalette from '@/visual/get-palette';
 import * as d3 from 'd3';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useStore } from 'zustand';
-// import { drawAxes } from './draw-axes';
 import useVisualStore from '@/stores/visual-store';
 import { logTransformGrid2D } from '@/shared/log-transform';
 import { useTranslation } from 'react-i18next';
 import { BScanMode, useUiStore } from '@/stores/ui-store';
 import { splitBscan } from './splitBscan';
 import { OperationTypeList } from '@/stores/undo-redo.types';
-// import { drawCurves } from './draw-curves';
 import CmpChart from '../cmp/CmpChart';
 import BScanAxes from './BScanAxes';
 
@@ -61,16 +59,6 @@ function BScanInternal({ store }: { store: DataStore }) {
   const setBScan = useStore(store, (s) => s.setBScan);
   const addOperation = useStore(store, (s) => s.addOperation);
 
-  // const axisBorders = useMemo(
-  //   () => ({
-  //     left: TIME_AXIS_WIDTH,
-  //     top: LENGTH_AXIS_HEIGHT,
-  //     right: DEPTH_AXIS_WIDTH + PALLETTE_WIDTH,
-  //     bottom: BOTTOM_BORDER_HEIGHT,
-  //   }),
-  //   [],
-  // );
-
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
     x: shiftX,
     y: shiftY,
@@ -81,6 +69,18 @@ function BScanInternal({ store }: { store: DataStore }) {
   const dragging = useRef<boolean>(false);
   const lastX = useRef<number>(shiftX);
   const lastY = useRef<number>(shiftY);
+
+  const panRaf = useRef<number | null>(null);
+  const panDelta = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+
+  const flushPan = useCallback(() => {
+    panRaf.current = null;
+    const { dx, dy } = panDelta.current;
+    if (dx === 0 && dy === 0) return;
+    panDelta.current = { dx: 0, dy: 0 };
+    const state = store.getState();
+    state.setShift(state.shiftX + dx, state.shiftY + dy);
+  }, [store]);
 
   const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
 
@@ -98,13 +98,6 @@ function BScanInternal({ store }: { store: DataStore }) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
-    // const backgroundColor = getComputedStyle(canvas)
-    //   .getPropertyValue('--scan')
-    //   .trim();
-    // const foregroundColor = getComputedStyle(canvas)
-    //   .getPropertyValue('--scan-foreground')
-    //   .trim();
 
     const dpr = window.devicePixelRatio || 1;
     const cssW = canvas.clientWidth;
@@ -145,35 +138,6 @@ function BScanInternal({ store }: { store: DataStore }) {
       ctx.restore();
     }
     ctx.restore();
-
-    // drawAxes(
-    //   ctx,
-    //   displayBuffer,
-    //   vpRef,
-    //   shiftX,
-    //   shiftY,
-    //   scale,
-    //   dx,
-    //   dt,
-    //   velocity,
-    //   indexTimeZero,
-    //   axisBorders,
-    //   backgroundColor,
-    //   foregroundColor,
-    //   selectedPalette,
-    // );
-    // if (cmpMode) {
-    //   drawCurves(
-    //     ctx,
-    //     displayBuffer,
-    //     vpRef,
-    //     shiftX,
-    //     shiftY,
-    //     scale,
-    //     indexTimeZero,
-    //     foregroundColor,
-    //   );
-    // }
   }, [scale, shiftX, shiftY, bitmapRef]);
 
   const redrawRef = useRef<() => void>(redraw);
@@ -347,7 +311,11 @@ function BScanInternal({ store }: { store: DataStore }) {
       const dy = sy - lastY.current;
       lastX.current = sx;
       lastY.current = sy;
-      setShift(shiftX + dx, shiftY + dy);
+      panDelta.current.dx += dx;
+      panDelta.current.dy += dy;
+      if (panRaf.current == null) {
+        panRaf.current = requestAnimationFrame(flushPan);
+      }
     };
 
     const onUp = () => {
@@ -355,7 +323,6 @@ function BScanInternal({ store }: { store: DataStore }) {
     };
 
     const onClick = (e: MouseEvent) => {
-      // console.log('canvas clicked', e.clientX, e.clientY);
       const canvas = canvasRef.current;
       if (!canvas) return null;
 
@@ -391,21 +358,8 @@ function BScanInternal({ store }: { store: DataStore }) {
         }
       }
 
-      if (cmpMode) {
-        if (
-          selectedFileId &&
-          col > 0 &&
-          col <= dims.cols &&
-          row > 0 &&
-          row <= dims.rows
-        ) {
-          console.log('cmp mode', col, row);
-        }
-      }
-
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
         setIndexTimeZero(row);
-        console.log('zero', row);
       }
     };
 
@@ -441,6 +395,10 @@ function BScanInternal({ store }: { store: DataStore }) {
       window.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('wheel', onWheel);
       canvas.removeEventListener('click', onClick);
+      if (panRaf.current != null) {
+        cancelAnimationFrame(panRaf.current);
+        panRaf.current = null;
+      }
     };
   }, [
     scale,
@@ -449,6 +407,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     dims,
     setShift,
     setScale,
+    flushPan,
     getBscanIndexFromMouse,
     setIndexX,
     setIndexY,

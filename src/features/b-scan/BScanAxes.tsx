@@ -119,14 +119,6 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
 
   const paletteLut = useMemo(() => getPalette(palette), [palette]);
 
-  // const paletteStops = useMemo(() => {
-  //   const n = 256;
-  //   return Array.from({ length: n }, (_, i) => ({
-  //     offset: i / (n - 1),
-  //     color: `rgb(${paletteLut[i * 4]}, ${paletteLut[i * 4 + 1]}, ${paletteLut[i * 4 + 2]})`,
-  //   }));
-  // }, [paletteLut]);
-
   const paletteStops = useMemo(() => {
     const n = 64;
     return Array.from({ length: n }, (_, i) => ({
@@ -310,7 +302,7 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
           transform={`translate(${axisXDepthShift + TIME_AXIS_WIDTH}, 0)`}
         ></g>
         <text
-          x={axisXDepthShift + TIME_AXIS_WIDTH + 16}
+          x={axisXDepthShift + TIME_AXIS_WIDTH + 4}
           y={depthLabelX + 12}
           className="text-scan-foreground"
           fill="currentColor"

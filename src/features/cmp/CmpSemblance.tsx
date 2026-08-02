@@ -70,6 +70,18 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const lastX = useRef<number>(cmpShiftX);
   const lastY = useRef<number>(cmpShiftY);
 
+  const panRaf = useRef<number | null>(null);
+  const panDelta = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+
+  const flushPan = useCallback(() => {
+    panRaf.current = null;
+    const { dx, dy } = panDelta.current;
+    if (dx === 0 && dy === 0) return;
+    panDelta.current = { dx: 0, dy: 0 };
+    const state = store.getState();
+    state.setCmpShift(state.cmpShiftX + dx, state.cmpShiftY + dy);
+  }, [store]);
+
   const valueRange = useMemo(
     () => d3.extent(cmpDisplayBuffer.buffer),
     [cmpDisplayBuffer],
@@ -124,22 +136,6 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       ctx.restore();
     }
     ctx.restore();
-
-    // drawSemblanceAxes(
-    //   ctx,
-    //   cmpDisplayBuffer,
-    //   vpRef,
-    //   cmpShiftX,
-    //   cmpShiftY,
-    //   cmpScale,
-    //   (VELOCITY_LIGHT - VELOCITY_WATER) / bScan.cols,
-    //   dt,
-    //   indexTimeZero,
-    //   axisBorders,
-    //   backgroundColor,
-    //   foregroundColor,
-    //   selectedPalette,
-    // );
   }, [cmpShiftX, cmpShiftY, cmpScale]);
 
   const convertDisplayBufferToImageData = useCallback((): ImageData | null => {
@@ -322,7 +318,11 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       const dy = sy - lastY.current;
       lastX.current = sx;
       lastY.current = sy;
-      setCmpShift(cmpShiftX + dx, cmpShiftY + dy);
+      panDelta.current.dx += dx;
+      panDelta.current.dy += dy;
+      if (panRaf.current == null) {
+        panRaf.current = requestAnimationFrame(flushPan);
+      }
     };
 
     const onClick = (e: MouseEvent) => {
@@ -391,6 +391,10 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('wheel', onWheel);
+      if (panRaf.current != null) {
+        cancelAnimationFrame(panRaf.current);
+        panRaf.current = null;
+      }
     };
   }, [
     cmpScale,
@@ -407,6 +411,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     indexTimeZero,
     dx,
     addCmpLayer,
+    flushPan,
   ]);
 
   useEffect(() => {
