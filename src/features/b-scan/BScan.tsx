@@ -1,11 +1,7 @@
 import {
-  BOTTOM_BORDER_HEIGHT,
   dataSliceStores,
   TIME_AXIS_WIDTH,
-  DEPTH_AXIS_WIDTH,
-  LENGTH_AXIS_HEIGHT,
   type DataStore,
-  PALLETTE_WIDTH,
 } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import clamp from '@/visual/clamp';
@@ -13,15 +9,16 @@ import getPalette from '@/visual/get-palette';
 import * as d3 from 'd3';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useStore } from 'zustand';
-import { drawAxes } from './draw-axes';
+// import { drawAxes } from './draw-axes';
 import useVisualStore from '@/stores/visual-store';
 import { logTransformGrid2D } from '@/shared/log-transform';
 import { useTranslation } from 'react-i18next';
 import { BScanMode, useUiStore } from '@/stores/ui-store';
 import { splitBscan } from './splitBscan';
 import { OperationTypeList } from '@/stores/undo-redo.types';
-import { drawCurves } from './draw-curves';
+// import { drawCurves } from './draw-curves';
 import CmpChart from '../cmp/CmpChart';
+import BScanAxes from './BScanAxes';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -57,26 +54,22 @@ function BScanInternal({ store }: { store: DataStore }) {
   const setShift = useStore(store, (s) => s.setShift);
   const setIndexX = useStore(store, (s) => s.setIndexX);
   const setIndexY = useStore(store, (s) => s.setIndexY);
-  const dx = useStore(store, (s) => s.dx);
-  const dt = useStore(store, (s) => s.dt);
-  const velocity = useStore(store, (s) => s.velocity);
   const setDisplayBuffer = useStore(store, (s) => s.setDisplayBuffer);
   const bScan = useStore(store, (s) => s.bScan);
   const setIndexTimeZero = useStore(store, (s) => s.setIndexTimeZero);
-  const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
   const setIndexSelectedAscan = useStore(store, (s) => s.setIndexSelectedAscan);
   const setBScan = useStore(store, (s) => s.setBScan);
   const addOperation = useStore(store, (s) => s.addOperation);
 
-  const axisBorders = useMemo(
-    () => ({
-      left: TIME_AXIS_WIDTH,
-      top: LENGTH_AXIS_HEIGHT,
-      right: DEPTH_AXIS_WIDTH + PALLETTE_WIDTH,
-      bottom: BOTTOM_BORDER_HEIGHT,
-    }),
-    [],
-  );
+  // const axisBorders = useMemo(
+  //   () => ({
+  //     left: TIME_AXIS_WIDTH,
+  //     top: LENGTH_AXIS_HEIGHT,
+  //     right: DEPTH_AXIS_WIDTH + PALLETTE_WIDTH,
+  //     bottom: BOTTOM_BORDER_HEIGHT,
+  //   }),
+  //   [],
+  // );
 
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
     x: shiftX,
@@ -106,12 +99,12 @@ function BScanInternal({ store }: { store: DataStore }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const backgroundColor = getComputedStyle(canvas)
-      .getPropertyValue('--scan')
-      .trim();
-    const foregroundColor = getComputedStyle(canvas)
-      .getPropertyValue('--scan-foreground')
-      .trim();
+    // const backgroundColor = getComputedStyle(canvas)
+    //   .getPropertyValue('--scan')
+    //   .trim();
+    // const foregroundColor = getComputedStyle(canvas)
+    //   .getPropertyValue('--scan-foreground')
+    //   .trim();
 
     const dpr = window.devicePixelRatio || 1;
     const cssW = canvas.clientWidth;
@@ -153,48 +146,35 @@ function BScanInternal({ store }: { store: DataStore }) {
     }
     ctx.restore();
 
-    drawAxes(
-      ctx,
-      displayBuffer,
-      vpRef,
-      shiftX,
-      shiftY,
-      scale,
-      dx,
-      dt,
-      velocity,
-      indexTimeZero,
-      axisBorders,
-      backgroundColor,
-      foregroundColor,
-      selectedPalette,
-    );
-    if (cmpMode) {
-      drawCurves(
-        ctx,
-        displayBuffer,
-        vpRef,
-        shiftX,
-        shiftY,
-        scale,
-        indexTimeZero,
-        foregroundColor,
-      );
-    }
-  }, [
-    scale,
-    shiftX,
-    shiftY,
-    bitmapRef,
-    dx,
-    dt,
-    velocity,
-    indexTimeZero,
-    axisBorders,
-    displayBuffer,
-    selectedPalette,
-    cmpMode,
-  ]);
+    // drawAxes(
+    //   ctx,
+    //   displayBuffer,
+    //   vpRef,
+    //   shiftX,
+    //   shiftY,
+    //   scale,
+    //   dx,
+    //   dt,
+    //   velocity,
+    //   indexTimeZero,
+    //   axisBorders,
+    //   backgroundColor,
+    //   foregroundColor,
+    //   selectedPalette,
+    // );
+    // if (cmpMode) {
+    //   drawCurves(
+    //     ctx,
+    //     displayBuffer,
+    //     vpRef,
+    //     shiftX,
+    //     shiftY,
+    //     scale,
+    //     indexTimeZero,
+    //     foregroundColor,
+    //   );
+    // }
+  }, [scale, shiftX, shiftY, bitmapRef]);
 
   const redrawRef = useRef<() => void>(redraw);
 
@@ -494,6 +474,7 @@ function BScanInternal({ store }: { store: DataStore }) {
         className="absolute inset-0 block w-full h-full"
       />
       {cmpMode && <CmpChart />}
+      <BScanAxes />
     </div>
   );
 }

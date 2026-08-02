@@ -84,8 +84,7 @@ function CmpSemblanceAxesInternal({ store }: { store: DataStore }) {
     return d3
       .scaleLinear()
       .domain([vMin, vMax])
-      .range([wxMin * cmpScale + cmpShiftX, wxMax * cmpScale + cmpShiftX])
-      .nice();
+      .range([wxMin * cmpScale + cmpShiftX, wxMax * cmpScale + cmpShiftX]);
   }, [dv, wxMin, wxMax, cmpScale, cmpShiftX]);
 
   const tDomainRange = useMemo(() => {
@@ -116,9 +115,9 @@ function CmpSemblanceAxesInternal({ store }: { store: DataStore }) {
 
   const paletteStops = useMemo(() => {
     const n = 256;
-    return Array.from({ length: n + 1 }, (_, i) => ({
-      offset: i / n,
-      color: `rgb(${paletteLut[Math.round(i * 4)]}, ${paletteLut[Math.round(i * 4 + 1)]}, ${paletteLut[Math.round(i * 4 + 2)]})`,
+    return Array.from({ length: n }, (_, i) => ({
+      offset: i / (n - 1),
+      color: `rgb(${paletteLut[i * 4]}, ${paletteLut[i * 4 + 1]}, ${paletteLut[i * 4 + 2]})`,
     }));
   }, [paletteLut]);
 

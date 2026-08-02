@@ -1,8 +1,27 @@
+import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
+import useFileRegistryStore from '@/stores/file-registry-store';
 import { useCallback, useRef, useState } from 'react';
 
 export default function CmpChart() {
+  const selectedFileId = useFileRegistryStore.use.selectedFileId();
+  const store = selectedFileId
+    ? dataSliceStores.get(selectedFileId)
+    : undefined;
+
+  if (!store) {
+    return (
+      <div className="flex flex-col flex-1 min-w-0 min-h-0 rounded-lg bg-scan text-scan-foreground" />
+    );
+  }
+
+  return <CmpChartInternal store={store} />;
+}
+
+function CmpChartInternal({ store }: { store: DataStore }) {
   const roRef = useRef<ResizeObserver | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
+
+  console.log(store);
 
   const setContainer = useCallback((node: HTMLDivElement | null) => {
     roRef.current?.disconnect();
