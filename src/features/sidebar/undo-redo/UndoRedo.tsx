@@ -17,6 +17,7 @@ import subtractMean from '../processing/statistical-processing/subtract-avg/subt
 import subtractMedian from '../processing/statistical-processing/subtract-avg/subtract-median';
 import dewow from '../processing/statistical-processing/dewow/dewow';
 import { unreachable } from '@/shared/unreachable';
+import { splitBscan } from '@/features/b-scan/splitBscan';
 import { savGolayFilter } from '../processing/statistical-processing/savitzky-golay/sav-golay-filter';
 import Grid2D from '@/shared/grid2d';
 
@@ -59,6 +60,14 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
           break;
         case OperationTypeList.Dewow:
           bScan = dewow(bScan, operation.windowSize);
+          break;
+        case OperationTypeList.SplitBscan:
+          [bScan] = splitBscan(
+            bScan,
+            operation.splitIndex,
+            operation.leftDataSliceId,
+            operation.rightDataSliceId,
+          );
           break;
         case OperationTypeList.SavitzkyGolay:
           bScan = Grid2D.fromArray(

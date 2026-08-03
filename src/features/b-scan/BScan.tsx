@@ -17,6 +17,9 @@ import { drawAxes } from './draw-axes';
 import useVisualStore from '@/stores/visual-store';
 import { logTransformGrid2D } from '@/shared/log-transform';
 import { useTranslation } from 'react-i18next';
+import { useUiStore } from '@/stores/ui-store';
+import { splitBscan } from './splitBscan';
+import { OperationTypeList } from '@/stores/undo-redo.types';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -39,7 +42,9 @@ function BScanInternal({ store }: { store: DataStore }) {
 
   const { i18n } = useTranslation();
 
+  const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const selectedPalette = useVisualStore.use.selectedPalette();
+  const splitBscanMode = useUiStore.use.splitBscanMode();
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
   const shiftX = useStore(store, (s) => s.shiftX);
@@ -56,6 +61,8 @@ function BScanInternal({ store }: { store: DataStore }) {
   const setIndexTimeZero = useStore(store, (s) => s.setIndexTimeZero);
   const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
   const setIndexSelectedAscan = useStore(store, (s) => s.setIndexSelectedAscan);
+  const setBScan = useStore(store, (s) => s.setBScan);
+  const addOperation = useStore(store, (s) => s.addOperation);
 
   const axisBorders = useMemo(
     () => ({
@@ -370,6 +377,21 @@ function BScanInternal({ store }: { store: DataStore }) {
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
+      if (splitBscanMode && selectedFileId && col > 0 && col <= dims.cols) {
+        const [leftBscan, rightBscanId] = splitBscan(
+          bScan,
+          col,
+          selectedFileId,
+        );
+        setBScan(leftBscan);
+        addOperation({
+          type: OperationTypeList.SplitBscan,
+          splitIndex: col,
+          leftDataSliceId: selectedFileId,
+          rightDataSliceId: rightBscanId,
+        });
+      }
+
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
         setIndexTimeZero(row);
         console.log('zero', row);
@@ -421,6 +443,11 @@ function BScanInternal({ store }: { store: DataStore }) {
     setIndexY,
     setIndexTimeZero,
     setIndexSelectedAscan,
+    splitBscanMode,
+    selectedFileId,
+    bScan,
+    setBScan,
+    addOperation,
   ]);
 
   useEffect(() => {

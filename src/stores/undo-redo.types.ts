@@ -2,6 +2,7 @@ export const OperationTypeList = {
   Dewow: 'dewow',
   SubtractMedian: 'subtract_median',
   SubtractMean: 'subtract_mean',
+  SplitBscan: 'split_bscan',
   SavitzkyGolay: 'savitzky_golay',
 } as const;
 
@@ -18,6 +19,12 @@ export type Operation =
     }
   | {
       type: typeof OperationTypeList.SubtractMean;
+    }
+  | {
+      type: typeof OperationTypeList.SplitBscan;
+      splitIndex: number;
+      leftDataSliceId: string;
+      rightDataSliceId: string;
     }
   | {
       type: typeof OperationTypeList.SavitzkyGolay;

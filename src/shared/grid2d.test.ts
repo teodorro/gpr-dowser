@@ -44,6 +44,45 @@ describe('Grid2D', () => {
     expect(grid2d.get(0, 0)).toBe(1);
   });
 
+  it('should split correctly', () => {
+    const grid2d = Grid2D.fromArray([
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ]);
+
+    const [left, right] = grid2d.split(2);
+
+    expect(left.cols).toBe(2);
+    expect(left.rows).toBe(2);
+    expect(left.getColumn(0)).toEqual([1, 2]);
+    expect(left.getColumn(1)).toEqual([3, 4]);
+
+    expect(right.cols).toBe(1);
+    expect(right.rows).toBe(2);
+    expect(right.getColumn(0)).toEqual([5, 6]);
+  });
+
+  it('should throw an error if the index is out of bounds', () => {
+    const grid2d = new Grid2D(2, 2);
+
+    expect(() => grid2d.split(-1)).toThrow(RangeError);
+    expect(() => grid2d.split(3)).toThrow(RangeError);
+  });
+
+  it('should split if only one column', () => {
+    const grid2d = Grid2D.fromArray([[1, 2]]);
+
+    const [left, right] = grid2d.split(1);
+
+    expect(left.cols).toBe(1);
+    expect(left.rows).toBe(2);
+    expect(left.getColumn(0)).toEqual([1, 2]);
+
+    expect(right.cols).toBe(0);
+    expect(right.rows).toBe(2);
+  });
+
   it('should convert to a column-major array', () => {
     const grid2d = new Grid2D(3, 2);
     grid2d.set(0, 0, 1);
