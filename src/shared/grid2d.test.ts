@@ -43,4 +43,36 @@ describe('Grid2D', () => {
     clone.set(0, 0, 99);
     expect(grid2d.get(0, 0)).toBe(1);
   });
+
+  it('should convert to a column-major array', () => {
+    const grid2d = new Grid2D(3, 2);
+    grid2d.set(0, 0, 1);
+    grid2d.set(0, 1, 2);
+    grid2d.set(1, 0, 3);
+    grid2d.set(1, 1, 4);
+    grid2d.set(2, 0, 5);
+    grid2d.set(2, 1, 6);
+
+    expect(grid2d.toArray()).toEqual([
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ]);
+  });
+
+  it('should round-trip through fromArray and toArray', () => {
+    const data = [
+      [1, 2, 3],
+      [4, 5, 6],
+    ];
+    const grid2d = Grid2D.fromArray(data);
+
+    expect(grid2d.cols).toBe(2);
+    expect(grid2d.rows).toBe(3);
+    expect(grid2d.toArray()).toEqual(data);
+  });
+
+  it('should return an empty array for a 0-size grid', () => {
+    expect(new Grid2D(0, 0).toArray()).toEqual([]);
+  });
 });

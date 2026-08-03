@@ -28,6 +28,10 @@ class Grid2D {
     return Array.from({ length: this.rows }, (_, row) => this.get(col, row));
   }
 
+  toArray(): number[][] {
+    return Array.from({ length: this.cols }, (_, col) => this.getColumn(col));
+  }
+
   // Cheap copy for immutable store updates
   clone(): Grid2D {
     const next = new Grid2D(this.cols, this.rows);

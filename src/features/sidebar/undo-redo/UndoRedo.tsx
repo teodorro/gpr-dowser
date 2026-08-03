@@ -17,6 +17,8 @@ import subtractMean from '../processing/statistical-processing/subtract-avg/subt
 import subtractMedian from '../processing/statistical-processing/subtract-avg/subtract-median';
 import dewow from '../processing/statistical-processing/dewow/dewow';
 import { unreachable } from '@/shared/unreachable';
+import { savGolayFilter } from '../processing/statistical-processing/savitzky-golay/sav-golay-filter';
+import Grid2D from '@/shared/grid2d';
 
 export default function UndoRedo() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -57,6 +59,17 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
           break;
         case OperationTypeList.Dewow:
           bScan = dewow(bScan, operation.windowSize);
+          break;
+        case OperationTypeList.SavitzkyGolay:
+          bScan = Grid2D.fromArray(
+            savGolayFilter(
+              bScan.toArray(),
+              operation.horizontalWindowSize,
+              operation.horizontalPolynomialSize,
+              operation.verticalWindowSize,
+              operation.verticalPolynomialSize,
+            ),
+          );
           break;
         default:
           unreachable(operation);

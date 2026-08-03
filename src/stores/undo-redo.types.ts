@@ -2,6 +2,7 @@ export const OperationTypeList = {
   Dewow: 'dewow',
   SubtractMedian: 'subtract_median',
   SubtractMean: 'subtract_mean',
+  SavitzkyGolay: 'savitzky_golay',
 } as const;
 
 export type OperationType =
@@ -17,6 +18,13 @@ export type Operation =
     }
   | {
       type: typeof OperationTypeList.SubtractMean;
+    }
+  | {
+      type: typeof OperationTypeList.SavitzkyGolay;
+      horizontalWindowSize: number;
+      horizontalPolynomialSize: number;
+      verticalWindowSize: number;
+      verticalPolynomialSize: number;
     };
 
 export type OperationHistory = {
