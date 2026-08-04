@@ -3,9 +3,20 @@ class Grid2D {
   cols: number;
   private buf: Float32Array;
 
-  constructor(cols: number, rows: number, data?: number[][]) {
+  constructor(cols: number, rows: number, data?: number[][] | Float32Array) {
     this.rows = rows;
     this.cols = cols;
+
+    if (data instanceof Float32Array) {
+      if (data.length !== rows * cols) {
+        throw new RangeError(
+          `Float32Array length ${data.length} does not match cols*rows (${cols}*${rows})`,
+        );
+      }
+      this.buf = new Float32Array(data);
+      return;
+    }
+
     this.buf = new Float32Array(rows * cols);
     if (data && data.length === cols) {
       data.forEach((col, colIndex) => {
@@ -34,9 +45,7 @@ class Grid2D {
 
   // Cheap copy for immutable store updates
   clone(): Grid2D {
-    const next = new Grid2D(this.cols, this.rows);
-    next.buf.set(this.buf);
-    return next;
+    return new Grid2D(this.cols, this.rows, this.buf);
   }
 
   // Direct buffer access for workers / WebGL upload

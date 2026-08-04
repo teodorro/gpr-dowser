@@ -114,4 +114,24 @@ describe('Grid2D', () => {
   it('should return an empty array for a 0-size grid', () => {
     expect(new Grid2D(0, 0).toArray()).toEqual([]);
   });
+
+  it('should construct from a Float32Array copy', () => {
+    // column-major: col0=[1,2], col1=[3,4]
+    const buf = new Float32Array([1, 2, 3, 4]);
+    const grid2d = new Grid2D(2, 2, buf);
+
+    expect(grid2d.cols).toBe(2);
+    expect(grid2d.rows).toBe(2);
+    expect(grid2d.get(0, 0)).toBe(1);
+    expect(grid2d.get(0, 1)).toBe(2);
+    expect(grid2d.get(1, 0)).toBe(3);
+    expect(grid2d.get(1, 1)).toBe(4);
+
+    buf[0] = 99;
+    expect(grid2d.get(0, 0)).toBe(1);
+  });
+
+  it('should throw if Float32Array length does not match cols*rows', () => {
+    expect(() => new Grid2D(2, 2, new Float32Array(3))).toThrow(RangeError);
+  });
 });

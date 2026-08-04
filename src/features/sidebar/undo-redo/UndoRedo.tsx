@@ -20,6 +20,7 @@ import { unreachable } from '@/shared/unreachable';
 import { splitBscan } from '@/features/b-scan/splitBscan';
 import { savGolayFilter } from '../processing/statistical-processing/savitzky-golay/sav-golay-filter';
 import Grid2D from '@/shared/grid2d';
+import { gaussianSmooth } from '../processing/gauss-smooth/gaussian-smooth';
 
 export default function UndoRedo() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -78,6 +79,13 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
               operation.verticalWindowSize,
               operation.verticalPolynomialSize,
             ),
+          );
+          break;
+        case OperationTypeList.GaussSmooth:
+          bScan = gaussianSmooth(
+            bScan,
+            operation.sigmaHorizontal,
+            operation.sigmaVertical,
           );
           break;
         default:

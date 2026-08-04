@@ -4,6 +4,7 @@ export const OperationTypeList = {
   SubtractMean: 'subtract_mean',
   SplitBscan: 'split_bscan',
   SavitzkyGolay: 'savitzky_golay',
+  GaussSmooth: 'gauss_smooth',
 } as const;
 
 export type OperationType =
@@ -32,6 +33,11 @@ export type Operation =
       horizontalPolynomialSize: number;
       verticalWindowSize: number;
       verticalPolynomialSize: number;
+    }
+  | {
+      type: typeof OperationTypeList.GaussSmooth;
+      sigmaHorizontal: number;
+      sigmaVertical: number;
     };
 
 export type OperationHistory = {

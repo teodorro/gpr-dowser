@@ -29,8 +29,8 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
   const setBScan = useStore(store, (state) => state.setBScan);
   const addOperation = useStore(store, (state) => state.addOperation);
 
-  const [horizontalWindowSize, setHorizontalWindowSize] = useState<string>('5');
-  const [verticalWindowSize, setVerticalWindowSize] = useState<string>('5');
+  const [horizontalWindowSize, setHorizontalWindowSize] = useState<string>('7');
+  const [verticalWindowSize, setVerticalWindowSize] = useState<string>('7');
   const [horizontalPolynomialSize, setHorizontalPolynomialSize] =
     useState<string>('3');
   const [verticalPolynomialSize, setVerticalPolynomialSize] =
@@ -71,87 +71,92 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
           >
             <AudioWaveformIcon />
           </Button>
-          <FieldLabel className="shrink-0  ml-2" htmlFor="savitzky-golay">
+          <FieldLabel className="shrink-0 ml-2">
             {t('SavitzkyGolay')}
           </FieldLabel>
         </div>
         <div className="flex flex-row items-center">
-          <FieldLabel className="shrink-0 w-32 ml-2" htmlFor="savitzky-golay">
+          <FieldLabel className="shrink-0 w-32 ml-2">
             {t('Horizontal')}
           </FieldLabel>
           <div className="flex flex-col gap-2 mx-1">
-            <FieldLabel className="shrink-0  ml-2" htmlFor="savitzky-golay">
+            <FieldLabel
+              className="shrink-0 ml-2"
+              htmlFor="sg-horizontal-window"
+            >
               {t('WindowSize')}
             </FieldLabel>
             <Input
-              id="horizontalWindowSize"
+              id="sg-horizontal-window"
               type="number"
               min={3}
               step={2}
               inputMode="numeric"
               value={horizontalWindowSize}
               onChange={(e) => {
-                const v = e.target.value;
-                setHorizontalWindowSize(v);
+                setHorizontalWindowSize(e.target.value);
               }}
               className="min-w-0 flex-1 max-w-24"
             />
           </div>
           <div className="flex flex-col gap-2 mx-1">
-            <FieldLabel className="shrink-0 ml-2" htmlFor="savitzky-golay">
+            <FieldLabel
+              className="shrink-0 ml-2"
+              htmlFor="sg-horizontal-polynomial"
+            >
               {t('PolynomialSize')}
             </FieldLabel>
             <Input
-              id="horizontalPolynom"
+              id="sg-horizontal-polynomial"
               type="number"
               min={3}
               step={2}
               inputMode="numeric"
               value={horizontalPolynomialSize}
               onChange={(e) => {
-                const v = e.target.value;
-                setHorizontalPolynomialSize(v);
+                setHorizontalPolynomialSize(e.target.value);
               }}
               className="min-w-0 flex-1 max-w-24"
             />
           </div>
         </div>
         <div className="flex flex-row items-center">
-          <FieldLabel className="shrink-0 w-32 ml-2" htmlFor="savitzky-golay">
+          <FieldLabel className="shrink-0 w-32 ml-2">
             {t('Vertical')}
           </FieldLabel>
           <div className="flex flex-col gap-2 mx-1">
-            <FieldLabel className="shrink-0 ml-2" htmlFor="savitzky-golay">
+            <FieldLabel className="shrink-0 ml-2" htmlFor="sg-vertical-window">
               {t('WindowSize')}
             </FieldLabel>
             <Input
-              id="horizontalWindowSize"
+              id="sg-vertical-window"
               type="number"
               min={3}
               step={2}
               inputMode="numeric"
               value={verticalWindowSize}
               onChange={(e) => {
-                const v = e.target.value;
-                setVerticalWindowSize(v);
+                setVerticalWindowSize(e.target.value);
               }}
               className="min-w-0 flex-1 max-w-24"
             />
           </div>
           <div className="flex flex-col gap-2 mx-1">
-            <FieldLabel className="shrink-0 ml-2" htmlFor="savitzky-golay">
+            <FieldLabel
+              className="shrink-0 ml-2"
+              htmlFor="sg-vertical-polynomial"
+            >
               {t('PolynomialSize')}
             </FieldLabel>
             <Input
-              id="verticalPolynom"
+              id="sg-vertical-polynomial"
               type="number"
               min={3}
               step={2}
               inputMode="numeric"
               value={verticalPolynomialSize}
               onChange={(e) => {
-                const v = e.target.value;
-                setVerticalPolynomialSize(v);
+                setVerticalPolynomialSize(e.target.value);
               }}
               className="min-w-0 flex-1 max-w-24"
             />

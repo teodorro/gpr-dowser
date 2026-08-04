@@ -2,6 +2,7 @@ import { Separator } from '@/components/ui/separator';
 import DewowInput from './statistical-processing/dewow/DewowInput';
 import SavitzkyGolay from './statistical-processing/savitzky-golay/SavitzkyGolay';
 import SubtractAvg from './statistical-processing/subtract-avg/SubtractAvg';
+import GaussSmooth from './gauss-smooth/GaussSmooth';
 
 export default function Processing() {
   return (
@@ -9,6 +10,8 @@ export default function Processing() {
       <DewowInput />
       <Separator />
       <SubtractAvg />
+      <Separator />
+      <GaussSmooth />
       <Separator />
       <SavitzkyGolay />
     </div>
