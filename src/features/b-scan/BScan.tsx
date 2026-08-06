@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { BScanMode, useUiStore } from '@/stores/ui-store';
 import { splitBscan } from './splitBscan';
 import { OperationTypeList } from '@/stores/undo-redo.types';
-import CmpChart from '../cmp/CmpChart';
+import CmpCurves from '../cmp/CmpCurves';
 import BScanAxes from './BScanAxes';
 
 export default function BScan() {
@@ -432,7 +432,7 @@ function BScanInternal({ store }: { store: DataStore }) {
         ref={canvasRef}
         className="absolute inset-0 block w-full h-full"
       />
-      {cmpMode && <CmpChart />}
+      {cmpMode && <CmpCurves />}
       <BScanAxes />
     </div>
   );

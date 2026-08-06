@@ -344,11 +344,11 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       const row = Math.floor(wy);
 
       if (col < 0 || col >= bScan.cols || row < 0 || row >= bScan.rows) return;
-      const velocity =
+      const avgVelocity =
         (col * (VELOCITY_LIGHT - VELOCITY_WATER)) / bScan.cols + VELOCITY_WATER;
       const time = row * dt - indexTimeZero * dt;
 
-      addCmpLayer(time, velocity);
+      addCmpLayer(time, avgVelocity);
     };
 
     const onUp = (e: MouseEvent) => {

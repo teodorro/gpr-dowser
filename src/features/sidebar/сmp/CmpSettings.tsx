@@ -26,7 +26,7 @@ function CmpSettingsInternal({ store }: { store: DataStore }) {
       <SignalAligner store={store} />
       <CmpSemblanceLinesColor />
       <CmpBscanLinesColor />
-      {cmpLayers.length > 0 && <CmpLayers />}
+      {cmpLayers.layers.length > 0 && <CmpLayers />}
     </div>
   );
 }

@@ -35,10 +35,6 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
 
   const cmpSemblanceLinesColor = useUiStore.use.cmpSemblanceLinesColor();
 
-  const sortedCmpLayers = useMemo(() => {
-    return [...cmpLayers].sort((a, b) => a.time - b.time);
-  }, [cmpLayers]);
-
   const vToWx = useMemo(
     () =>
       d3
@@ -57,8 +53,13 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
     [cmpData.rows, indexTimeZero, dt],
   );
 
+  const getVelocityInRange = (velocity: number) => {
+    return Math.max(VELOCITY_WATER, Math.min(velocity, VELOCITY_LIGHT));
+  };
+
   const velocityToX = useCallback(
-    (velocity: number) => vToWx(velocity) * cmpScale + cmpShiftX,
+    (velocity: number) =>
+      vToWx(getVelocityInRange(velocity)) * cmpScale + cmpShiftX,
     [cmpScale, cmpShiftX, vToWx],
   );
 
@@ -100,14 +101,32 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
         <clipPath id="cmp-chart">
           <rect x={0} y={0} width={size.width} height={size.height} />
         </clipPath>
-        {sortedCmpLayers.length > 0 && (
+        {cmpLayers.layers.length > 0 && (
           <path
             d={
               pathLineGenerator([
-                [-indexTimeZero * dt, sortedCmpLayers?.[0]?.velocity ?? 0],
-                ...sortedCmpLayers.map((l): [number, number] => [
+                [-indexTimeZero * dt, cmpLayers.layers?.[0]?.velocity ?? 0],
+                ...cmpLayers.layers.map((l): [number, number] => [
                   l.time,
                   l.velocity,
+                ]),
+              ]) ?? ''
+            }
+            clipPath="url(#cmp-chart)"
+            fill="none"
+            stroke={cmpSemblanceLinesColor}
+            strokeWidth={1}
+            strokeDasharray="5,5"
+          />
+        )}
+        {cmpLayers.layers.length > 0 && (
+          <path
+            d={
+              pathLineGenerator([
+                [-indexTimeZero * dt, cmpLayers.layers?.[0]?.rmsVelocity ?? 0],
+                ...cmpLayers.layers.map((l): [number, number] => [
+                  l.time,
+                  l.rmsVelocity,
                 ]),
               ]) ?? ''
             }

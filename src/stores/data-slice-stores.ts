@@ -7,6 +7,7 @@ import type { FileSlice } from './file-slice';
 import type { UndoRedoSlice } from './undo-redo-slice';
 import type { Operation } from './undo-redo.types';
 import type { CmpSlice } from './cmp-slice';
+import CmpLayersContainer from './cmp-layers-container';
 
 type DataSliceStore = { id: string } & FileSlice &
   DataSlice &
@@ -23,8 +24,11 @@ export const PALLETTE_WIDTH = 20;
 
 export type CmpLayer = {
   id: string;
-  velocity: number;
   time: number;
+  rmsVelocity: number;
+  velocity: number;
+  totalThickness: number;
+  thickness: number;
 };
 
 export const createDataSliceStore = (
@@ -110,25 +114,34 @@ export const createDataSliceStore = (
     cmpShiftY: (options.cmpShiftY as number) ?? LENGTH_AXIS_HEIGHT,
     cmpIndexX: (options.cmpIndexX as number | undefined) ?? undefined,
     cmpIndexY: (options.cmpIndexY as number | undefined) ?? undefined,
-    cmpLayers: (options.cmpLayers as CmpLayer[]) ?? [],
+    cmpLayers:
+      (options.cmpLayers as CmpLayersContainer) ?? new CmpLayersContainer(),
     setCmpData: (cmpData) => set({ cmpData }),
     setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
     setCmpScale: (cmpScale) => set({ cmpScale }),
     setCmpShift: (cmpShiftX, cmpShiftY) => set({ cmpShiftX, cmpShiftY }),
     setCmpIndexX: (cmpIndexX) => set({ cmpIndexX }),
     setCmpIndexY: (cmpIndexY) => set({ cmpIndexY }),
-    setCmpLayers: (cmpLayers) => set({ cmpLayers }),
-    addCmpLayer: (time, velocity) =>
+    setCmpLayersContainer: (cmpLayers) => set({ cmpLayers }),
+    addCmpLayer: (time, rmsVelocity) =>
       set((state) => {
-        const id = crypto.randomUUID();
-        return {
-          cmpLayers: [...state.cmpLayers, { id, time, velocity }],
-        };
+        const cmpLayers = state.cmpLayers.clone();
+        cmpLayers.addLayer(time, rmsVelocity);
+        console.log(cmpLayers.layers);
+        return { cmpLayers };
       }),
     removeCmpLayer: (id) =>
-      set((state) => ({
-        cmpLayers: state.cmpLayers.filter((layer) => layer.id !== id),
-      })),
+      set((state) => {
+        const cmpLayers = state.cmpLayers.clone();
+        cmpLayers.removeLayer(id);
+        return { cmpLayers };
+      }),
+    updateCmpLayer: (id, time, rmsVelocity) =>
+      set((state) => {
+        const cmpLayers = state.cmpLayers.clone();
+        cmpLayers.updateLayer(id, time, rmsVelocity);
+        return { cmpLayers };
+      }),
   }));
 
 // Registry of stores

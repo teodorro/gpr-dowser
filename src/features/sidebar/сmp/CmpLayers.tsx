@@ -3,7 +3,7 @@ import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { Table, TableRow } from '@/components/ui/table';
 import { TableBody, TableCell } from '@/components/ui/table';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import { Button } from '@/components/ui/button';
@@ -25,19 +25,15 @@ const CmpLayersInternal = ({ store }: { store: DataStore }) => {
   const { t } = useTranslation();
 
   const cmpLayers = useStore(store, (state) => state.cmpLayers);
-  const viewportRef = useRef<HTMLDivElement>(null);
   const removeCmpLayer = useStore(store, (state) => state.removeCmpLayer);
-
-  const sortedCmpLayers = useMemo(() => {
-    return [...cmpLayers].sort((a, b) => a.time - b.time);
-  }, [cmpLayers]);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const viewport = viewportRef.current;
     if (viewport) {
       viewport.scrollTop = viewport.scrollHeight;
     }
-  }, [cmpLayers.length]);
+  }, [cmpLayers.layers.length]);
 
   return (
     <div className="flex flex-col gap-2 my-1">
@@ -45,7 +41,7 @@ const CmpLayersInternal = ({ store }: { store: DataStore }) => {
         viewportRef={viewportRef}
         className="max-h-64 w-full rounded-md bg-secondary/20 border"
       >
-        {sortedCmpLayers.map((layer) => (
+        {cmpLayers.layers.map((layer) => (
           <div
             key={layer.id}
             className="flex flex-col gap-2 bg-secondary/20 mr-2"
@@ -69,6 +65,12 @@ const CmpLayersInternal = ({ store }: { store: DataStore }) => {
                     <TableCell>{t('Velocity')}</TableCell>
                     <TableCell>
                       {Math.round(layer.velocity * 1000) / 1000} m/s
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>{t('Thickness')}</TableCell>
+                    <TableCell>
+                      {Math.round(layer.thickness * 1000) / 1000} m
                     </TableCell>
                   </TableRow>
                 </TableBody>

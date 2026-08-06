@@ -38,7 +38,7 @@ const INITIAL_STATE: UiState = {
   cmpMode: false,
   hyperbolaMode: false,
   cmpSemblanceLinesColor: '#000000',
-  cmpBScanLinesColor: '#000000',
+  cmpBScanLinesColor: '#ffff00',
 };
 
 const useUiBase = create<Ui>((set) => ({

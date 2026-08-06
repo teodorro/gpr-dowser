@@ -1,11 +1,5 @@
 import type Grid2D from '@/shared/grid2d';
 
-///
-// Align direct signal to be straight
-// Loza GPR receiver starts by receiving a pulse so
-// on a bigger distance it starts later than on a smaller distance
-// so we need to align the signal to be straight
-// by adding zeros to the start of the A-Scans
 export const alignSignal = (bScan: Grid2D, ampBreakpoint: number): Grid2D => {
   const zeros: number[] = [];
   for (let i = 0; i < bScan.cols; i++) {

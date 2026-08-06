@@ -27,3 +27,37 @@ export const getCmpTimePoint = (
     ? part1 * part2 - distance / VELOCITY_LIGHT
     : part1 * part2;
 };
+
+// export const getCmpLineLoza = (
+//   distance: number,
+//   depth: number,
+//   velocity: number,
+// ) => {
+//   const part1 = 1 / velocity;
+//   const part2 = Math.sqrt(Math.pow(depth * 2, 2) + Math.pow(distance, 2));
+//   const part3 = distance / VELOCITY_LIGHT;
+//   return part1 * part2 - part3;
+// };
+
+export const getCmpLinePoint = (
+  time: number,
+  velocity: number,
+  distance: number,
+  options?: { loza: boolean },
+) => {
+  const part1 = 1 / velocity;
+  const part2 = Math.sqrt(Math.pow(time * velocity, 2) + Math.pow(distance, 2));
+  const part3 = options?.loza ? distance / VELOCITY_LIGHT : 0;
+  return part1 * part2 - part3;
+};
+
+export const getDixFormula = (
+  time: number,
+  rmsVelocity: number,
+  prevTime: number,
+  prevVelocity: number,
+) => {
+  const part1 = rmsVelocity ** 2 * time - prevVelocity ** 2 * prevTime;
+  const part2 = time - prevTime;
+  return part1 < 0 ? 0 : Math.sqrt(part1 / part2);
+};
