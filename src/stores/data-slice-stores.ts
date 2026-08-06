@@ -6,18 +6,30 @@ import type { DataSlice } from './data-slice';
 import type { FileSlice } from './file-slice';
 import type { UndoRedoSlice } from './undo-redo-slice';
 import type { Operation } from './undo-redo.types';
+import type { CmpSlice } from './cmp-slice';
+import CmpLayersContainer from './cmp-layers-container';
 
 type DataSliceStore = { id: string } & FileSlice &
   DataSlice &
   UnitSlice &
   VisualSlice &
-  UndoRedoSlice;
+  UndoRedoSlice &
+  CmpSlice;
 
 export const TIME_AXIS_WIDTH = 56;
 export const LENGTH_AXIS_HEIGHT = 46;
 export const DEPTH_AXIS_WIDTH = 66;
 export const BOTTOM_BORDER_HEIGHT = 0;
-export const PALLETTE_WIDTH = 30;
+export const PALLETTE_WIDTH = 20;
+
+export type CmpLayer = {
+  id: string;
+  time: number;
+  rmsVelocity: number;
+  velocity: number;
+  totalThickness: number;
+  thickness: number;
+};
 
 export const createDataSliceStore = (
   id: string,
@@ -92,6 +104,43 @@ export const createDataSliceStore = (
           history,
           position: state.position + 1,
         };
+      }),
+
+    // CmpSlice
+    cmpData: (options.cmpData as Grid2D) ?? new Grid2D(0, 0),
+    cmpDisplayBuffer: (options.cmpDisplayBuffer as Grid2D) ?? new Grid2D(0, 0),
+    cmpScale: (options.cmpScale as number) ?? 1,
+    cmpShiftX: (options.cmpShiftX as number) ?? TIME_AXIS_WIDTH,
+    cmpShiftY: (options.cmpShiftY as number) ?? LENGTH_AXIS_HEIGHT,
+    cmpIndexX: (options.cmpIndexX as number | undefined) ?? undefined,
+    cmpIndexY: (options.cmpIndexY as number | undefined) ?? undefined,
+    cmpLayers:
+      (options.cmpLayers as CmpLayersContainer) ?? new CmpLayersContainer(),
+    setCmpData: (cmpData) => set({ cmpData }),
+    setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
+    setCmpScale: (cmpScale) => set({ cmpScale }),
+    setCmpShift: (cmpShiftX, cmpShiftY) => set({ cmpShiftX, cmpShiftY }),
+    setCmpIndexX: (cmpIndexX) => set({ cmpIndexX }),
+    setCmpIndexY: (cmpIndexY) => set({ cmpIndexY }),
+    setCmpLayersContainer: (cmpLayers) => set({ cmpLayers }),
+    addCmpLayer: (time, rmsVelocity) =>
+      set((state) => {
+        const cmpLayers = state.cmpLayers.clone();
+        cmpLayers.addLayer(time, rmsVelocity);
+        console.log(cmpLayers.layers);
+        return { cmpLayers };
+      }),
+    removeCmpLayer: (id) =>
+      set((state) => {
+        const cmpLayers = state.cmpLayers.clone();
+        cmpLayers.removeLayer(id);
+        return { cmpLayers };
+      }),
+    updateCmpLayer: (id, time, rmsVelocity) =>
+      set((state) => {
+        const cmpLayers = state.cmpLayers.clone();
+        cmpLayers.updateLayer(id, time, rmsVelocity);
+        return { cmpLayers };
       }),
   }));
 

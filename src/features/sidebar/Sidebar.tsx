@@ -1,6 +1,7 @@
 import NavItem from './NavItem';
 import {
   CalculatorIcon,
+  ArrowUpWideNarrowIcon,
   RecycleIcon,
   RulerDimensionLineIcon,
 } from 'lucide-react';
@@ -9,10 +10,12 @@ import UnitsMeasurement from './units-of-measurement/UnitsMeasurement';
 import { useTranslation } from 'react-i18next';
 import Processing from './processing/Processing';
 import UndoRedo from './undo-redo/UndoRedo';
+import CmpSettings from './сmp/CmpSettings';
 
 const Sidebar = () => {
   const { sideBarVisible } = useUiStore();
   const { t } = useTranslation();
+  const cmpMode = useUiStore.use.cmpMode();
 
   if (!sideBarVisible) return null;
 
@@ -32,6 +35,15 @@ const Sidebar = () => {
 
         <NavItem icon={<RecycleIcon />} label={t('UndoRedo')}>
           <UndoRedo />
+        </NavItem>
+
+        <NavItem
+          icon={<ArrowUpWideNarrowIcon />}
+          label={t('CMP')}
+          disabled={!cmpMode}
+          expanded={cmpMode}
+        >
+          <CmpSettings />
         </NavItem>
       </nav>
     </div>

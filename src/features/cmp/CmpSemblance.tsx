@@ -1,24 +1,20 @@
-import {
-  dataSliceStores,
-  TIME_AXIS_WIDTH,
-  type DataStore,
-} from '@/stores/data-slice-stores';
+import { VELOCITY_LIGHT, VELOCITY_WATER } from '@/shared/gpr-math';
+import { logTransformGrid2D } from '@/shared/log-transform';
+import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
+import useVisualStore from '@/stores/visual-store';
 import clamp from '@/visual/clamp';
 import getPalette from '@/visual/get-palette';
 import * as d3 from 'd3';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useStore } from 'zustand';
-import useVisualStore from '@/stores/visual-store';
-import { logTransformGrid2D } from '@/shared/log-transform';
 import { useTranslation } from 'react-i18next';
-import { BScanMode, useUiStore } from '@/stores/ui-store';
-import { splitBscan } from './splitBscan';
-import { OperationTypeList } from '@/stores/undo-redo.types';
-import CmpCurves from '../cmp/CmpCurves';
-import BScanAxes from './BScanAxes';
+import { useStore } from 'zustand';
+import { getSemblanceData } from './get-semblance-data';
+import CmpSemblanceLines from './CmpSemblanceLines';
+import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
+import CmpSemblanceAxes from './CmpSemblanceAxes';
 
-export default function BScan() {
+export default function CmpSemblance() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const store = selectedFileId
     ? dataSliceStores.get(selectedFileId)
@@ -30,45 +26,49 @@ export default function BScan() {
     );
   }
 
-  return <BScanInternal store={store} />;
+  return <CmpSemblanceInternal store={store} />;
 }
 
-function BScanInternal({ store }: { store: DataStore }) {
+function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const bitmapRef = useRef<ImageBitmap | null>(null);
 
   const { i18n } = useTranslation();
 
-  const selectedFileId = useFileRegistryStore.use.selectedFileId();
-  const selectedPalette = useVisualStore.use.selectedPalette();
-  const splitBscanMode = useUiStore.use.splitBScanMode();
-  const setBScanMode = useUiStore.use.setBScanMode();
-  const cmpMode = useUiStore.use.cmpMode();
-  const displayBuffer = useStore(store, (s) => s.displayBuffer);
-  const scale = useStore(store, (s) => s.scale);
-  const shiftX = useStore(store, (s) => s.shiftX);
-  const shiftY = useStore(store, (s) => s.shiftY);
-  const setScale = useStore(store, (s) => s.setScale);
-  const setShift = useStore(store, (s) => s.setShift);
-  const setIndexX = useStore(store, (s) => s.setIndexX);
-  const setIndexY = useStore(store, (s) => s.setIndexY);
-  const setDisplayBuffer = useStore(store, (s) => s.setDisplayBuffer);
+  const cmpShiftX = useStore(store, (s) => s.cmpShiftX);
+  const cmpShiftY = useStore(store, (s) => s.cmpShiftY);
+  const setCmpShift = useStore(store, (s) => s.setCmpShift);
+  const setCmpIndexX = useStore(store, (s) => s.setCmpIndexX);
+  const setCmpIndexY = useStore(store, (s) => s.setCmpIndexY);
+  const cmpDisplayBuffer = useStore(store, (s) => s.cmpDisplayBuffer);
+  const cmpScale = useStore(store, (s) => s.cmpScale);
+  const setCmpScale = useStore(store, (s) => s.setCmpScale);
+  const setCmpDisplayBuffer = useStore(store, (s) => s.setCmpDisplayBuffer);
+  const cmpData = useStore(store, (s) => s.cmpData);
+  const setCmpData = useStore(store, (s) => s.setCmpData);
   const bScan = useStore(store, (s) => s.bScan);
-  const setIndexTimeZero = useStore(store, (s) => s.setIndexTimeZero);
-  const setIndexSelectedAscan = useStore(store, (s) => s.setIndexSelectedAscan);
-  const setBScan = useStore(store, (s) => s.setBScan);
-  const addOperation = useStore(store, (s) => s.addOperation);
+  const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
+  const dx = useStore(store, (s) => s.dx);
+  const dt = useStore(store, (s) => s.dt);
+  const addCmpLayer = useStore(store, (s) => s.addCmpLayer);
+
+  const selectedPalette = useVisualStore.use.selectedPalette();
+
+  const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
 
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
-    x: shiftX,
-    y: shiftY,
+    x: cmpShiftX,
+    y: cmpShiftY,
     w: 0,
     h: 0,
   });
 
   const dragging = useRef<boolean>(false);
-  const lastX = useRef<number>(shiftX);
-  const lastY = useRef<number>(shiftY);
+  const dragMoved = useRef<boolean>(false);
+  const downX = useRef<number>(0);
+  const downY = useRef<number>(0);
+  const lastX = useRef<number>(cmpShiftX);
+  const lastY = useRef<number>(cmpShiftY);
 
   const panRaf = useRef<number | null>(null);
   const panDelta = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
@@ -79,19 +79,17 @@ function BScanInternal({ store }: { store: DataStore }) {
     if (dx === 0 && dy === 0) return;
     panDelta.current = { dx: 0, dy: 0 };
     const state = store.getState();
-    state.setShift(state.shiftX + dx, state.shiftY + dy);
+    state.setCmpShift(state.cmpShiftX + dx, state.cmpShiftY + dy);
   }, [store]);
 
-  const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
-
   const valueRange = useMemo(
-    () => d3.extent(displayBuffer.buffer),
-    [displayBuffer],
+    () => d3.extent(cmpDisplayBuffer.buffer),
+    [cmpDisplayBuffer],
   );
 
   const dims = useMemo(() => {
-    return { rows: displayBuffer.rows, cols: displayBuffer.cols };
-  }, [displayBuffer]);
+    return { rows: cmpDisplayBuffer.rows, cols: cmpDisplayBuffer.cols };
+  }, [cmpDisplayBuffer]);
 
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -132,15 +130,13 @@ function BScanInternal({ store }: { store: DataStore }) {
       ctx.imageSmoothingEnabled = false;
 
       ctx.save();
-      ctx.translate(vp.x + shiftX, vp.y + shiftY);
-      ctx.scale(scale, scale);
+      ctx.translate(vp.x + cmpShiftX, vp.y + cmpShiftY);
+      ctx.scale(cmpScale, cmpScale);
       ctx.drawImage(bmp, 0, 0);
       ctx.restore();
     }
     ctx.restore();
-  }, [scale, shiftX, shiftY, bitmapRef]);
-
-  const redrawRef = useRef<() => void>(redraw);
+  }, [cmpShiftX, cmpShiftY, cmpScale]);
 
   const convertDisplayBufferToImageData = useCallback((): ImageData | null => {
     const { rows, cols } = dims;
@@ -164,7 +160,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     let p = 0;
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
-        const v = displayBuffer.buffer[x * rows + y];
+        const v = cmpDisplayBuffer.buffer[x * rows + y];
         const t = clamp((v - min) * inv, 0, 1);
         const idx = (t * 255) | 0;
         const o = idx * 4;
@@ -175,7 +171,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
     }
     return img;
-  }, [displayBuffer.buffer, dims, valueRange, palette]);
+  }, [cmpDisplayBuffer.buffer, dims, valueRange, palette]);
 
   const toViewportLocal = (e: MouseEvent, canvas: HTMLCanvasElement) => {
     const rect = canvas.getBoundingClientRect();
@@ -183,6 +179,37 @@ function BScanInternal({ store }: { store: DataStore }) {
     const py = e.clientY - rect.top;
     return { sx: px - vpRef.current.x, sy: py - vpRef.current.y };
   };
+
+  const getBscanIndexFromMouse = useCallback(
+    (e: MouseEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
+
+      const rect = canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left; // canvas-local CSS px
+      const py = e.clientY - rect.top;
+
+      // viewport-local screen
+      const sx = px - vpRef.current.x;
+      const sy = py - vpRef.current.y;
+
+      const wx = (sx - cmpShiftX) / cmpScale;
+      const wy = (sy - cmpShiftY) / cmpScale;
+
+      const col = Math.floor(wx);
+      const row = Math.floor(wy);
+
+      const { rows, cols } = dims; // rows = bitmap height, cols = bitmap width
+      if (col < 0 || col >= cols || row < 0 || row >= rows) return null;
+      if (sx < 0 || sy < 0 || sx > vpRef.current.w || sy > vpRef.current.h) {
+        return null;
+      }
+      return { col, row, wx, wy, px, py };
+    },
+    [cmpShiftX, cmpShiftY, cmpScale, dims],
+  );
+
+  const redrawRef = useRef<() => void>(redraw);
 
   useEffect(() => {
     redrawRef.current = redraw;
@@ -245,45 +272,15 @@ function BScanInternal({ store }: { store: DataStore }) {
     dims.cols,
     valueRange,
     palette,
-    scale,
-    shiftX,
-    shiftY,
-    setShift,
-    setScale,
+    cmpScale,
+    cmpShiftX,
+    cmpShiftY,
+    setCmpShift,
+    setCmpScale,
     convertDisplayBufferToImageData,
     redraw,
     i18n.language,
   ]);
-
-  const getBscanIndexFromMouse = useCallback(
-    (e: MouseEvent) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return null;
-
-      const rect = canvas.getBoundingClientRect();
-      const px = e.clientX - rect.left; // canvas-local CSS px
-      const py = e.clientY - rect.top;
-
-      // viewport-local screen
-      const sx = px - vpRef.current.x;
-      const sy = py - vpRef.current.y;
-
-      const wx = (sx - shiftX) / scale;
-      const wy = (sy - shiftY) / scale;
-
-      const col = Math.floor(wx);
-      const row = Math.floor(wy);
-
-      setIndexSelectedAscan(col < 0 || col >= dims.cols ? undefined : col);
-      const { rows, cols } = dims; // rows = bitmap height, cols = bitmap width
-      if (col < 0 || col >= cols || row < 0 || row >= rows) return null;
-      if (sx < 0 || sy < 0 || sx > vpRef.current.w || sy > vpRef.current.h) {
-        return null;
-      }
-      return { col, row, wx, wy, px, py };
-    },
-    [shiftX, shiftY, scale, dims, setIndexSelectedAscan],
-  );
 
   // Mouse interactions: pan + wheel zoom
   useEffect(() => {
@@ -292,7 +289,10 @@ function BScanInternal({ store }: { store: DataStore }) {
 
     const onDown = (e: MouseEvent) => {
       dragging.current = true;
+      dragMoved.current = false;
       const { sx, sy } = toViewportLocal(e, canvas);
+      downX.current = sx;
+      downY.current = sy;
       lastX.current = sx;
       lastY.current = sy;
     };
@@ -303,9 +303,16 @@ function BScanInternal({ store }: { store: DataStore }) {
         col: undefined,
         row: undefined,
       };
-      setIndexX(col);
-      setIndexY(row);
+      setCmpIndexX(col);
+      setCmpIndexY(row);
       if (!dragging.current) return;
+
+      if (
+        Math.hypot(sx - downX.current, sy - downY.current) >
+        CLICK_MOVE_THRESHOLD
+      ) {
+        dragMoved.current = true;
+      }
 
       const dx = sx - lastX.current;
       const dy = sy - lastY.current;
@@ -318,13 +325,9 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
     };
 
-    const onUp = () => {
-      dragging.current = false;
-    };
-
     const onClick = (e: MouseEvent) => {
       const canvas = canvasRef.current;
-      if (!canvas) return null;
+      if (!canvas) return;
 
       const rect = canvas.getBoundingClientRect();
       const px = e.clientX - rect.left;
@@ -335,31 +338,26 @@ function BScanInternal({ store }: { store: DataStore }) {
       const sy = py - vpRef.current.y;
 
       // world coordinates
-      const wx = (sx - shiftX) / scale;
-      const wy = (sy - shiftY) / scale;
+      const wx = (sx - cmpShiftX) / cmpScale;
+      const wy = (sy - cmpShiftY) / cmpScale;
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
-      if (splitBscanMode) {
-        if (selectedFileId && col > 0 && col <= dims.cols) {
-          const [leftBscan, rightBscanId] = splitBscan(
-            bScan,
-            col,
-            selectedFileId,
-          );
-          setBScan(leftBscan);
-          addOperation({
-            type: OperationTypeList.SplitBscan,
-            splitIndex: col,
-            leftDataSliceId: selectedFileId,
-            rightDataSliceId: rightBscanId,
-          });
-          setBScanMode(splitBscanMode ? BScanMode.none : BScanMode.split);
-        }
-      }
+      if (col < 0 || col >= bScan.cols || row < 0 || row >= bScan.rows) return;
+      const avgVelocity =
+        (col * (VELOCITY_LIGHT - VELOCITY_WATER)) / bScan.cols + VELOCITY_WATER;
+      const time = row * dt - indexTimeZero * dt;
 
-      if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
-        setIndexTimeZero(row);
+      addCmpLayer(time, avgVelocity);
+    };
+
+    const onUp = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      const wasDragging = dragMoved.current;
+      dragging.current = false;
+      dragMoved.current = false;
+      if (!wasDragging) {
+        onClick(e);
       }
     };
 
@@ -374,57 +372,64 @@ function BScanInternal({ store }: { store: DataStore }) {
 
       // Zoom factor
       const zoom = Math.exp(-e.deltaY * 0.001);
-      const next = clamp(scale * zoom, 0.1, 40);
+      const next = clamp(cmpScale * zoom, 0.1, 40);
 
       // Zoom around cursor: adjust shiftX/shiftY so the point under cursor stays put
-      const wx = (mx - shiftX) / scale;
-      const wy = (my - shiftY) / scale;
-      setShift(mx - wx * next, my - wy * next);
-      setScale(next);
+      const wx = (mx - cmpShiftX) / cmpScale;
+      const wy = (my - cmpShiftY) / cmpScale;
+      setCmpShift(mx - wx * next, my - wy * next);
+      setCmpScale(next);
     };
 
     canvas.addEventListener('mousedown', onDown);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     canvas.addEventListener('wheel', onWheel, { passive: false });
-    canvas.addEventListener('click', onClick);
 
     return () => {
       canvas.removeEventListener('mousedown', onDown);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('wheel', onWheel);
-      canvas.removeEventListener('click', onClick);
       if (panRaf.current != null) {
         cancelAnimationFrame(panRaf.current);
         panRaf.current = null;
       }
     };
   }, [
-    scale,
-    shiftX,
-    shiftY,
+    cmpScale,
+    cmpShiftX,
+    cmpShiftY,
     dims,
-    setShift,
-    setScale,
-    flushPan,
+    setCmpShift,
+    setCmpScale,
     getBscanIndexFromMouse,
-    setIndexX,
-    setIndexY,
-    setIndexTimeZero,
-    setIndexSelectedAscan,
-    splitBscanMode,
-    selectedFileId,
+    setCmpIndexX,
+    setCmpIndexY,
     bScan,
-    setBScan,
-    addOperation,
-    setBScanMode,
-    cmpMode,
+    dt,
+    indexTimeZero,
+    dx,
+    addCmpLayer,
+    flushPan,
   ]);
 
   useEffect(() => {
-    setDisplayBuffer(logTransformGrid2D(bScan));
-  }, [bScan, setDisplayBuffer]);
+    const data = getSemblanceData(
+      bScan,
+      VELOCITY_WATER,
+      VELOCITY_LIGHT,
+      -indexTimeZero * dt,
+      (bScan.rows - indexTimeZero) * dt,
+      dx,
+      dt,
+    );
+    setCmpData(data);
+  }, [bScan, indexTimeZero, dt, dx, setCmpData]);
+
+  useEffect(() => {
+    setCmpDisplayBuffer(logTransformGrid2D(cmpData));
+  }, [cmpData, setCmpDisplayBuffer]);
 
   return (
     <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-scan text-scan-foreground shadow-sm">
@@ -432,8 +437,8 @@ function BScanInternal({ store }: { store: DataStore }) {
         ref={canvasRef}
         className="absolute inset-0 block w-full h-full"
       />
-      {cmpMode && <CmpCurves />}
-      <BScanAxes />
+      <CmpSemblanceLines />
+      <CmpSemblanceAxes />
     </div>
   );
 }

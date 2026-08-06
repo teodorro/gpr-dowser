@@ -42,7 +42,7 @@ export const splitBscan = (
       displayBuffer: logTransformGrid2D(rightBScan),
     }),
   );
-  useFileRegistryStore.getState().addFile(rightDataSliceId);
+  useFileRegistryStore.getState().addFile(rightDataSliceId, false);
 
   return [leftBScan, rightDataSliceId];
 };

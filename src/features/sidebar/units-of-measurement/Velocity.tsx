@@ -1,6 +1,6 @@
 import { FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { LIGHT_VELOCITY } from '@/shared/constants';
+import { VELOCITY_LIGHT } from '@/shared/gpr-math';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { useEffect, useState } from 'react';
@@ -47,10 +47,10 @@ function VelocityInternal({ store }: { store: DataStore }) {
   }, [internalPermittivity, setPermittivity]);
 
   const convertVelocityToPermittivity = (velocity: number) => {
-    return (LIGHT_VELOCITY / velocity) ** 2;
+    return (VELOCITY_LIGHT / velocity) ** 2;
   };
   const convertPermittivityToVelocity = (permittivity: number) => {
-    return LIGHT_VELOCITY / Math.sqrt(permittivity);
+    return VELOCITY_LIGHT / Math.sqrt(permittivity);
   };
 
   const handleVelocityChange = (e: React.ChangeEvent<HTMLInputElement>) => {

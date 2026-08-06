@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
 import {
+  ArrowUpWideNarrowIcon,
   FolderOpenIcon,
   PaletteIcon,
   PanelLeftIcon,
   PanelRightIcon,
-  SquareSplitHorizontalIcon,
+  UnfoldHorizontalIcon,
 } from 'lucide-react';
-import { useUiStore } from '@/stores/ui-store';
+import { BScanMode, useUiStore } from '@/stores/ui-store';
 import useVisualStore from '@/stores/visual-store';
 import {
   DropdownMenu,
@@ -22,8 +23,9 @@ export default function ButtonsBar() {
     useUiStore();
   const selectedPalette = useVisualStore.use.selectedPalette();
   const setSelectedPalette = useVisualStore.use.setSelectedPalette();
-  const splitBscanMode = useUiStore.use.splitBscanMode();
-  const setSplitBscanMode = useUiStore.use.setSplitBscanMode();
+  const splitBscanMode = useUiStore.use.splitBScanMode();
+  const setBScanMode = useUiStore.use.setBScanMode();
+  const cmpMode = useUiStore.use.cmpMode();
 
   return (
     <div className="flex flex-row gap-1 p-1">
@@ -67,26 +69,10 @@ export default function ButtonsBar() {
             {t('Greys')}
           </DropdownMenuItem>
           <DropdownMenuItem
-            className={
-              selectedPalette === 'cubehelix' ? 'border border-ring' : ''
-            }
-            onClick={() => setSelectedPalette('cubehelix')}
-          >
-            {t('Cubehelix')}
-          </DropdownMenuItem>
-          <DropdownMenuItem
             className={selectedPalette === 'turbo' ? 'border border-ring' : ''}
             onClick={() => setSelectedPalette('turbo')}
           >
             {t('Turbo')}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className={
-              selectedPalette === 'spectral' ? 'border border-ring' : ''
-            }
-            onClick={() => setSelectedPalette('spectral')}
-          >
-            {t('Spectral')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className={
@@ -95,6 +81,30 @@ export default function ButtonsBar() {
             onClick={() => setSelectedPalette('sinebow')}
           >
             {t('Sinebow')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'rainbow' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('rainbow')}
+          >
+            {t('Rainbow')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'cubehelix' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('cubehelix')}
+          >
+            {t('Cubehelix')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'spectral' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('spectral')}
+          >
+            {t('Spectral')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className={
@@ -116,10 +126,20 @@ export default function ButtonsBar() {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setSplitBscanMode(!splitBscanMode)}
+        onClick={() =>
+          setBScanMode(splitBscanMode ? BScanMode.none : BScanMode.split)
+        }
         className={splitBscanMode ? 'border-primary border-2' : ''}
       >
-        <SquareSplitHorizontalIcon className="w-4 h-4" />
+        <UnfoldHorizontalIcon className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setBScanMode(cmpMode ? BScanMode.none : BScanMode.cmp)}
+        className={cmpMode ? 'border-primary border-2' : ''}
+      >
+        <ArrowUpWideNarrowIcon className="w-4 h-4" />
       </Button>
     </div>
   );

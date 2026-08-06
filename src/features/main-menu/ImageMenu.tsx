@@ -39,14 +39,6 @@ export default function ImageMenu() {
               </MenubarItem>
               <MenubarItem
                 className={
-                  selectedPalette === 'cubehelix' ? 'border border-ring' : ''
-                }
-                onClick={() => setSelectedPalette('cubehelix')}
-              >
-                {t('Cubehelix')}
-              </MenubarItem>
-              <MenubarItem
-                className={
                   selectedPalette === 'turbo' ? 'border border-ring' : ''
                 }
                 onClick={() => setSelectedPalette('turbo')}
@@ -55,19 +47,35 @@ export default function ImageMenu() {
               </MenubarItem>
               <MenubarItem
                 className={
-                  selectedPalette === 'spectral' ? 'border border-ring' : ''
-                }
-                onClick={() => setSelectedPalette('spectral')}
-              >
-                {t('Spectral')}
-              </MenubarItem>
-              <MenubarItem
-                className={
                   selectedPalette === 'sinebow' ? 'border border-ring' : ''
                 }
                 onClick={() => setSelectedPalette('sinebow')}
               >
                 {t('Sinebow')}
+              </MenubarItem>
+              <MenubarItem
+                className={
+                  selectedPalette === 'rainbow' ? 'border border-ring' : ''
+                }
+                onClick={() => setSelectedPalette('rainbow')}
+              >
+                {t('Rainbow')}
+              </MenubarItem>
+              <MenubarItem
+                className={
+                  selectedPalette === 'cubehelix' ? 'border border-ring' : ''
+                }
+                onClick={() => setSelectedPalette('cubehelix')}
+              >
+                {t('Cubehelix')}
+              </MenubarItem>
+              <MenubarItem
+                className={
+                  selectedPalette === 'spectral' ? 'border border-ring' : ''
+                }
+                onClick={() => setSelectedPalette('spectral')}
+              >
+                {t('Spectral')}
               </MenubarItem>
               <MenubarItem
                 className={

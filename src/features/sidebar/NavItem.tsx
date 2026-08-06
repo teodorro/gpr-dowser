@@ -2,19 +2,30 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight } from "lucide-react";
+} from '@/components/ui/collapsible';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
 type Props = {
   icon: React.ReactNode;
   label: string;
   children: React.ReactNode;
+  disabled?: boolean;
+  expanded?: boolean;
 };
 
-export default function NavItem({ icon, label, children }: Props) {
+export default function NavItem({
+  icon,
+  label,
+  children,
+  disabled,
+  expanded,
+}: Props) {
   return (
-    <Collapsible>
-      <CollapsibleTrigger className="flex w-full items-center gap-3 px-3 py-2 hover:bg-accent rounded-md">
+    <Collapsible disabled={disabled} open={expanded}>
+      <CollapsibleTrigger
+        disabled={disabled}
+        className="flex w-full items-center gap-3 px-3 py-2 hover:bg-accent rounded-md disabled:pointer-events-none disabled:opacity-50"
+      >
         {icon}
         <span className="flex-1 text-left">{label}</span>
         {children ? (

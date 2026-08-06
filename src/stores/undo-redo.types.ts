@@ -5,6 +5,7 @@ export const OperationTypeList = {
   SplitBscan: 'split_bscan',
   SavitzkyGolay: 'savitzky_golay',
   GaussSmooth: 'gauss_smooth',
+  CmpAlignSignal: 'cmp_align_signal',
 } as const;
 
 export type OperationType =
@@ -38,6 +39,10 @@ export type Operation =
       type: typeof OperationTypeList.GaussSmooth;
       sigmaHorizontal: number;
       sigmaVertical: number;
+    }
+  | {
+      type: typeof OperationTypeList.CmpAlignSignal;
+      ampBreakpoint: number;
     };
 
 export type OperationHistory = {

@@ -13,9 +13,12 @@ import useFileRegistryStore from './stores/file-registry-store';
 import { loadDataFile } from './file-parsers/load-data-file';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import CmpSemblance from './features/cmp/CmpSemblance';
+import { useUiStore } from './stores/ui-store';
 
 function App() {
   const fileIds = useFileRegistryStore.use.fileIds();
+  const cmpMode = useUiStore.use.cmpMode();
 
   useEffect(() => {
     const loadExample = async () => {
@@ -56,6 +59,7 @@ function App() {
           {fileIds.length > 0 && <FileTabs />}
           <div className="flex flex-row flex-1 min-w-0 min-h-0 gap-2">
             <BScan />
+            {cmpMode && <CmpSemblance />}
             <AScan />
           </div>
           <StatusBar />

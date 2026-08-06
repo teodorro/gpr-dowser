@@ -10,7 +10,7 @@ import {
   RedoIcon,
   UndoIcon,
 } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import subtractMean from '../processing/statistical-processing/subtract-avg/subtract-mean';
@@ -21,6 +21,7 @@ import { splitBscan } from '@/features/b-scan/splitBscan';
 import { savGolayFilter } from '../processing/statistical-processing/savitzky-golay/sav-golay-filter';
 import Grid2D from '@/shared/grid2d';
 import { gaussianSmooth } from '../processing/gauss-smooth/gaussian-smooth';
+import { alignSignal } from '../сmp/align-signal';
 
 export default function UndoRedo() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -44,6 +45,8 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
 
   const bScanInitial = useStore(store, (state) => state.bScanInitial);
   const setBScan = useStore(store, (state) => state.setBScan);
+
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const replayTo = (target: number) => {
     let bScan = bScanInitial.clone();
@@ -88,6 +91,9 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
             operation.sigmaVertical,
           );
           break;
+        case OperationTypeList.CmpAlignSignal:
+          bScan = alignSignal(bScan, operation.ampBreakpoint);
+          break;
         default:
           unreachable(operation);
       }
@@ -106,6 +112,12 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
     redo();
     setBScan(bScan);
   };
+
+  useEffect(() => {
+    if (viewportRef.current) {
+      viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
+    }
+  }, [history.size, position]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -130,7 +142,10 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
           <ClipboardPasteIcon className="w-4 h-4" />
         </Button>
       </div>
-      <ScrollArea className="max-h-48 w-full rounded-md border">
+      <ScrollArea
+        viewportRef={viewportRef}
+        className="max-h-48 w-full rounded-md border"
+      >
         <div className="p-4">
           {[...history.entries()].map(([key, operation]) => (
             <React.Fragment key={key}>
