@@ -1,7 +1,7 @@
 import { VELOCITY_LIGHT, VELOCITY_WATER } from '@/shared/gpr-math';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
-import { useUiStore } from '@/stores/ui-store';
+import useVisualStore from '@/stores/visual-store';
 import * as d3 from 'd3';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
@@ -33,7 +33,12 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
   const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
   const dt = useStore(store, (s) => s.dt);
 
-  const cmpSemblanceLinesColor = useUiStore.use.cmpSemblanceLinesColor();
+  const cmpSemblanceLinesColor = useVisualStore.use.cmpSemblanceLinesColor();
+
+  const dv = useMemo(
+    () => (VELOCITY_LIGHT - VELOCITY_WATER) / cmpData.cols,
+    [cmpData.cols],
+  );
 
   const vToWx = useMemo(
     () =>
@@ -59,13 +64,13 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
 
   const velocityToX = useCallback(
     (velocity: number) =>
-      vToWx(getVelocityInRange(velocity)) * cmpScale + cmpShiftX,
-    [cmpScale, cmpShiftX, vToWx],
+      vToWx(getVelocityInRange(velocity + dv / 2)) * cmpScale + cmpShiftX,
+    [cmpScale, cmpShiftX, vToWx, dv],
   );
 
   const timeToY = useCallback(
-    (time: number) => tToWy(time) * cmpScale + cmpShiftY,
-    [cmpScale, cmpShiftY, tToWy],
+    (time: number) => tToWy(time + dt / 2) * cmpScale + cmpShiftY,
+    [cmpScale, cmpShiftY, tToWy, dt],
   );
 
   const pathLineGenerator = useMemo(() => {

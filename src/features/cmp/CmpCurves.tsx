@@ -1,7 +1,7 @@
 import { getCmpLinePoint } from '@/shared/gpr-math';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
-import { useUiStore } from '@/stores/ui-store';
+import useVisualStore from '@/stores/visual-store';
 import * as d3 from 'd3';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
@@ -34,7 +34,7 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
   const dx = useStore(store, (s) => s.dx);
   const bScan = useStore(store, (s) => s.bScan);
 
-  const cmpBScanLinesColor = useUiStore.use.cmpBScanLinesColor();
+  const cmpBScanLinesColor = useVisualStore.use.cmpBScanLinesColor();
 
   const setContainer = useCallback((node: HTMLDivElement | null) => {
     roRef.current?.disconnect();

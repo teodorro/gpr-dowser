@@ -26,10 +26,10 @@ export default function SetToZero({ store }: { store: DataStore }) {
 
   const [open, setOpen] = useState(false);
 
-  const [zeroBreakpoint, setZeroBreakpoint] = useState<number>(0);
+  const [zeroBreakpoint, setZeroBreakpoint] = useState<number>(5);
 
   const [internalZeroBreakpoint, setInternalZeroBreakpoint] =
-    useState<string>('0');
+    useState<string>('5');
 
   const onOpenChange = (openState: boolean) => {
     setOpen(openState);
@@ -67,7 +67,7 @@ export default function SetToZero({ store }: { store: DataStore }) {
   };
 
   return (
-    <div className="flex flex-row items-center">
+    <div className="flex flex-row items-center my-1 ">
       <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>
           <Button
@@ -80,16 +80,15 @@ export default function SetToZero({ store }: { store: DataStore }) {
           </Button>
         </PopoverTrigger>
         <PopoverContent>
-          <div className="flex flex-row items-center">
-            <FieldLabel
-              className="shrink-0 w-24 ml-2"
-              htmlFor="zero-breakpoint"
-            >
+          <div className="flex flex-1 flex-row items-center">
+            <FieldLabel className="flex-1 ml-2" htmlFor="zero-breakpoint">
               {t('ZeroBreakpoint')}
             </FieldLabel>
             <Input
               id="zero-breakpoint"
               type="number"
+              min="0"
+              max={bScan.cols}
               step="1"
               value={internalZeroBreakpoint}
               onChange={(e) => {
@@ -104,8 +103,8 @@ export default function SetToZero({ store }: { store: DataStore }) {
           </Button>
         </PopoverContent>
       </Popover>
-      <FieldLabel className="shrink-0 w-24 ml-2" htmlFor="set-to-zero">
-        {t('SetToZero')}
+      <FieldLabel className="flex-1 w-24 ml-2" htmlFor="set-to-zero">
+        {t('SetToZeroLeftAScans')}
       </FieldLabel>
     </div>
   );

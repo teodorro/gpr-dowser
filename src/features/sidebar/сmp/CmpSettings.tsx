@@ -6,6 +6,7 @@ import { useStore } from 'zustand';
 import CmpSemblanceLinesColor from './CmpSemblanceLinesColor';
 import CmpBscanLinesColor from './CmpBscanLinesColor';
 import LeftAScansToZero from './left-ascans-to-zero/LeftAScansToZero';
+import DeltaToUpdateLayer from './DeltaToUpdateLayer';
 
 export default function CmpSettings() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -26,6 +27,7 @@ function CmpSettingsInternal({ store }: { store: DataStore }) {
     <div>
       <SignalAligner store={store} />
       <LeftAScansToZero store={store} />
+      <DeltaToUpdateLayer />
       <CmpSemblanceLinesColor />
       <CmpBscanLinesColor />
       {cmpLayers.layers.length > 0 && <CmpLayers />}

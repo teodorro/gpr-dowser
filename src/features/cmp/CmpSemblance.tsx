@@ -51,7 +51,10 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const dx = useStore(store, (s) => s.dx);
   const dt = useStore(store, (s) => s.dt);
   const addCmpLayer = useStore(store, (s) => s.addCmpLayer);
+  const removeCmpLayer = useStore(store, (s) => s.removeCmpLayer);
+  const cmpLayers = useStore(store, (s) => s.cmpLayers);
 
+  const deltaToUpdateLayer = useVisualStore.use.deltaToUpdateLayer();
   const selectedPalette = useVisualStore.use.selectedPalette();
 
   const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
@@ -348,6 +351,13 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
         (col * (VELOCITY_LIGHT - VELOCITY_WATER)) / bScan.cols + VELOCITY_WATER;
       const time = row * dt - indexTimeZero * dt;
 
+      const layers = cmpLayers.layers.filter(
+        (layer) =>
+          layer.time >= time - deltaToUpdateLayer &&
+          layer.time <= time + deltaToUpdateLayer,
+      );
+      console.log(cmpLayers.layers);
+      layers.forEach((layer) => removeCmpLayer(layer.id));
       addCmpLayer(time, avgVelocity);
     };
 
@@ -412,6 +422,9 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     dx,
     addCmpLayer,
     flushPan,
+    cmpLayers,
+    deltaToUpdateLayer,
+    removeCmpLayer,
   ]);
 
   useEffect(() => {

@@ -104,7 +104,7 @@ export default function SignalAligner({ store }: { store: DataStore }) {
           </Button>
         </PopoverContent>
       </Popover>
-      <FieldLabel className="shrink-0 w-24 ml-2" htmlFor="align-signal">
+      <FieldLabel className="flex-1 w-24 ml-2" htmlFor="align-signal">
         {t('AlignSignal')}
       </FieldLabel>
     </div>

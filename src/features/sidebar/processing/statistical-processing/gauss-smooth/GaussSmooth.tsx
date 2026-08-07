@@ -61,7 +61,7 @@ function GaussSmoothInternal({ store }: { store: DataStore }) {
           <FieldLabel className="shrink-0 ml-2">{t('GaussSmooth')}</FieldLabel>
         </div>
         <div className="flex flex-row items-center">
-          <FieldLabel className="shrink-0 w-32 ml-2">
+          <FieldLabel className="shrink-0 w-28 ml-2">
             {t('SigmaHorizontal')}
           </FieldLabel>
           <div className="flex flex-col gap-2 mx-1">
@@ -82,7 +82,7 @@ function GaussSmoothInternal({ store }: { store: DataStore }) {
           </div>
         </div>
         <div className="flex flex-row items-center">
-          <FieldLabel className="shrink-0 w-32 ml-2">
+          <FieldLabel className="shrink-0 w-28 ml-2">
             {t('SigmaVertical')}
           </FieldLabel>
           <div className="flex flex-col gap-2 mx-1">
