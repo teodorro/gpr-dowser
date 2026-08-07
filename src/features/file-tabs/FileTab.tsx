@@ -1,6 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { CMP_COLUMNS_BREAKPOINT } from '@/shared/constants';
+import { dataSliceStores } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
+import { BScanMode, useUiStore } from '@/stores/ui-store';
 import { XIcon } from 'lucide-react';
 
 type Props = {
@@ -11,6 +14,10 @@ type Props = {
 export default function FileTab({ id, label }: Props) {
   const closeTab = useFileRegistryStore.use.removeFile();
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
+
+  const setBScanMode = useUiStore.use.setBScanMode();
+  const cmpMode = useUiStore.use.cmpMode();
+
   const isSelected = id === selectedFileId;
 
   const getShortLabel = (label: string, maxLength: number) => {
@@ -30,6 +37,13 @@ export default function FileTab({ id, label }: Props) {
         variant="ghost"
         className="border-0"
         onClick={() => {
+          if (cmpMode) {
+            const bScanCols =
+              dataSliceStores.get(id)?.getState().bScan.cols ?? 0;
+            if (bScanCols > CMP_COLUMNS_BREAKPOINT) {
+              setBScanMode(BScanMode.none);
+            }
+          }
           selectFile(id);
         }}
       >
