@@ -76,14 +76,6 @@ export default function ButtonsBar() {
           </DropdownMenuItem>
           <DropdownMenuItem
             className={
-              selectedPalette === 'sinebow' ? 'border border-ring' : ''
-            }
-            onClick={() => setSelectedPalette('sinebow')}
-          >
-            {t('Sinebow')}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className={
               selectedPalette === 'rainbow' ? 'border border-ring' : ''
             }
             onClick={() => setSelectedPalette('rainbow')}
@@ -92,11 +84,11 @@ export default function ButtonsBar() {
           </DropdownMenuItem>
           <DropdownMenuItem
             className={
-              selectedPalette === 'cubehelix' ? 'border border-ring' : ''
+              selectedPalette === 'sinebow' ? 'border border-ring' : ''
             }
-            onClick={() => setSelectedPalette('cubehelix')}
+            onClick={() => setSelectedPalette('sinebow')}
           >
-            {t('Cubehelix')}
+            {t('Sinebow')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className={
@@ -119,6 +111,14 @@ export default function ButtonsBar() {
             onClick={() => setSelectedPalette('magma')}
           >
             {t('Magma')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={
+              selectedPalette === 'cubehelix' ? 'border border-ring' : ''
+            }
+            onClick={() => setSelectedPalette('cubehelix')}
+          >
+            {t('Cubehelix')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

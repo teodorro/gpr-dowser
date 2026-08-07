@@ -18,7 +18,18 @@ export const getPalette = (palette: string | undefined): Uint8ClampedArray => {
     case 'sinebow':
       return makeLut256(getSinebowPalette());
     case 'rainbow':
-      return makeLut256(getRainbowPalette());
+      return makeLut256(
+        d3.interpolateRgbBasis([
+          '#000000',
+          '#8f00ff',
+          '#4b0082',
+          '#0000ff',
+          '#00ff00',
+          '#ffff00',
+          '#ff7f00',
+          '#ff0000',
+        ]),
+      );
     default:
       return makeLut256(d3.interpolateGreys);
   }
@@ -54,7 +65,16 @@ export const getPaletteRaw = (palette: string): ((t: number) => string) => {
     case 'sinebow':
       return getSinebowPalette();
     case 'rainbow':
-      return getRainbowPalette();
+      return d3.interpolateRgbBasis([
+        '#000000',
+        '#8f00ff',
+        '#4b0082',
+        '#0000ff',
+        '#00ff00',
+        '#ffff00',
+        '#ff7f00',
+        '#ff0000',
+      ]);
     default:
       return d3.interpolateGreys;
   }
@@ -66,17 +86,6 @@ const getSinebowPalette = (): ((t: number) => string) => {
   const tail = d3.quantize(d3.interpolateRgb('purple', 'black'), 5);
   colors.splice(n - 5, 5, ...tail);
   const head = d3.quantize(d3.interpolateRgb('red', 'lightgreen'), 5);
-  colors.splice(0, 5, ...head);
-  const custom = d3.interpolateRgbBasis(colors);
-  return (t) => custom(1 - t);
-};
-
-const getRainbowPalette = (): ((t: number) => string) => {
-  const n = 16;
-  const colors = d3.quantize(d3.interpolateRainbow, n);
-  // const tail = d3.quantize(d3.interpolateRgb('purple', 'black'), 5);
-  // colors.splice(n - 5, 5, ...tail);
-  const head = d3.quantize(d3.interpolateRgb('black', '#DA588D'), 5);
   colors.splice(0, 5, ...head);
   const custom = d3.interpolateRgbBasis(colors);
   return (t) => custom(1 - t);
