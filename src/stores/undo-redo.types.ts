@@ -6,6 +6,7 @@ export const OperationTypeList = {
   SavitzkyGolay: 'savitzky_golay',
   GaussSmooth: 'gauss_smooth',
   CmpAlignSignal: 'cmp_align_signal',
+  SetLeftAScansToZero: 'set_left_ascans_to_zero',
 } as const;
 
 export type OperationType =
@@ -43,6 +44,10 @@ export type Operation =
   | {
       type: typeof OperationTypeList.CmpAlignSignal;
       ampBreakpoint: number;
+    }
+  | {
+      type: typeof OperationTypeList.SetLeftAScansToZero;
+      zeroBreakpoint: number;
     };
 
 export type OperationHistory = {

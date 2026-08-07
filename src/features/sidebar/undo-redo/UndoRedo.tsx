@@ -20,8 +20,9 @@ import { unreachable } from '@/shared/unreachable';
 import { splitBscan } from '@/features/b-scan/splitBscan';
 import { savGolayFilter } from '../processing/statistical-processing/savitzky-golay/sav-golay-filter';
 import Grid2D from '@/shared/grid2d';
-import { gaussianSmooth } from '../processing/gauss-smooth/gaussian-smooth';
-import { alignSignal } from '../сmp/align-signal';
+import { gaussianSmooth } from '../processing/statistical-processing/gauss-smooth/gaussian-smooth';
+import { alignSignal } from '../сmp/signal-aligner/align-signal';
+import { setLeftAScansToZero } from '../сmp/left-ascans-to-zero/set-left-ascans-to-zero';
 
 export default function UndoRedo() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -93,6 +94,9 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
           break;
         case OperationTypeList.CmpAlignSignal:
           bScan = alignSignal(bScan, operation.ampBreakpoint);
+          break;
+        case OperationTypeList.SetLeftAScansToZero:
+          bScan = setLeftAScansToZero(bScan, operation.zeroBreakpoint);
           break;
         default:
           unreachable(operation);

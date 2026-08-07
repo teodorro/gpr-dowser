@@ -2,7 +2,7 @@ import { Separator } from '@/components/ui/separator';
 import DewowInput from './statistical-processing/dewow/DewowInput';
 import SavitzkyGolay from './statistical-processing/savitzky-golay/SavitzkyGolay';
 import SubtractAvg from './statistical-processing/subtract-avg/SubtractAvg';
-import GaussSmooth from './gauss-smooth/GaussSmooth';
+import GaussSmooth from './statistical-processing/gauss-smooth/GaussSmooth';
 
 export default function Processing() {
   return (

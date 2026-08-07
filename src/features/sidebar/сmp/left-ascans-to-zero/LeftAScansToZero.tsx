@@ -7,17 +7,17 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import Grid2D from '@/shared/grid2d';
+import { type DataStore } from '@/stores/data-slice-stores';
 import { useUiStore } from '@/stores/ui-store';
-import { SaveIcon, SignpostIcon } from 'lucide-react';
+import { RectangleVerticalIcon, SaveIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
-import { alignSignal } from './align-signal';
-import type { DataStore } from '@/stores/data-slice-stores';
+import { setLeftAScansToZero } from './set-left-ascans-to-zero';
 
-export default function SignalAligner({ store }: { store: DataStore }) {
-  const cmpMode = useUiStore.use.cmpMode();
+export default function SetToZero({ store }: { store: DataStore }) {
   const { t } = useTranslation();
+  const cmpMode = useUiStore.use.cmpMode();
 
   const initialBScan = useRef<Grid2D | null>(null);
   const bScan = useStore(store, (state) => state.bScan);
@@ -26,32 +26,33 @@ export default function SignalAligner({ store }: { store: DataStore }) {
 
   const [open, setOpen] = useState(false);
 
-  const [ampBreakpoint, setAmpBreakpoint] = useState<number>(0);
+  const [zeroBreakpoint, setZeroBreakpoint] = useState<number>(0);
 
-  const [internalAmpBreakpoint, setInternalAmpBreakpoint] =
+  const [internalZeroBreakpoint, setInternalZeroBreakpoint] =
     useState<string>('0');
 
   const onOpenChange = (openState: boolean) => {
     setOpen(openState);
     if (openState) {
       initialBScan.current = bScan.clone();
+      onZeroBreakpointChange(internalZeroBreakpoint);
     } else {
       setBScan(initialBScan.current ?? new Grid2D(0, 0, []));
-      setInternalAmpBreakpoint('0');
+      setInternalZeroBreakpoint('0');
     }
   };
 
-  const onAmpBreakpointChange = (value: string) => {
+  const onZeroBreakpointChange = (value: string) => {
     if (value === '') {
-      setInternalAmpBreakpoint('');
+      setInternalZeroBreakpoint('');
       return;
     }
     const nextValue = Number(value);
     if (Number.isFinite(nextValue)) {
-      setInternalAmpBreakpoint(value);
-      setAmpBreakpoint(nextValue);
+      setInternalZeroBreakpoint(value);
+      setZeroBreakpoint(nextValue);
       setBScan(
-        alignSignal(
+        setLeftAScansToZero(
           initialBScan.current?.clone() ?? new Grid2D(0, 0, []),
           nextValue,
         ),
@@ -61,8 +62,8 @@ export default function SignalAligner({ store }: { store: DataStore }) {
 
   const onSaveBscan = () => {
     setOpen(false);
-    addOperation({ type: 'cmp_align_signal', ampBreakpoint });
-    setInternalAmpBreakpoint('0');
+    addOperation({ type: 'set_left_ascans_to_zero', zeroBreakpoint });
+    setInternalZeroBreakpoint('0');
   };
 
   return (
@@ -75,25 +76,25 @@ export default function SignalAligner({ store }: { store: DataStore }) {
             disabled={!cmpMode}
             className="shrink-0"
           >
-            <SignpostIcon />
+            <RectangleVerticalIcon />
           </Button>
         </PopoverTrigger>
         <PopoverContent>
           <div className="flex flex-row items-center">
             <FieldLabel
               className="shrink-0 w-24 ml-2"
-              htmlFor="amplitude-breakpoint"
+              htmlFor="zero-breakpoint"
             >
-              {t('AmplitudeBreakpoint')}
+              {t('ZeroBreakpoint')}
             </FieldLabel>
             <Input
-              id="time-step"
+              id="zero-breakpoint"
               type="number"
               step="1"
-              value={internalAmpBreakpoint}
+              value={internalZeroBreakpoint}
               onChange={(e) => {
                 const v = e.target.value;
-                onAmpBreakpointChange(v);
+                onZeroBreakpointChange(v);
               }}
               className="flex-1 max-w-24"
             />
@@ -103,8 +104,8 @@ export default function SignalAligner({ store }: { store: DataStore }) {
           </Button>
         </PopoverContent>
       </Popover>
-      <FieldLabel className="shrink-0 w-24 ml-2" htmlFor="align-signal">
-        {t('AlignSignal')}
+      <FieldLabel className="shrink-0 w-24 ml-2" htmlFor="set-to-zero">
+        {t('SetToZero')}
       </FieldLabel>
     </div>
   );
