@@ -11,6 +11,7 @@ import useFileRegistryStore from '@/stores/file-registry-store';
 import { readGeoFile } from './read-geo-file';
 import i18n from '@/i18n';
 import { logTransform } from '@/shared/log-transform';
+import { BScanMode, useUiStore } from '@/stores/ui-store';
 
 type FileExtension = 'txt' | 'geo' | 'gem';
 
@@ -42,6 +43,7 @@ const loadTxtFile = async (file: File) => {
     }
     const raw = await file.text();
     const data = readKrotTxtFile(raw);
+    useUiStore.getState().setBScanMode(BScanMode.none);
     const id = crypto.randomUUID();
     dataSliceStores.set(
       id,
@@ -76,6 +78,7 @@ const loadGemFile = async (file: File) => {
     const buffer = reader.result as ArrayBuffer;
     const uint8 = new Uint8Array(buffer);
     const data = readGemFile(uint8);
+    useUiStore.getState().setBScanMode(BScanMode.none);
     const id = crypto.randomUUID();
     dataSliceStores.set(
       id,
@@ -115,6 +118,7 @@ const loadGeoFile = async (file: File) => {
     const buffer = reader.result as ArrayBuffer;
     const uint8 = new Uint8Array(buffer);
     const data = readGeoFile(uint8);
+    useUiStore.getState().setBScanMode(BScanMode.none);
     const id = crypto.randomUUID();
     dataSliceStores.set(
       id,

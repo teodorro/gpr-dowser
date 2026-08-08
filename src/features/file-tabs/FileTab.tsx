@@ -54,6 +54,9 @@ export default function FileTab({ id, label }: Props) {
         className="border-0"
         size="icon"
         onClick={() => {
+          if (cmpMode) {
+            setBScanMode(BScanMode.none);
+          }
           closeTab(id);
         }}
       >
