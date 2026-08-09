@@ -20,7 +20,7 @@ const Sidebar = () => {
   if (!sideBarVisible) return null;
 
   return (
-    <div className="flex flex-col min-h-0 w-sm shrink-0 rounded-lg border border-border bg-sidebar text-sidebar-foreground">
+    <div className="flex flex-col min-h-0 w-sm shrink-0 rounded-l-lg border border-border bg-sidebar text-sidebar-foreground">
       <nav className="flex flex-col flex-1 gap-1 p-2 overflow-y-auto">
         <NavItem
           icon={<RulerDimensionLineIcon />}
