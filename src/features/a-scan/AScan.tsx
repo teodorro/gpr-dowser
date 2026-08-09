@@ -23,7 +23,7 @@ export default function AScan() {
   if (!aScanVisible || !store) return null;
 
   return (
-    <div className="flex flex-col w-[14rem] shrink-0">
+    <div className="flex flex-col flex-1 min-h-0 min-w-0">
       <AScanInternal store={store} />
     </div>
   );
@@ -51,7 +51,7 @@ const AScanInternal = ({ store }: { store: DataStore }) => {
   return (
     <div
       ref={setContainer}
-      className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-scan text-scan-foreground shadow-sm"
+      className="flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-scan text-scan-foreground shadow-sm"
     >
       <AScanChart
         displayBuffer={displayBuffer}

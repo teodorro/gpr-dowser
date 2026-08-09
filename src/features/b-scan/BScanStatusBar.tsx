@@ -3,7 +3,7 @@ import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { useStore } from 'zustand';
 
-export default function StatusBar() {
+export default function BScanStatusBar() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const store = selectedFileId
     ? dataSliceStores.get(selectedFileId)
@@ -15,12 +15,12 @@ export default function StatusBar() {
 
   return (
     <div>
-      <StatusBarInternal store={store} />
+      <BScanStatusBarInternal store={store} />
     </div>
   );
 }
 
-function StatusBarInternal({ store }: { store: DataStore }) {
+function BScanStatusBarInternal({ store }: { store: DataStore }) {
   const indexX = useStore(store, (s) => s.indexX);
   const indexY = useStore(store, (s) => s.indexY);
   const dx = useStore(store, (s) => s.dx);
@@ -36,7 +36,7 @@ function StatusBarInternal({ store }: { store: DataStore }) {
       : undefined;
 
   return (
-    <div className="flex flex-row gap-3 p-1 min-h-8">
+    <div className="flex flex-row gap-2 px-1 min-h-6">
       {x !== undefined && (
         <div className="w-16">
           <TypographySmall>

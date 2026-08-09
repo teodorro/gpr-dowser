@@ -356,7 +356,6 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
           layer.time >= time - deltaToUpdateLayer &&
           layer.time <= time + deltaToUpdateLayer,
       );
-      console.log(cmpLayers.layers);
       layers.forEach((layer) => removeCmpLayer(layer.id));
       addCmpLayer(time, avgVelocity);
     };

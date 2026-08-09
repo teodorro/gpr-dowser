@@ -127,7 +127,6 @@ export const createDataSliceStore = (
       set((state) => {
         const cmpLayers = state.cmpLayers.clone();
         cmpLayers.addLayer(time, rmsVelocity);
-        console.log(cmpLayers.layers);
         return { cmpLayers };
       }),
     removeCmpLayer: (id) =>

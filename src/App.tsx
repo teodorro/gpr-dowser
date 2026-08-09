@@ -3,8 +3,8 @@ import MainMenu from './features/main-menu/MainMenu';
 import FileTabs from './features/file-tabs/FileTabs';
 import Sidebar from './features/sidebar/Sidebar';
 import ButtonsBar from './features/buttons-bar/ButtonsBar';
-import StatusBar from './features/StatusBar';
-import AScan from './features/AScan';
+import BScanStatusBar from './features/b-scan/BScanStatusBar';
+import AScan from './features/a-scan/AScan';
 import BScan from './features/b-scan/BScan';
 import SettingsButtonsBar from './features/settings-buttons-bar/SettingsButtonsBar';
 import { Toaster } from '@/components/ui/sonner';
@@ -15,10 +15,12 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import CmpSemblance from './features/cmp/CmpSemblance';
 import { useUiStore } from './stores/ui-store';
+import AScanToolbar from './features/a-scan/AScanToolbar';
 
 function App() {
   const fileIds = useFileRegistryStore.use.fileIds();
   const cmpMode = useUiStore.use.cmpMode();
+  const aScanVisible = useUiStore.use.aScanVisible();
 
   useEffect(() => {
     const loadExample = async () => {
@@ -58,11 +60,18 @@ function App() {
           <ButtonsBar />
           {fileIds.length > 0 && <FileTabs />}
           <div className="flex flex-row flex-1 min-w-0 min-h-0 gap-2">
-            <BScan />
+            <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-1">
+              <BScan />
+              <BScanStatusBar />
+            </div>
             {cmpMode && <CmpSemblance />}
-            <AScan />
+            {aScanVisible && (
+              <div className="relative flex flex-col w-[14rem] shrink-0 min-h-0 gap-1">
+                <AScan />
+                <AScanToolbar />
+              </div>
+            )}
           </div>
-          <StatusBar />
         </div>
       </div>
     </div>
