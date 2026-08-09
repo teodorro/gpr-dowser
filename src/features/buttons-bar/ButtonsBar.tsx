@@ -16,16 +16,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTranslation } from 'react-i18next';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/ui/tooltip';
 
 export default function ButtonsBar() {
   const { t } = useTranslation();
-  const { sideBarVisible, setSideBarVisible, aScanVisible, setAScanVisible } =
-    useUiStore();
+  const {
+    aScanVisible,
+    cmpMode,
+    sideBarVisible,
+    splitBScanMode,
+    setAScanVisible,
+    setBScanMode,
+    setSideBarVisible,
+  } = useUiStore();
   const selectedPalette = useVisualStore.use.selectedPalette();
   const setSelectedPalette = useVisualStore.use.setSelectedPalette();
-  const splitBscanMode = useUiStore.use.splitBScanMode();
-  const setBScanMode = useUiStore.use.setBScanMode();
-  const cmpMode = useUiStore.use.cmpMode();
 
   return (
     <div className="flex flex-row gap-1 p-1">
@@ -33,34 +42,64 @@ export default function ButtonsBar() {
         className="flex flex-row gap-1"
         onClick={() => document.getElementById('file-input')?.click()}
       >
-        <Button variant="ghost" size="icon">
-          <FolderOpenIcon className="w-4 h-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <FolderOpenIcon className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t('OpenFile')}</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setSideBarVisible(!sideBarVisible)}
-      >
-        <PanelLeftIcon className="w-4 h-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setAScanVisible(!aScanVisible)}
-      >
-        <PanelRightIcon className="w-4 h-4" />
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setSelectedPalette('greys')}
+            onClick={() => setSideBarVisible(!sideBarVisible)}
           >
-            <PaletteIcon className="w-4 h-4" />
+            <PanelLeftIcon className="w-4 h-4" />
           </Button>
-        </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{sideBarVisible ? t('HideSideBar') : t('ShowSideBar')}</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setAScanVisible(!aScanVisible)}
+          >
+            <PanelRightIcon className="w-4 h-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{aScanVisible ? t('HideAScan') : t('ShowAScan')}</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <DropdownMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSelectedPalette('greys')}
+              >
+                <PaletteIcon className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t('Palette')}</p>
+          </TooltipContent>
+        </Tooltip>
         <DropdownMenuContent>
           <DropdownMenuItem
             className={selectedPalette === 'greys' ? 'border border-ring' : ''}
@@ -123,24 +162,41 @@ export default function ButtonsBar() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() =>
-          setBScanMode(splitBscanMode ? BScanMode.none : BScanMode.split)
-        }
-        className={splitBscanMode ? 'border-primary border-2' : ''}
-      >
-        <UnfoldHorizontalIcon className="w-4 h-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setBScanMode(cmpMode ? BScanMode.none : BScanMode.cmp)}
-        className={cmpMode ? 'border-primary border-2' : ''}
-      >
-        <ArrowUpWideNarrowIcon className="w-4 h-4" />
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              setBScanMode(splitBScanMode ? BScanMode.none : BScanMode.split)
+            }
+            className={splitBScanMode ? 'border-primary border-2' : ''}
+          >
+            <UnfoldHorizontalIcon className="w-4 h-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t('SplitBScanMode')}</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              setBScanMode(cmpMode ? BScanMode.none : BScanMode.cmp)
+            }
+            className={cmpMode ? 'border-primary border-2' : ''}
+          >
+            <ArrowUpWideNarrowIcon className="w-4 h-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t('CmpMode')}</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }

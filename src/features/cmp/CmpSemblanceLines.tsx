@@ -2,6 +2,7 @@ import { VELOCITY_LIGHT, VELOCITY_WATER } from '@/shared/gpr-math';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import useVisualStore from '@/stores/visual-store';
+import clamp from '@/visual/clamp';
 import * as d3 from 'd3';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
@@ -33,11 +34,29 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
   const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
   const dt = useStore(store, (s) => s.dt);
 
+  const cmpTransparency = useVisualStore.use.cmpTransparency();
   const cmpSemblanceLinesColor = useVisualStore.use.cmpSemblanceLinesColor();
 
   const dv = useMemo(
     () => (VELOCITY_LIGHT - VELOCITY_WATER) / cmpData.cols,
     [cmpData.cols],
+  );
+
+  const wyMin = useMemo(
+    () => clamp((0 - cmpShiftY) / cmpScale, 0, cmpData.rows),
+    [cmpData.rows, cmpScale, cmpShiftY],
+  );
+  const wyMax = useMemo(
+    () => clamp((size.height - cmpShiftY) / cmpScale, 0, cmpData.rows),
+    [cmpData.rows, cmpScale, cmpShiftY, size.height],
+  );
+  const wxMin = useMemo(
+    () => clamp((0 - cmpShiftX) / cmpScale, 0, cmpData.cols),
+    [cmpData.cols, cmpScale, cmpShiftX],
+  );
+  const wxMax = useMemo(
+    () => clamp((size.width - cmpShiftX) / cmpScale, 0, cmpData.cols),
+    [cmpData.cols, cmpScale, cmpShiftX, size.width],
   );
 
   const vToWx = useMemo(
@@ -106,6 +125,13 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
         <clipPath id="cmp-chart">
           <rect x={0} y={0} width={size.width} height={size.height} />
         </clipPath>
+        <rect
+          x={wxMin * cmpScale + cmpShiftX}
+          y={wyMin * cmpScale + cmpShiftY}
+          width={(wxMax - wxMin) * cmpScale}
+          height={(wyMax - wyMin) * cmpScale}
+          fill={`rgba(255, 255, 255, ${cmpTransparency})`}
+        />
         {cmpLayers.layers.length > 0 && (
           <path
             d={

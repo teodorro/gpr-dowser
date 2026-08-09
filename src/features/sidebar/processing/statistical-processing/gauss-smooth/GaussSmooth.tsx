@@ -29,8 +29,8 @@ function GaussSmoothInternal({ store }: { store: DataStore }) {
   const setBScan = useStore(store, (state) => state.setBScan);
   const addOperation = useStore(store, (state) => state.addOperation);
 
-  const [sigmaHorizontal, setSigmaHorizontal] = useState(0.6);
-  const [sigmaVertical, setSigmaVertical] = useState(0.6);
+  const [sigmaHorizontal, setSigmaHorizontal] = useState(0.5);
+  const [sigmaVertical, setSigmaVertical] = useState(0.5);
 
   const handleGaussSmoothSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

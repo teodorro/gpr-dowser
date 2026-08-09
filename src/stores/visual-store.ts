@@ -8,6 +8,8 @@ type VisualState = {
   cmpSemblanceLinesColor: string;
   cmpBScanLinesColor: string;
   deltaToUpdateLayer: number;
+  bScanCmpTransparency: number;
+  cmpTransparency: number;
 };
 
 type VisualActions = {
@@ -15,15 +17,19 @@ type VisualActions = {
   setCmpSemblanceLinesColor: (color: string) => void;
   setCmpBScanLinesColor: (color: string) => void;
   setDeltaToUpdateLayer: (delta: number) => void;
+  setBScanCmpTransparency: (transparency: number) => void;
+  setCmpTransparency: (transparency: number) => void;
 };
 
 type VisualStore = VisualState & VisualActions;
 
 const INITIAL_STATE: VisualState = {
   selectedPalette: 'greys',
-  cmpSemblanceLinesColor: '#888888',
+  cmpSemblanceLinesColor: '#000',
   cmpBScanLinesColor: '#ffff00',
   deltaToUpdateLayer: DEFAULT_DELTA_TO_UPDATE_LAYER,
+  bScanCmpTransparency: 0.0,
+  cmpTransparency: 0.33,
 };
 
 const useVisualBase = create<VisualStore>((set) => ({
@@ -32,6 +38,10 @@ const useVisualBase = create<VisualStore>((set) => ({
   setCmpSemblanceLinesColor: (color) => set({ cmpSemblanceLinesColor: color }),
   setCmpBScanLinesColor: (color) => set({ cmpBScanLinesColor: color }),
   setDeltaToUpdateLayer: (delta) => set({ deltaToUpdateLayer: delta }),
+  setBScanCmpTransparency: (transparency: number) =>
+    set({ bScanCmpTransparency: transparency }),
+  setCmpTransparency: (transparency: number) =>
+    set({ cmpTransparency: transparency }),
 }));
 
 const useVisualStore = createSelectors(useVisualBase);

@@ -4,6 +4,7 @@ import {
   ArrowUpWideNarrowIcon,
   RecycleIcon,
   RulerDimensionLineIcon,
+  WallpaperIcon,
 } from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import UnitsMeasurement from './units-of-measurement/UnitsMeasurement';
@@ -11,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import Processing from './processing/Processing';
 import UndoRedo from './undo-redo/UndoRedo';
 import CmpSettings from './сmp/CmpSettings';
+import VisualSettings from './visual/VisualSettings';
 
 const Sidebar = () => {
   const { sideBarVisible } = useUiStore();
@@ -35,6 +37,15 @@ const Sidebar = () => {
 
         <NavItem icon={<RecycleIcon />} label={t('UndoRedo')}>
           <UndoRedo />
+        </NavItem>
+
+        <NavItem
+          icon={<WallpaperIcon />}
+          label={t('VisualSettings')}
+          disabled={!cmpMode}
+          expanded={cmpMode}
+        >
+          <VisualSettings />
         </NavItem>
 
         <NavItem

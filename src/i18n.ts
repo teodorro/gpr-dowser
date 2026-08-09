@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 i18n
   .use(initReactI18next) // wires i18next into React
   .init({
-    lng: 'en', // default language
+    lng: 'ru', // default language
     fallbackLng: 'en', // if a key is missing in current lang, fall back here
     resources: {
       en: {
@@ -90,6 +90,11 @@ i18n
           InfinityValue: 'Infinity',
           PermittivityShort: 'Permittivity',
           TotalThickness: 'Total thickness, m',
+          CmpTransparency: 'CMP semblance transparency',
+          VisualSettings: 'Visual settings',
+          BScanCmpTransparency: 'CMP curves transparency',
+          SplitBScanMode: 'Split radargram',
+          CmpMode: 'Common Mid Point mode',
         },
       },
       ru: {
@@ -175,6 +180,11 @@ i18n
           InfinityValue: 'Бесконечность',
           PermittivityShort: 'Диэл. проницаемость',
           TotalThickness: 'Общая толщина, м',
+          CmpTransparency: 'Прозрачность графика подобия ОСТ',
+          VisualSettings: 'Настройки визуализации',
+          BScanCmpTransparency: 'Прозрачность годографов ОСТ',
+          SplitBScanMode: 'Разделить радарограмму',
+          CmpMode: 'Режим общей средней точки',
         },
       },
     },

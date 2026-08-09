@@ -2,6 +2,7 @@ import { getCmpLinePoint } from '@/shared/gpr-math';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import useVisualStore from '@/stores/visual-store';
+import clamp from '@/visual/clamp';
 import * as d3 from 'd3';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
@@ -35,6 +36,7 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
   const bScan = useStore(store, (s) => s.bScan);
 
   const cmpBScanLinesColor = useVisualStore.use.cmpBScanLinesColor();
+  const bScanCmpTransparency = useVisualStore.use.bScanCmpTransparency();
 
   const setContainer = useCallback((node: HTMLDivElement | null) => {
     roRef.current?.disconnect();
@@ -46,6 +48,23 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
     ro.observe(node);
     roRef.current = ro;
   }, []);
+
+  const wyMin = useMemo(
+    () => clamp((0 - shiftY) / scale, 0, bScan.rows),
+    [bScan.rows, scale, shiftY],
+  );
+  const wyMax = useMemo(
+    () => clamp((size.height - shiftY) / scale, 0, bScan.rows),
+    [bScan.rows, scale, shiftY, size.height],
+  );
+  const wxMin = useMemo(
+    () => clamp((0 - shiftX) / scale, 0, bScan.cols),
+    [bScan.cols, scale, shiftX],
+  );
+  const wxMax = useMemo(
+    () => clamp((size.width - shiftX) / scale, 0, bScan.cols),
+    [bScan.cols, scale, shiftX, size.width],
+  );
 
   const tToWy = useMemo(
     () =>
@@ -114,6 +133,13 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
         <clipPath id="cmp-curves">
           <rect x={0} y={0} width={size.width} height={size.height} />
         </clipPath>
+        <rect
+          x={wxMin * scale + shiftX}
+          y={wyMin * scale + shiftY}
+          width={(wxMax - wxMin) * scale}
+          height={(wyMax - wyMin) * scale}
+          fill={`rgba(255, 255, 255, ${bScanCmpTransparency})`}
+        />
         {curvePoints.map(({ id, points }) => (
           <path
             key={id}

@@ -31,10 +31,8 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
 
   const [horizontalWindowSize, setHorizontalWindowSize] = useState<string>('7');
   const [verticalWindowSize, setVerticalWindowSize] = useState<string>('7');
-  const [horizontalPolynomialSize, setHorizontalPolynomialSize] =
-    useState<string>('3');
-  const [verticalPolynomialSize, setVerticalPolynomialSize] =
-    useState<string>('3');
+  const horizontalPolynomialSize = 3;
+  const verticalPolynomialSize = 3;
 
   const handleSmoothSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,7 +87,7 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
             <Input
               id="sg-horizontal-window"
               type="number"
-              min={3}
+              min={5}
               step={2}
               inputMode="numeric"
               value={horizontalWindowSize}
@@ -99,7 +97,7 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
               className="min-w-0 flex-1 max-w-24"
             />
           </div>
-          <div className="flex flex-col gap-2 mx-1">
+          {/* <div className="flex flex-col gap-2 mx-1">
             <FieldLabel
               className="shrink-0 ml-2"
               htmlFor="sg-horizontal-polynomial"
@@ -118,7 +116,7 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
               }}
               className="min-w-0 flex-1 max-w-24"
             />
-          </div>
+          </div> */}
         </div>
         <div className="flex flex-row items-center">
           <FieldLabel className="shrink-0 w-32 ml-2">
@@ -131,7 +129,7 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
             <Input
               id="sg-vertical-window"
               type="number"
-              min={3}
+              min={5}
               step={2}
               inputMode="numeric"
               value={verticalWindowSize}
@@ -141,7 +139,7 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
               className="min-w-0 flex-1 max-w-24"
             />
           </div>
-          <div className="flex flex-col gap-2 mx-1">
+          {/* <div className="flex flex-col gap-2 mx-1">
             <FieldLabel
               className="shrink-0 ml-2"
               htmlFor="sg-vertical-polynomial"
@@ -160,7 +158,7 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
               }}
               className="min-w-0 flex-1 max-w-24"
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </form>
