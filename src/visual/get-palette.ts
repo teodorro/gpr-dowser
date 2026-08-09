@@ -21,9 +21,9 @@ export const getPalette = (palette: string | undefined): Uint8ClampedArray => {
       return makeLut256(
         d3.interpolateRgbBasis([
           '#000000',
-          '#8f00ff',
-          '#4b0082',
-          '#0000ff',
+          '#af60fb',
+          '#0000aa',
+          '#00eeff',
           '#00ff00',
           '#ffff00',
           '#ff7f00',
@@ -67,9 +67,9 @@ export const getPaletteRaw = (palette: string): ((t: number) => string) => {
     case 'rainbow':
       return d3.interpolateRgbBasis([
         '#000000',
-        '#8f00ff',
-        '#4b0082',
-        '#0000ff',
+        '#af60fb',
+        '#0000aa',
+        '#00eeff',
         '#00ff00',
         '#ffff00',
         '#ff7f00',
