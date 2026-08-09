@@ -120,7 +120,7 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
             clipPath="url(#cmp-chart)"
             fill="none"
             stroke={cmpSemblanceLinesColor}
-            strokeWidth={1}
+            strokeWidth={1.5}
             strokeDasharray="5,5"
           />
         )}

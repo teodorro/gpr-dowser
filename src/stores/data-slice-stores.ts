@@ -29,6 +29,7 @@ export type CmpLayer = {
   velocity: number;
   totalThickness: number;
   thickness: number;
+  permittivity: number;
 };
 
 export const createDataSliceStore = (

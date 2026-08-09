@@ -1,4 +1,4 @@
-import { getDixFormula } from '@/shared/gpr-math';
+import { getDixFormula, VELOCITY_LIGHT } from '@/shared/gpr-math';
 import type { CmpLayer } from './data-slice-stores';
 
 class CmpLayersContainer {
@@ -86,13 +86,22 @@ class CmpLayersContainer {
           precedingLayer.rmsVelocity,
         )
       : rmsVelocity;
+    const permittivity = (VELOCITY_LIGHT / velocity) ** 2;
     const dt = time - (precedingLayer?.time ?? 0);
     const thickness = (dt * velocity) / 2;
     const totalThickness = precedingLayer
       ? thickness + precedingLayer.totalThickness
       : thickness;
 
-    return { id, time, rmsVelocity, velocity, totalThickness, thickness };
+    return {
+      id,
+      time,
+      rmsVelocity,
+      velocity,
+      totalThickness,
+      thickness,
+      permittivity,
+    };
   }
 }
 

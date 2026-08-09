@@ -16,11 +16,16 @@ import { toast } from 'sonner';
 import CmpSemblance from './features/cmp/CmpSemblance';
 import { useUiStore } from './stores/ui-store';
 import AScanToolbar from './features/a-scan/AScanToolbar';
+import CmpLayersTable from './features/sidebar/сmp/CmpLayersTable';
+import { Button } from './components/ui/button';
+import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 
 function App() {
   const fileIds = useFileRegistryStore.use.fileIds();
   const cmpMode = useUiStore.use.cmpMode();
   const aScanVisible = useUiStore.use.aScanVisible();
+  const cmpTableVisible = useUiStore.use.cmpTableVisible();
+  const setCmpTableVisible = useUiStore.use.setCmpTableVisible();
 
   useEffect(() => {
     const loadExample = async () => {
@@ -64,7 +69,26 @@ function App() {
               <BScan />
               <BScanStatusBar />
             </div>
-            {cmpMode && <CmpSemblance />}
+            {cmpMode && (
+              <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-1">
+                <div className="relative flex flex-1 min-w-0 min-h-0">
+                  <CmpSemblance />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute bottom-0 right-0 z-10"
+                    onClick={() => setCmpTableVisible(!cmpTableVisible)}
+                  >
+                    {cmpTableVisible ? <ArrowDownIcon /> : <ArrowUpIcon />}
+                  </Button>
+                </div>
+                {cmpTableVisible && (
+                  <div className="flex flex-col h-50 shrink-0 min-w-0 min-h-0 gap-1">
+                    <CmpLayersTable />
+                  </div>
+                )}
+              </div>
+            )}
             {aScanVisible && (
               <div className="relative flex flex-col w-[14rem] shrink-0 min-h-0 gap-1">
                 <AScan />

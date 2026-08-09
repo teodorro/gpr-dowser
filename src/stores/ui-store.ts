@@ -8,6 +8,7 @@ type UiState = {
   splitBScanMode: boolean;
   cmpMode: boolean;
   hyperbolaMode: boolean;
+  cmpTableVisible: boolean;
 };
 
 export const BScanMode = {
@@ -23,6 +24,7 @@ type UiActions = {
   setSideBarVisible: (visible: boolean) => void;
   setAScanVisible: (visible: boolean) => void;
   setBScanMode: (mode: BScanMode) => void;
+  setCmpTableVisible: (visible: boolean) => void;
 };
 
 type Ui = UiState & UiActions;
@@ -33,6 +35,7 @@ const INITIAL_STATE: UiState = {
   splitBScanMode: false,
   cmpMode: false,
   hyperbolaMode: false,
+  cmpTableVisible: true,
 };
 
 const useUiBase = create<Ui>((set) => ({
@@ -81,6 +84,9 @@ const useUiBase = create<Ui>((set) => ({
       default:
         unreachable(mode);
     }
+  },
+  setCmpTableVisible: (visible: boolean) => {
+    set((s) => ({ ...s, cmpTableVisible: visible }));
   },
 }));
 

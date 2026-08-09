@@ -21,7 +21,7 @@ type VisualStore = VisualState & VisualActions;
 
 const INITIAL_STATE: VisualState = {
   selectedPalette: 'greys',
-  cmpSemblanceLinesColor: '#000000',
+  cmpSemblanceLinesColor: '#888888',
   cmpBScanLinesColor: '#ffff00',
   deltaToUpdateLayer: DEFAULT_DELTA_TO_UPDATE_LAYER,
 };
