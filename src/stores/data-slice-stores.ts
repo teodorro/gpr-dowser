@@ -117,8 +117,10 @@ export const createDataSliceStore = (
     cmpIndexY: (options.cmpIndexY as number | undefined) ?? undefined,
     cmpLayers:
       (options.cmpLayers as CmpLayersContainer) ?? new CmpLayersContainer(),
+    cmpGate: (options.cmpGate as number) ?? 1,
     setCmpData: (cmpData) => set({ cmpData }),
     setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
+    setCmpGate: (cmpGate) => set({ cmpGate }),
     setCmpScale: (cmpScale) => set({ cmpScale }),
     setCmpShift: (cmpShiftX, cmpShiftY) => set({ cmpShiftX, cmpShiftY }),
     setCmpIndexX: (cmpIndexX) => set({ cmpIndexX }),

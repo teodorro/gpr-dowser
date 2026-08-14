@@ -10,6 +10,7 @@ type CmpState = {
   cmpIndexX: number | undefined;
   cmpIndexY: number | undefined;
   cmpLayers: CmpLayersContainer;
+  cmpGate: number;
 };
 
 type CmpActions = {
@@ -23,6 +24,7 @@ type CmpActions = {
   addCmpLayer: (time: number, rmsVelocity: number) => void;
   removeCmpLayer: (id: string) => void;
   updateCmpLayer: (id: string, time: number, rmsVelocity: number) => void;
+  setCmpGate: (cmpGate: number) => void;
 };
 
 export type CmpSlice = CmpState & CmpActions;

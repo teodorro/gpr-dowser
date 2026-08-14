@@ -95,6 +95,7 @@ i18n
           BScanCmpTransparency: 'CMP curves transparency',
           SplitBScanMode: 'Split radargram',
           CmpMode: 'Common Mid Point mode',
+          CmpWaveletLength: 'Wavelet length',
         },
       },
       ru: {
@@ -185,6 +186,7 @@ i18n
           BScanCmpTransparency: 'Прозрачность годографов ОСТ',
           SplitBScanMode: 'Разделить радарограмму',
           CmpMode: 'Режим общей средней точки',
+          CmpWaveletLength: 'Длина вейвлета',
         },
       },
     },

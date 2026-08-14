@@ -29,7 +29,7 @@ function App() {
 
   useEffect(() => {
     const loadExample = async () => {
-      const name = 'river-ВБ_13_1.gem';
+      const name = 'cmp-731.gem';
       const url = `${import.meta.env.BASE_URL}data-examples/loza/${encodeURIComponent(name)}`;
       const res = await fetch(url);
       if (!res.ok) {

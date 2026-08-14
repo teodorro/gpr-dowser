@@ -53,6 +53,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const addCmpLayer = useStore(store, (s) => s.addCmpLayer);
   const removeCmpLayer = useStore(store, (s) => s.removeCmpLayer);
   const cmpLayers = useStore(store, (s) => s.cmpLayers);
+  const cmpGate = useStore(store, (s) => s.cmpGate);
 
   const deltaToUpdateLayer = useVisualStore.use.deltaToUpdateLayer();
   const selectedPalette = useVisualStore.use.selectedPalette();
@@ -435,9 +436,10 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       (bScan.rows - indexTimeZero) * dt,
       dx,
       dt,
+      cmpGate,
     );
     setCmpData(data);
-  }, [bScan, indexTimeZero, dt, dx, setCmpData]);
+  }, [bScan, indexTimeZero, dt, dx, setCmpData, cmpGate]);
 
   useEffect(() => {
     setCmpDisplayBuffer(logTransformGrid2D(cmpData));
