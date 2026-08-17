@@ -26,23 +26,23 @@ function CmpGateSliderInternal({ store }: { store: DataStore }) {
   const setCmpGate = useStore(store, (s) => s.setCmpGate);
 
   const handleValueChange = (value: number[]) => {
-    setCmpGate((value[0] - 1) / 2);
+    setCmpGate(value[0]);
   };
 
   return (
     <div className="flex flex-col my-2">
       <FieldLabel className="flex flex-1 ml-2 ">
-        {t('CmpWaveletLength')}
+        {t('CmpHalfWaveLength')}
       </FieldLabel>
       <div className="flex flex-1 flex-row items-center gap-2 m-1">
         <FieldLabel className="shrink-0 ml-2" htmlFor="cmp-gate">
-          {cmpGate * 2 + 1}
+          {cmpGate}
         </FieldLabel>
         <Slider
-          value={[cmpGate * 2 + 1]}
-          min={1}
-          max={30}
-          step={2}
+          value={[cmpGate]}
+          min={0}
+          max={15}
+          step={1}
           onValueChange={handleValueChange}
           className="w-full"
         />
