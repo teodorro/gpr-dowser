@@ -60,7 +60,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const deltaToUpdateLayer = useVisualStore.use.deltaToUpdateLayer();
   const selectedPalette = useVisualStore.use.selectedPalette();
 
-  const setShowProgressBar = useUiStore.use.setShowProgressBar();
+  const setInProgress = useUiStore.use.setInProgress();
   const addProgress = useUiStore.use.addProgress();
   const clearProgress = useUiStore.use.clearProgress();
 
@@ -245,7 +245,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
               e.data.result.buf,
             ),
           );
-          setShowProgressBar(false);
+          setInProgress(false);
           clearProgress();
           break;
       }
@@ -467,7 +467,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   useEffect(() => {
     if (!semblanceWorker.current) return;
     clearProgress();
-    setShowProgressBar(true);
+    setInProgress(true);
     semblanceWorker.current.postMessage({
       data: bScan,
       minVelocity: VELOCITY_WATER,
@@ -485,7 +485,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     dx,
     setCmpData,
     cmpGate,
-    setShowProgressBar,
+    setInProgress,
     addProgress,
     clearProgress,
   ]);

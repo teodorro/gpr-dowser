@@ -71,7 +71,7 @@ function CmpLayersTableInternal({ store }: { store: DataStore }) {
                   isWrongLayer(layer)
                     ? 'bg-red-500'
                     : layer.velocity > 0.173 || layer.velocity < 0.047
-                      ? 'bg-red-100'
+                      ? 'bg-red-500/30'
                       : '',
                 )}
               >
@@ -82,7 +82,7 @@ function CmpLayersTableInternal({ store }: { store: DataStore }) {
                   isWrongLayer(layer)
                     ? 'bg-red-500'
                     : layer.permittivity > 40 || layer.permittivity < 3
-                      ? 'bg-red-100'
+                      ? 'bg-red-500/30'
                       : '',
                 )}
               >

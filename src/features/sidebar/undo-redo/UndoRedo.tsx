@@ -3,7 +3,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
-import { OperationTypeList } from '@/stores/undo-redo.types';
 import {
   ArrowRightIcon,
   ClipboardPasteIcon,
@@ -13,16 +12,9 @@ import {
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
-import subtractMean from '../processing/statistical-processing/subtract-avg/subtract-mean';
-import subtractMedian from '../processing/statistical-processing/subtract-avg/subtract-median';
-import dewow from '../processing/statistical-processing/dewow/dewow';
-import { unreachable } from '@/shared/unreachable';
-import { splitBscan } from '@/features/b-scan/splitBscan';
-import { savGolayFilter } from '../processing/statistical-processing/savitzky-golay/sav-golay-filter';
+import useUiStore from '@/stores/ui-store';
+import type { UndoRedoMessage } from './undo-redo-worker';
 import Grid2D from '@/shared/grid2d';
-import { gaussianSmooth } from '../processing/statistical-processing/gauss-smooth/gaussian-smooth';
-import { alignSignal } from '../сmp/signal-aligner/align-signal';
-import { setLeftAScansToZero } from '../сmp/left-ascans-to-zero/set-left-ascans-to-zero';
 
 export default function UndoRedo() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -47,74 +39,31 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
   const bScanInitial = useStore(store, (state) => state.bScanInitial);
   const setBScan = useStore(store, (state) => state.setBScan);
 
+  const inProgress = useUiStore.use.inProgress();
+  const addProgress = useUiStore.use.addProgress();
+  const clearProgress = useUiStore.use.clearProgress();
+  const setInProgress = useUiStore.use.setInProgress();
+
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const replayTo = (target: number) => {
-    let bScan = bScanInitial.clone();
-    for (let i = 1; i <= target; i++) {
-      const operation = history.get(i);
-      if (!operation) {
-        continue;
-      }
-      switch (operation.type) {
-        case OperationTypeList.SubtractMean:
-          bScan = subtractMean(bScan);
-          break;
-        case OperationTypeList.SubtractMedian:
-          bScan = subtractMedian(bScan);
-          break;
-        case OperationTypeList.Dewow:
-          bScan = dewow(bScan, operation.windowSize);
-          break;
-        case OperationTypeList.SplitBscan:
-          [bScan] = splitBscan(
-            bScan,
-            operation.splitIndex,
-            operation.leftDataSliceId,
-            operation.rightDataSliceId,
-          );
-          break;
-        case OperationTypeList.SavitzkyGolay:
-          bScan = Grid2D.fromArray(
-            savGolayFilter(
-              bScan.toArray(),
-              operation.horizontalWindowSize,
-              operation.horizontalPolynomialSize,
-              operation.verticalWindowSize,
-              operation.verticalPolynomialSize,
-            ),
-          );
-          break;
-        case OperationTypeList.GaussSmooth:
-          bScan = gaussianSmooth(
-            bScan,
-            operation.sigmaHorizontal,
-            operation.sigmaVertical,
-          );
-          break;
-        case OperationTypeList.CmpAlignSignal:
-          bScan = alignSignal(bScan, operation.ampBreakpoint);
-          break;
-        case OperationTypeList.SetLeftAScansToZero:
-          bScan = setLeftAScansToZero(bScan, operation.zeroBreakpoint);
-          break;
-        default:
-          unreachable(operation);
-      }
-    }
-    return bScan;
-  };
+  const undoRedoWorker = useRef<Worker | null>(null);
 
   const handleUndo = () => {
-    const bScan = replayTo(position - 1);
-    undo();
-    setBScan(bScan);
+    undoRedoWorker.current?.postMessage({
+      bScan: bScanInitial,
+      history,
+      target: position - 1,
+      operationType: 'undo',
+    });
   };
 
   const handleRedo = () => {
-    const bScan = replayTo(position + 1);
-    redo();
-    setBScan(bScan);
+    undoRedoWorker.current?.postMessage({
+      bScan: bScanInitial,
+      history,
+      target: position + 1,
+      operationType: 'redo',
+    });
   };
 
   useEffect(() => {
@@ -123,13 +72,47 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
     }
   }, [history.size, position]);
 
+  useEffect(() => {
+    undoRedoWorker.current = new Worker(
+      new URL('./undo-redo-worker.ts', import.meta.url),
+      { type: 'module' },
+    );
+    undoRedoWorker.current.onmessage = (e: MessageEvent<UndoRedoMessage>) => {
+      switch (e.data.type) {
+        case 'progress':
+          addProgress(e.data.progress);
+          break;
+        case 'complete':
+          if (e.data.operationType === 'undo') {
+            undo();
+          } else {
+            redo();
+          }
+          setBScan(
+            new Grid2D(
+              e.data.result.cols,
+              e.data.result.rows,
+              e.data.result.buf,
+            ),
+          );
+          setInProgress(false);
+          clearProgress();
+          break;
+      }
+    };
+    return () => {
+      undoRedoWorker.current?.terminate();
+      undoRedoWorker.current = null;
+    };
+  }, [addProgress, clearProgress, setBScan, setInProgress, undo, redo]);
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row gap-2">
         <Button
           variant="outline"
           size="icon"
-          disabled={position === 0}
+          disabled={position === 0 || inProgress}
           onClick={handleUndo}
         >
           <UndoIcon className="w-4 h-4" />
@@ -137,7 +120,7 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
         <Button
           variant="outline"
           size="icon"
-          disabled={position === history.size}
+          disabled={position === history.size || inProgress}
           onClick={handleRedo}
         >
           <RedoIcon className="w-4 h-4" />
