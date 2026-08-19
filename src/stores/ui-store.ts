@@ -9,6 +9,8 @@ type UiState = {
   cmpMode: boolean;
   hyperbolaMode: boolean;
   cmpTableVisible: boolean;
+  progress: number[];
+  showProgressBar: boolean;
 };
 
 export const BScanMode = {
@@ -25,6 +27,9 @@ type UiActions = {
   setAScanVisible: (visible: boolean) => void;
   setBScanMode: (mode: BScanMode) => void;
   setCmpTableVisible: (visible: boolean) => void;
+  addProgress: (progress: number) => void;
+  clearProgress: () => void;
+  setShowProgressBar: (show: boolean) => void;
 };
 
 type Ui = UiState & UiActions;
@@ -36,6 +41,8 @@ const INITIAL_STATE: UiState = {
   cmpMode: false,
   hyperbolaMode: false,
   cmpTableVisible: true,
+  progress: [],
+  showProgressBar: false,
 };
 
 const useUiBase = create<Ui>((set) => ({
@@ -88,6 +95,17 @@ const useUiBase = create<Ui>((set) => ({
   setCmpTableVisible: (visible: boolean) => {
     set((s) => ({ ...s, cmpTableVisible: visible }));
   },
+  addProgress: (progress: number) => {
+    set((s) => ({ ...s, progress: [...s.progress, progress] }));
+  },
+  clearProgress: () => {
+    set((s) => ({ ...s, progress: [] }));
+  },
+  setShowProgressBar: (show: boolean) => {
+    set((s) => ({ ...s, showProgressBar: show }));
+  },
 }));
 
-export const useUiStore = createSelectors(useUiBase);
+const useUiStore = createSelectors(useUiBase);
+
+export default useUiStore;

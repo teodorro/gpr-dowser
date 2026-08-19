@@ -2,6 +2,7 @@ import { FieldLabel } from '@/components/ui/field';
 import { Slider } from '@/components/ui/slider';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 
@@ -25,9 +26,7 @@ function CmpGateSliderInternal({ store }: { store: DataStore }) {
   const cmpGate = useStore(store, (s) => s.cmpGate);
   const setCmpGate = useStore(store, (s) => s.setCmpGate);
 
-  const handleValueChange = (value: number[]) => {
-    setCmpGate(value[0]);
-  };
+  const [cmpGateInternal, setCmpGateInternal] = useState(cmpGate);
 
   return (
     <div className="flex flex-col my-2">
@@ -36,14 +35,20 @@ function CmpGateSliderInternal({ store }: { store: DataStore }) {
       </FieldLabel>
       <div className="flex flex-1 flex-row items-center gap-2 m-1">
         <FieldLabel className="shrink-0 ml-2" htmlFor="cmp-gate">
-          {cmpGate}
+          {cmpGateInternal}
         </FieldLabel>
         <Slider
-          value={[cmpGate]}
+          value={[cmpGateInternal]}
           min={0}
           max={15}
           step={1}
-          onValueChange={handleValueChange}
+          onValueChange={(value) => {
+            setCmpGateInternal(value[0]);
+          }}
+          onValueCommit={(value) => {
+            setCmpGate(value[0]);
+            setCmpGateInternal(value[0]);
+          }}
           className="w-full"
         />
       </div>

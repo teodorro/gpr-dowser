@@ -11,7 +11,8 @@ import useFileRegistryStore from '@/stores/file-registry-store';
 import { readGeoFile } from './read-geo-file';
 import i18n from '@/i18n';
 import { logTransform } from '@/shared/log-transform';
-import { BScanMode, useUiStore } from '@/stores/ui-store';
+import { BScanMode } from '@/stores/ui-store';
+import useUiStore from '@/stores/ui-store';
 
 type FileExtension = 'txt' | 'geo' | 'gem';
 

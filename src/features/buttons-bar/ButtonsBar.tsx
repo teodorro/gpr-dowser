@@ -7,7 +7,8 @@ import {
   PanelRightIcon,
   UnfoldHorizontalIcon,
 } from 'lucide-react';
-import { BScanMode, useUiStore } from '@/stores/ui-store';
+import { BScanMode } from '@/stores/ui-store';
+import useUiStore from '@/stores/ui-store';
 import useVisualStore from '@/stores/visual-store';
 import {
   DropdownMenu,

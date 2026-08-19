@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import Grid2D from '@/shared/grid2d';
-import { useUiStore } from '@/stores/ui-store';
+import useUiStore from '@/stores/ui-store';
 import { SaveIcon, SignpostIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

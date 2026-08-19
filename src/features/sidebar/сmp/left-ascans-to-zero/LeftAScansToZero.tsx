@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/popover';
 import Grid2D from '@/shared/grid2d';
 import { type DataStore } from '@/stores/data-slice-stores';
-import { useUiStore } from '@/stores/ui-store';
+import useUiStore from '@/stores/ui-store';
 import { RectangleVerticalIcon, SaveIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

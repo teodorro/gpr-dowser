@@ -3,7 +3,8 @@ import { cn } from '@/lib/utils';
 import { CMP_COLUMNS_BREAKPOINT } from '@/shared/constants';
 import { dataSliceStores } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
-import { BScanMode, useUiStore } from '@/stores/ui-store';
+import { BScanMode } from '@/stores/ui-store';
+import useUiStore from '@/stores/ui-store';
 import { XIcon } from 'lucide-react';
 
 type Props = {

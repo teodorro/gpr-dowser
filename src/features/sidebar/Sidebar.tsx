@@ -6,7 +6,7 @@ import {
   RulerDimensionLineIcon,
   WallpaperIcon,
 } from 'lucide-react';
-import { useUiStore } from '@/stores/ui-store';
+import useUiStore from '@/stores/ui-store';
 import UnitsMeasurement from './units-of-measurement/UnitsMeasurement';
 import { useTranslation } from 'react-i18next';
 import Processing from './processing/Processing';

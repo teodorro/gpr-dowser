@@ -1,37 +1,60 @@
 import { getCmpTimePoint, getDepth } from '@/shared/gpr-math';
 import Grid2D from '@/shared/grid2d';
 
-export const getSemblanceData = (
-  data: Grid2D,
-  minVelocity: number,
-  maxVelocity: number,
-  minTime: number,
-  maxTime: number,
-  dx: number,
-  dt: number,
-  gate = 1,
-): Grid2D => {
-  const res = new Grid2D(data.cols, data.rows);
-  for (let i = 0; i < data.cols; i++) {
+export type SemblanceMessage =
+  | {
+      type: 'progress';
+      progress: number;
+    }
+  | {
+      type: 'complete';
+      result: Grid2D;
+    };
+
+export type DataContainer = {
+  data: Grid2D;
+  minVelocity: number;
+  maxVelocity: number;
+  minTime: number;
+  maxTime: number;
+  dx: number;
+  dt: number;
+  cmpGate: number;
+};
+
+self.onmessage = (e: MessageEvent<{ d: DataContainer }>) => {
+  const dc = e.data as unknown as DataContainer;
+  const dcData = dc.data as unknown as {
+    cols: number;
+    rows: number;
+    buf: Float32Array;
+  };
+  const res = new Grid2D(dc.data.cols, dc.data.rows);
+  const data = new Grid2D(dcData.cols, dcData.rows, dcData.buf);
+  for (let i = 0; i < dc.data.cols; i++) {
     const velocity =
-      minVelocity + (i / (data.cols - 1)) * (maxVelocity - minVelocity);
-    for (let j = 0; j < data.rows; j++) {
-      const time = minTime + (j / (data.rows - 1)) * (maxTime - minTime);
+      dc.minVelocity +
+      (i / (dc.data.cols - 1)) * (dc.maxVelocity - dc.minVelocity);
+    for (let j = 0; j < dc.data.rows; j++) {
+      const time =
+        dc.minTime + (j / (dc.data.rows - 1)) * (dc.maxTime - dc.minTime);
       const depth = getDepth(time, velocity);
       const semblance = calcSemblanceForVelocityAndDepth(
         data,
         depth,
         velocity,
-        dx,
-        dt,
-        minTime,
-        maxTime,
+        dc.dx,
+        dc.dt,
+        dc.minTime,
+        dc.maxTime,
         { loza: true },
-        gate,
+        dc.cmpGate,
       );
       res.set(i, j, semblance);
     }
+    self.postMessage({ type: 'progress', progress: (i + 1) / dc.data.cols });
   }
+  self.postMessage({ type: 'complete', result: res });
   return res;
 };
 
@@ -56,7 +79,7 @@ const calcSemblanceForVelocityAndDepth = (
   minTime: number,
   maxTime: number,
   options: { loza: boolean },
-  gate: number,
+  cmpGate: number,
 ): number => {
   if (isNaN(depth) || depth < 0) return 0;
 
@@ -82,7 +105,7 @@ const calcSemblanceForVelocityAndDepth = (
 
   let num = 0; // Σ_τ ( Σ_i A_iτ )²
   let den = 0; // N · Σ_τ Σ_i A_iτ²
-  for (let w = -gate; w <= gate; w++) {
+  for (let w = -cmpGate; w <= cmpGate; w++) {
     let stack = 0; // Σ_i A_iτ
     let energy = 0; // Σ_i A_iτ²
     for (let k = 0; k < n; k++) {

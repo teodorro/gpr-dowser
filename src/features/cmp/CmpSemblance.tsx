@@ -2,6 +2,7 @@ import { VELOCITY_LIGHT, VELOCITY_WATER } from '@/shared/gpr-math';
 import { logTransformGrid2D } from '@/shared/log-transform';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
+import useUiStore from '@/stores/ui-store';
 import useVisualStore from '@/stores/visual-store';
 import clamp from '@/visual/clamp';
 import getPalette from '@/visual/get-palette';
@@ -9,10 +10,11 @@ import * as d3 from 'd3';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
-import { getSemblanceData } from './get-semblance-data';
 import CmpSemblanceLines from './CmpSemblanceLines';
 import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
 import CmpSemblanceAxes from './CmpSemblanceAxes';
+import type { SemblanceMessage } from './semblance-worker';
+import Grid2D from '@/shared/grid2d';
 
 export default function CmpSemblance() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -57,6 +59,12 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
 
   const deltaToUpdateLayer = useVisualStore.use.deltaToUpdateLayer();
   const selectedPalette = useVisualStore.use.selectedPalette();
+
+  const setShowProgressBar = useUiStore.use.setShowProgressBar();
+  const addProgress = useUiStore.use.addProgress();
+  const clearProgress = useUiStore.use.clearProgress();
+
+  const semblanceWorker = useRef<Worker | null>(null);
 
   const palette = useMemo(() => getPalette(selectedPalette), [selectedPalette]);
 
@@ -218,6 +226,35 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   useEffect(() => {
     redrawRef.current = redraw;
   }, [redraw]);
+
+  useEffect(() => {
+    semblanceWorker.current = new Worker(
+      new URL('./semblance-worker.ts', import.meta.url),
+      { type: 'module' },
+    );
+    semblanceWorker.current.onmessage = (e: MessageEvent<SemblanceMessage>) => {
+      switch (e.data.type) {
+        case 'progress':
+          addProgress(e.data.progress);
+          break;
+        case 'complete':
+          setCmpData(
+            new Grid2D(
+              e.data.result.cols,
+              e.data.result.rows,
+              e.data.result.buf,
+            ),
+          );
+          setShowProgressBar(false);
+          clearProgress();
+          break;
+      }
+    };
+    return () => {
+      semblanceWorker.current?.terminate();
+      semblanceWorker.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     const observer = new MutationObserver(() => redrawRef.current());
@@ -428,18 +465,30 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   ]);
 
   useEffect(() => {
-    const data = getSemblanceData(
-      bScan,
-      VELOCITY_WATER,
-      VELOCITY_LIGHT,
-      -indexTimeZero * dt,
-      (bScan.rows - indexTimeZero) * dt,
+    if (!semblanceWorker.current) return;
+    clearProgress();
+    setShowProgressBar(true);
+    semblanceWorker.current.postMessage({
+      data: bScan,
+      minVelocity: VELOCITY_WATER,
+      maxVelocity: VELOCITY_LIGHT,
+      minTime: -indexTimeZero * dt,
+      maxTime: (bScan.rows - indexTimeZero) * dt,
       dx,
       dt,
       cmpGate,
-    );
-    setCmpData(data);
-  }, [bScan, indexTimeZero, dt, dx, setCmpData, cmpGate]);
+    });
+  }, [
+    bScan,
+    indexTimeZero,
+    dt,
+    dx,
+    setCmpData,
+    cmpGate,
+    setShowProgressBar,
+    addProgress,
+    clearProgress,
+  ]);
 
   useEffect(() => {
     setCmpDisplayBuffer(logTransformGrid2D(cmpData));

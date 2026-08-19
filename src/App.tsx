@@ -14,11 +14,12 @@ import { loadDataFile } from './file-parsers/load-data-file';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import CmpSemblance from './features/cmp/CmpSemblance';
-import { useUiStore } from './stores/ui-store';
+import useUiStore from './stores/ui-store';
 import AScanToolbar from './features/a-scan/AScanToolbar';
 import CmpLayersTable from './features/sidebar/сmp/CmpLayersTable';
 import { Button } from './components/ui/button';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
+import ProgressBar from './features/progress-bar/ProgressBar';
 
 function App() {
   const fileIds = useFileRegistryStore.use.fileIds();
@@ -61,8 +62,9 @@ function App() {
       <Toaster />
       <div className="flex flex-row flex-1 min-h-0 gap-2 p-1">
         <Sidebar />
-        <div className="flex flex-col flex-1 min-w-0 gap-2">
+        <div className="flex flex-col flex-1 min-w-0 gap-1">
           <ButtonsBar />
+          <ProgressBar />
           {fileIds.length > 0 && <FileTabs />}
           <div className="flex flex-row flex-1 min-w-0 min-h-0 gap-2">
             <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-1">

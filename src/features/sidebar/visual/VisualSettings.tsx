@@ -1,4 +1,4 @@
-import { useUiStore } from '@/stores/ui-store';
+import useUiStore from '@/stores/ui-store';
 import BScanCmpTransparency from './BScanCmpTransparency';
 import CmpBscanLinesColor from './CmpBscanLinesColor';
 import CmpSemblanceLinesColor from './CmpSemblanceLinesColor';

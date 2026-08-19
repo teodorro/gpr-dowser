@@ -1,7 +1,7 @@
 import type { DataStore } from '@/stores/data-slice-stores';
 import type Grid2D from '@/shared/grid2d';
 import useFileRegistryStore from '@/stores/file-registry-store';
-import { useUiStore } from '@/stores/ui-store';
+import useUiStore from '@/stores/ui-store';
 import {
   dataSliceStores,
   LENGTH_AXIS_HEIGHT,
