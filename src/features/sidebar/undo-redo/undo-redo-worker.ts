@@ -7,8 +7,8 @@ import dewow from '../processing/statistical-processing/dewow/dewow';
 import { splitBscan } from '@/features/b-scan/splitBscan';
 import { savGolayFilter } from '../processing/statistical-processing/savitzky-golay/sav-golay-filter';
 import { gaussianSmooth } from '../processing/statistical-processing/gauss-smooth/gaussian-smooth';
-import { alignSignal } from '../сmp/signal-aligner/align-signal';
-import { setLeftAScansToZero } from '../сmp/left-ascans-to-zero/set-left-ascans-to-zero';
+import { alignSignal } from '../cmp/signal-aligner/align-signal';
+import { setLeftAScansToZero } from '../cmp/left-ascans-to-zero/set-left-ascans-to-zero';
 
 export type UndoRedoMessage =
   | {

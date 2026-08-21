@@ -11,7 +11,7 @@ import UnitsMeasurement from './units-of-measurement/UnitsMeasurement';
 import { useTranslation } from 'react-i18next';
 import Processing from './processing/Processing';
 import UndoRedo from './undo-redo/UndoRedo';
-import CmpSettings from './сmp/CmpSettings';
+import CmpSettings from './cmp/CmpSettings';
 import VisualSettings from './visual/VisualSettings';
 
 const Sidebar = () => {

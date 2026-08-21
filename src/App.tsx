@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import CmpSemblance from './features/cmp/CmpSemblance';
 import useUiStore from './stores/ui-store';
 import AScanToolbar from './features/a-scan/AScanToolbar';
-import CmpLayersTable from './features/sidebar/сmp/CmpLayersTable';
+import CmpLayersTable from './features/sidebar/cmp/CmpLayersTable';
 import { Button } from './components/ui/button';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import ProgressBar from './features/progress-bar/ProgressBar';
