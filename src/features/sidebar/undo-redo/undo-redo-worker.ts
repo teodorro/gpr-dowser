@@ -17,12 +17,12 @@ export type UndoRedoMessage =
     }
   | {
       type: 'complete';
-      result: Grid2D;
+      result: { cols: number; rows: number; buf: Float32Array };
       operationType: 'undo' | 'redo';
     };
 
 export type DataContainer = {
-  bScan: Grid2D;
+  bScan: { cols: number; rows: number; buf: Float32Array };
   history: Map<number, Operation>;
   target: number;
   operationType: 'undo' | 'redo';
@@ -91,7 +91,7 @@ self.onmessage = (e: MessageEvent<DataContainer>) => {
   }
   self.postMessage({
     type: 'complete',
-    result: bScan,
+    result: { cols: bScan.cols, rows: bScan.rows, buf: bScan.buffer },
     operationType,
   });
 };

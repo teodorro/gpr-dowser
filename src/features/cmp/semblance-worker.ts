@@ -8,11 +8,11 @@ export type SemblanceMessage =
     }
   | {
       type: 'complete';
-      result: Grid2D;
+      result: { cols: number; rows: number; buf: Float32Array };
     };
 
 export type DataContainer = {
-  data: Grid2D;
+  data: { cols: number; rows: number; buf: Float32Array };
   minVelocity: number;
   maxVelocity: number;
   minTime: number;
@@ -24,13 +24,8 @@ export type DataContainer = {
 
 self.onmessage = (e: MessageEvent<{ d: DataContainer }>) => {
   const dc = e.data as unknown as DataContainer;
-  const dcData = dc.data as unknown as {
-    cols: number;
-    rows: number;
-    buf: Float32Array;
-  };
   const res = new Grid2D(dc.data.cols, dc.data.rows);
-  const data = new Grid2D(dcData.cols, dcData.rows, dcData.buf);
+  const data = new Grid2D(dc.data.cols, dc.data.rows, dc.data.buf);
   for (let i = 0; i < dc.data.cols; i++) {
     const velocity =
       dc.minVelocity +
