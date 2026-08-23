@@ -18,6 +18,7 @@ import { splitBscan } from './splitBscan';
 import { OperationTypeList } from '@/stores/undo-redo.types';
 import CmpCurves from '../cmp/CmpCurves';
 import BScanAxes from './BScanAxes';
+import { BSCAN_CHART_ROOT_ID } from '../export/export-consts';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -428,7 +429,10 @@ function BScanInternal({ store }: { store: DataStore }) {
   }, [bScan, setDisplayBuffer]);
 
   return (
-    <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-scan text-scan-foreground shadow-sm">
+    <div
+      id={BSCAN_CHART_ROOT_ID}
+      className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-scan text-scan-foreground shadow-sm"
+    >
       <canvas
         ref={canvasRef}
         className="absolute inset-0 block w-full h-full"

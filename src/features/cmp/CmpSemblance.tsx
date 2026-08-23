@@ -15,6 +15,7 @@ import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
 import CmpSemblanceAxes from './CmpSemblanceAxes';
 import type { SemblanceMessage } from './semblance-worker';
 import Grid2D from '@/shared/grid2d';
+import { CMP_SEMBLANCE_CHART_ROOT_ID } from '../export/export-consts';
 
 export default function CmpSemblance() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -495,7 +496,10 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   }, [cmpData, setCmpDisplayBuffer]);
 
   return (
-    <div className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-scan text-scan-foreground shadow-sm">
+    <div
+      id={CMP_SEMBLANCE_CHART_ROOT_ID}
+      className="relative flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-scan text-scan-foreground shadow-sm"
+    >
       <canvas
         ref={canvasRef}
         className="absolute inset-0 block w-full h-full"

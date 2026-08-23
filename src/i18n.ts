@@ -96,6 +96,8 @@ i18n
           SplitBScanMode: 'Split radargram',
           CmpMode: 'Common Mid Point mode',
           CmpHalfWaveLength: 'Half-wave length',
+          ExportBScan: 'Export radargram',
+          ExportSemblanceAnalysis: 'Export semblance analysis',
         },
       },
       ru: {
@@ -187,6 +189,8 @@ i18n
           SplitBScanMode: 'Разделить радарограмму',
           CmpMode: 'Режим общей средней точки',
           CmpHalfWaveLength: 'Длина полуволны',
+          ExportBScan: 'Экспортировать радарограмму',
+          ExportSemblanceAnalysis: 'Экспортировать анализ подобия',
         },
       },
     },
