@@ -104,7 +104,7 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
       undoRedoWorker.current?.terminate();
       undoRedoWorker.current = null;
     };
-  }, [addProgress, clearProgress, setBScan, setInProgress, undo, redo]);
+  }, [store, addProgress, clearProgress, setBScan, setInProgress, undo, redo]);
 
   return (
     <div className="flex flex-col gap-2">

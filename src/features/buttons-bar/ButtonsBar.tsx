@@ -120,7 +120,7 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
       undoRedoWorker.current?.terminate();
       undoRedoWorker.current = null;
     };
-  }, [addProgress, clearProgress, setBScan, setInProgress, undo, redo]);
+  }, [store, addProgress, clearProgress, setBScan, setInProgress, undo, redo]);
 
   return (
     <div className="flex flex-row gap-1 p-1">

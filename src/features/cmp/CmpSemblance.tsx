@@ -256,7 +256,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       semblanceWorker.current?.terminate();
       semblanceWorker.current = null;
     };
-  }, []);
+  }, [store, setCmpData, addProgress, clearProgress, setInProgress]);
 
   useEffect(() => {
     const observer = new MutationObserver(() => redrawRef.current());
@@ -323,6 +323,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     convertDisplayBufferToImageData,
     redraw,
     i18n.language,
+    cmpDisplayBuffer,
   ]);
 
   // Mouse interactions: pan + wheel zoom
