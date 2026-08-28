@@ -20,6 +20,7 @@ export type DataContainer = {
   dx: number;
   dt: number;
   cmpGate: number;
+  lozaMode: boolean;
 };
 
 self.onmessage = (e: MessageEvent<{ d: DataContainer }>) => {
@@ -42,7 +43,7 @@ self.onmessage = (e: MessageEvent<{ d: DataContainer }>) => {
         dc.dt,
         dc.minTime,
         dc.maxTime,
-        { loza: true },
+        { loza: dc.lozaMode },
         dc.cmpGate,
       );
       res.set(i, j, semblance);

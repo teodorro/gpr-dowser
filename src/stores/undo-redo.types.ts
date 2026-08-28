@@ -7,6 +7,7 @@ export const OperationTypeList = {
   GaussSmooth: 'gauss_smooth',
   CmpAlignSignal: 'cmp_align_signal',
   SetLeftAScansToZero: 'set_left_ascans_to_zero',
+  AddLozaCmpShift: 'add_loza_cmp_shift',
 } as const;
 
 export type OperationType =
@@ -48,6 +49,11 @@ export type Operation =
   | {
       type: typeof OperationTypeList.SetLeftAScansToZero;
       zeroBreakpoint: number;
+    }
+  | {
+      type: typeof OperationTypeList.AddLozaCmpShift;
+      dx: number;
+      dt: number;
     };
 
 export type OperationHistory = {

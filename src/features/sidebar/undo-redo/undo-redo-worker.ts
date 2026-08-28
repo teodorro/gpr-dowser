@@ -9,6 +9,7 @@ import { savGolayFilter } from '../processing/statistical-processing/savitzky-go
 import { gaussianSmooth } from '../processing/statistical-processing/gauss-smooth/gaussian-smooth';
 import { alignSignal } from '../cmp/signal-aligner/align-signal';
 import { setLeftAScansToZero } from '../cmp/left-ascans-to-zero/set-left-ascans-to-zero';
+import addLozaCmpShift from '../cmp/add-loza-cmp-shift/add-loza-shift';
 
 export type UndoRedoMessage =
   | {
@@ -83,6 +84,9 @@ self.onmessage = (e: MessageEvent<DataContainer>) => {
         break;
       case OperationTypeList.SetLeftAScansToZero:
         bScan = setLeftAScansToZero(bScan, operation.zeroBreakpoint);
+        break;
+      case OperationTypeList.AddLozaCmpShift:
+        bScan = addLozaCmpShift(bScan, operation.dx, operation.dt);
         break;
       default:
         unreachable(operation);

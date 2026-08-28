@@ -118,6 +118,7 @@ export const createDataSliceStore = (
     cmpLayers:
       (options.cmpLayers as CmpLayersContainer) ?? new CmpLayersContainer(),
     cmpGate: (options.cmpGate as number) ?? 1,
+    lozaMode: (options.lozaMode as boolean) ?? true,
     setCmpData: (cmpData) => set({ cmpData }),
     setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
     setCmpGate: (cmpGate) => set({ cmpGate }),
@@ -144,6 +145,7 @@ export const createDataSliceStore = (
         cmpLayers.updateLayer(id, time, rmsVelocity);
         return { cmpLayers };
       }),
+    setLozaMode: (lozaMode) => set({ lozaMode }),
   }));
 
 // Registry of stores

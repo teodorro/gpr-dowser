@@ -57,6 +57,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const removeCmpLayer = useStore(store, (s) => s.removeCmpLayer);
   const cmpLayers = useStore(store, (s) => s.cmpLayers);
   const cmpGate = useStore(store, (s) => s.cmpGate);
+  const lozaMode = useStore(store, (s) => s.lozaMode);
 
   const deltaToUpdateLayer = useVisualStore.use.deltaToUpdateLayer();
   const selectedPalette = useVisualStore.use.selectedPalette();
@@ -478,6 +479,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       dx,
       dt,
       cmpGate,
+      lozaMode,
     });
   }, [
     bScan,

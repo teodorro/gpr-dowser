@@ -28,17 +28,6 @@ export const getCmpTimePoint = (
     : part1 * part2;
 };
 
-// export const getCmpLineLoza = (
-//   distance: number,
-//   depth: number,
-//   velocity: number,
-// ) => {
-//   const part1 = 1 / velocity;
-//   const part2 = Math.sqrt(Math.pow(depth * 2, 2) + Math.pow(distance, 2));
-//   const part3 = distance / VELOCITY_LIGHT;
-//   return part1 * part2 - part3;
-// };
-
 export const getCmpLinePoint = (
   time: number,
   velocity: number,

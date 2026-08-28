@@ -34,6 +34,7 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
   const dt = useStore(store, (s) => s.dt);
   const dx = useStore(store, (s) => s.dx);
   const bScan = useStore(store, (s) => s.bScan);
+  const lozaMode = useStore(store, (s) => s.lozaMode);
 
   const cmpBScanLinesColor = useVisualStore.use.cmpBScanLinesColor();
   const bScanCmpTransparency = useVisualStore.use.bScanCmpTransparency();
@@ -112,7 +113,9 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
           const x = i * dx;
           return [
             x,
-            getCmpLinePoint(layer.time, layer.rmsVelocity, x, { loza: true }),
+            getCmpLinePoint(layer.time, layer.rmsVelocity, x, {
+              loza: lozaMode,
+            }),
           ] as [number, number];
         }),
       })),

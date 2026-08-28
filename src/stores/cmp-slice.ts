@@ -11,6 +11,7 @@ type CmpState = {
   cmpIndexY: number | undefined;
   cmpLayers: CmpLayersContainer;
   cmpGate: number;
+  lozaMode: boolean;
 };
 
 type CmpActions = {
@@ -25,6 +26,7 @@ type CmpActions = {
   removeCmpLayer: (id: string) => void;
   updateCmpLayer: (id: string, time: number, rmsVelocity: number) => void;
   setCmpGate: (cmpGate: number) => void;
+  setLozaMode: (lozaMode: boolean) => void;
 };
 
 export type CmpSlice = CmpState & CmpActions;
