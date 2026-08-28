@@ -56,7 +56,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const addCmpLayer = useStore(store, (s) => s.addCmpLayer);
   const removeCmpLayer = useStore(store, (s) => s.removeCmpLayer);
   const cmpLayers = useStore(store, (s) => s.cmpLayers);
-  const cmpGate = useStore(store, (s) => s.cmpGate);
+  const cmpHalfwave = useStore(store, (s) => s.cmpHalfwave);
   const lozaMode = useStore(store, (s) => s.lozaMode);
 
   const deltaToUpdateLayer = useVisualStore.use.deltaToUpdateLayer();
@@ -479,7 +479,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       maxTime: (bScan.rows - indexTimeZero) * dt,
       dx,
       dt,
-      cmpGate,
+      cmpGate: cmpHalfwave / dt,
       lozaMode,
     });
   }, [
@@ -488,10 +488,11 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     dt,
     dx,
     setCmpData,
-    cmpGate,
+    cmpHalfwave,
     setInProgress,
     addProgress,
     clearProgress,
+    lozaMode,
   ]);
 
   useEffect(() => {

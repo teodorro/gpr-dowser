@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 
-export default function CmpGateSlider() {
+export default function CmpHalfwaveSlider() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const store = selectedFileId
     ? dataSliceStores.get(selectedFileId)
@@ -18,15 +18,16 @@ export default function CmpGateSlider() {
     );
   }
 
-  return <CmpGateSliderInternal store={store} />;
+  return <CmpHalfwaveSliderInternal store={store} />;
 }
 
-function CmpGateSliderInternal({ store }: { store: DataStore }) {
+function CmpHalfwaveSliderInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
-  const cmpGate = useStore(store, (s) => s.cmpGate);
-  const setCmpGate = useStore(store, (s) => s.setCmpGate);
+  const cmpHalfwave = useStore(store, (s) => s.cmpHalfwave);
+  const setCmpHalfwave = useStore(store, (s) => s.setCmpHalfwave);
+  const dt = useStore(store, (s) => s.dt);
 
-  const [cmpGateInternal, setCmpGateInternal] = useState(cmpGate);
+  const [cmpHalfwaveInternal, setCmpHalfwaveInternal] = useState(cmpHalfwave);
 
   return (
     <div className="flex flex-col my-2">
@@ -34,20 +35,20 @@ function CmpGateSliderInternal({ store }: { store: DataStore }) {
         {t('CmpHalfWaveLength')}
       </FieldLabel>
       <div className="flex flex-1 flex-row items-center gap-2 m-1">
-        <FieldLabel className="shrink-0 ml-2" htmlFor="cmp-gate">
-          {cmpGateInternal}
+        <FieldLabel className="shrink-0 ml-2" htmlFor="cmp-halfwave">
+          {cmpHalfwaveInternal}
         </FieldLabel>
         <Slider
-          value={[cmpGateInternal]}
-          min={0}
-          max={15}
-          step={1}
+          value={[cmpHalfwaveInternal]}
+          min={dt}
+          max={80}
+          step={dt}
           onValueChange={(value) => {
-            setCmpGateInternal(value[0]);
+            setCmpHalfwaveInternal(value[0]);
           }}
           onValueCommit={(value) => {
-            setCmpGate(value[0]);
-            setCmpGateInternal(value[0]);
+            setCmpHalfwave(value[0]);
+            setCmpHalfwaveInternal(value[0]);
           }}
           className="w-full"
         />

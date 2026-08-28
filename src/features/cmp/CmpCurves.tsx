@@ -1,4 +1,4 @@
-import { getCmpLinePoint } from '@/shared/gpr-math';
+import { getCmpLinePoint, getCmpLinePointBackshifted } from '@/shared/gpr-math';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import useVisualStore from '@/stores/visual-store';
@@ -35,6 +35,8 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
   const dx = useStore(store, (s) => s.dx);
   const bScan = useStore(store, (s) => s.bScan);
   const lozaMode = useStore(store, (s) => s.lozaMode);
+  const cmpHalfwave = useStore(store, (s) => s.cmpHalfwave);
+  const backshift = useStore(store, (s) => s.backshift);
 
   const cmpBScanLinesColor = useVisualStore.use.cmpBScanLinesColor();
   const bScanCmpTransparency = useVisualStore.use.bScanCmpTransparency();
@@ -113,13 +115,18 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
           const x = i * dx;
           return [
             x,
-            getCmpLinePoint(layer.time, layer.rmsVelocity, x, {
-              loza: lozaMode,
-            }),
+            backshift
+              ? getCmpLinePointBackshifted(layer.time, layer.rmsVelocity, x, {
+                  loza: lozaMode,
+                  halfWave: cmpHalfwave,
+                })
+              : getCmpLinePoint(layer.time, layer.rmsVelocity, x, {
+                  loza: lozaMode,
+                }),
           ] as [number, number];
         }),
       })),
-    [cmpLayers.layers, bScan.cols, dx],
+    [cmpLayers.layers, bScan.cols, dx, lozaMode, cmpHalfwave, backshift],
   );
 
   return (

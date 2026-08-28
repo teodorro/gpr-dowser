@@ -117,11 +117,12 @@ export const createDataSliceStore = (
     cmpIndexY: (options.cmpIndexY as number | undefined) ?? undefined,
     cmpLayers:
       (options.cmpLayers as CmpLayersContainer) ?? new CmpLayersContainer(),
-    cmpGate: (options.cmpGate as number) ?? 1,
+    cmpHalfwave: (options.cmpHalfwave as number) ?? 1,
     lozaMode: (options.lozaMode as boolean) ?? true,
+    backshift: (options.backshift as boolean) ?? false,
     setCmpData: (cmpData) => set({ cmpData }),
     setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
-    setCmpGate: (cmpGate) => set({ cmpGate }),
+    setCmpHalfwave: (cmpHalfwave) => set({ cmpHalfwave }),
     setCmpScale: (cmpScale) => set({ cmpScale }),
     setCmpShift: (cmpShiftX, cmpShiftY) => set({ cmpShiftX, cmpShiftY }),
     setCmpIndexX: (cmpIndexX) => set({ cmpIndexX }),
@@ -146,6 +147,7 @@ export const createDataSliceStore = (
         return { cmpLayers };
       }),
     setLozaMode: (lozaMode) => set({ lozaMode }),
+    setBackshift: (backshift) => set({ backshift }),
   }));
 
 // Registry of stores

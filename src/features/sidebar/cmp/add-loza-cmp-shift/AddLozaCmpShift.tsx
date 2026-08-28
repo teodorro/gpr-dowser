@@ -1,9 +1,4 @@
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { AngleIcon, ChartBarDecreasingIcon } from 'lucide-react';
@@ -11,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import addLozaShift from './add-loza-shift';
 import { OperationTypeList } from '@/stores/undo-redo.types';
+import { FieldLabel } from '@/components/ui/field';
 
 export default function AddLozaCmpShift() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -46,47 +42,46 @@ function AddLozaCmpShiftInternal({ store }: { store: DataStore }) {
   };
 
   return (
-    <div className="flex flex-row gap-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
+    <div className="flex flex-col gap-2 my-2">
+      <div className="flex flex-row items-center">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={(e) => {
+            e.preventDefault();
+            setLozaMode(!lozaMode);
+          }}
+          className={
+            lozaMode ? 'border-2 border-primary dark:border-primary' : ''
+          }
+        >
+          <AngleIcon className="w-4 h-4 rotate-135" />
+        </Button>
+        <FieldLabel className="shrink-0 w-48 ml-2" htmlFor="loza-mode">
+          {t('LozaMode')}
+        </FieldLabel>
+      </div>
+
+      {lozaMode && (
+        <div className="flex flex-row items-center">
           <Button
             variant="outline"
             size="icon"
             onClick={(e) => {
               e.preventDefault();
-              setLozaMode(!lozaMode);
+              handleAddShiftClick();
             }}
-            className={
-              lozaMode ? 'border-2 border-primary dark:border-primary' : ''
-            }
           >
-            <AngleIcon className="w-4 h-4 rotate-135" />
+            <ChartBarDecreasingIcon className="w-4 h-4 rotate-90" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{t('LozaMode')}</p>
-        </TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          {lozaMode && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={(e) => {
-                e.preventDefault();
-                handleAddShiftClick();
-              }}
-            >
-              <ChartBarDecreasingIcon className="w-4 h-4 rotate-90" />
-            </Button>
-          )}
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{t('AddLozaCmpShift')}</p>
-        </TooltipContent>
-      </Tooltip>
+          <FieldLabel
+            className="shrink-0 w-48 ml-2"
+            htmlFor="add-loza-cmp-shift"
+          >
+            {t('AddLozaCmpShift')}
+          </FieldLabel>
+        </div>
+      )}
     </div>
   );
 }

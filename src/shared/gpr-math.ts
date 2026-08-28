@@ -40,6 +40,21 @@ export const getCmpLinePoint = (
   return part1 * part2 - part3;
 };
 
+export const getCmpLinePointBackshifted = (
+  time: number,
+  velocity: number,
+  distance: number,
+  options?: { loza: boolean; halfWave: number },
+) => {
+  const deltaTime = options?.halfWave ? options.halfWave * 1.5 : 0;
+  const part1 = 1 / velocity;
+  const part2 = Math.sqrt(
+    Math.pow((time - deltaTime) * velocity, 2) + Math.pow(distance, 2),
+  );
+  const part3 = options?.loza ? distance / VELOCITY_LIGHT : 0;
+  return part1 * part2 - part3 + deltaTime;
+};
+
 export const getDixFormula = (
   time: number,
   rmsVelocity: number,
