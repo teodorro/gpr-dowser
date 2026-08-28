@@ -19,6 +19,7 @@ import { OperationTypeList } from '@/stores/undo-redo.types';
 import CmpCurves from '../cmp/CmpCurves';
 import BScanAxes from './BScanAxes';
 import { BSCAN_CHART_ROOT_ID } from '../export/export-consts';
+import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -69,6 +70,9 @@ function BScanInternal({ store }: { store: DataStore }) {
   });
 
   const dragging = useRef<boolean>(false);
+  const dragMoved = useRef<boolean>(false);
+  const downX = useRef<number>(0);
+  const downY = useRef<number>(0);
   const lastX = useRef<number>(shiftX);
   const lastY = useRef<number>(shiftY);
 
@@ -294,6 +298,9 @@ function BScanInternal({ store }: { store: DataStore }) {
 
     const onDown = (e: MouseEvent) => {
       dragging.current = true;
+      dragMoved.current = false;
+      downX.current = e.clientX;
+      downY.current = e.clientY;
       const { sx, sy } = toViewportLocal(e, canvas);
       lastX.current = sx;
       lastY.current = sy;
@@ -308,6 +315,12 @@ function BScanInternal({ store }: { store: DataStore }) {
       setIndexX(col);
       setIndexY(row);
       if (!dragging.current) return;
+      if (
+        Math.hypot(sx - downX.current, sy - downY.current) >
+        CLICK_MOVE_THRESHOLD
+      ) {
+        dragMoved.current = true;
+      }
 
       const dx = sx - lastX.current;
       const dy = sy - lastY.current;
@@ -320,8 +333,14 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
     };
 
-    const onUp = () => {
+    const onUp = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      const wasDragging = dragMoved.current;
       dragging.current = false;
+      dragMoved.current = false;
+      if (!wasDragging) {
+        onClick(e);
+      }
     };
 
     const onClick = (e: MouseEvent) => {
@@ -389,14 +408,12 @@ function BScanInternal({ store }: { store: DataStore }) {
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     canvas.addEventListener('wheel', onWheel, { passive: false });
-    canvas.addEventListener('click', onClick);
 
     return () => {
       canvas.removeEventListener('mousedown', onDown);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('wheel', onWheel);
-      canvas.removeEventListener('click', onClick);
       if (panRaf.current != null) {
         cancelAnimationFrame(panRaf.current);
         panRaf.current = null;
