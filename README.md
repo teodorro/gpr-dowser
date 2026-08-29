@@ -54,6 +54,8 @@ steps, and — for CMP soundings — estimates a layered velocity/depth model by
   - Align signal to a chosen amplitude breakpoint
   - Zero out the first _N_ left traces
   - Split a radargram into two at a chosen position
+  - Backshift
+  - Bringing Loza CMP radargrams to a standard view
 - **Non-destructive editing** — processing is stored as a _sequence of operations_ and replayed
   from the original data, so undo/redo never loses precision and never mutates the source.
 - **Interactive B-scan canvas** — GPU-friendly rendering with `ImageBitmap`, HiDPI-aware,
@@ -61,6 +63,7 @@ steps, and — for CMP soundings — estimates a layered velocity/depth model by
 - **Multiple files** in tabs, each with its own independent processing history.
 - **Units & physics** — configurable time step (ns), spatial step (m), velocity (m/ns) and
   permittivity, with depth axes derived from them.
+- **Export to SVG** - export to SVG files radargram and semblance analysis charts at any zoom and panning
 - **8 colour palettes** (Greys, Viridis, Turbo, Spectral, Magma, Cubehelix, Sinebow, Rainbow),
   adjustable transparency, and light/dark themes.
 - **Bilingual UI** — English and Russian (i18next).
@@ -100,6 +103,9 @@ t_loza(x) = (1 / v) · √( (2·h)² + x² )  −  x / c
 where `c` is the speed of light in free space. This correction is applied consistently when
 drawing hodographs and when computing the semblance spectrum, so picks made on the semblance map
 correspond to physically meaningful velocities.
+
+Also because a Loza receiver starts recording when the **direct air/ground wave** from the transmitter
+arrives, for every trace the start of recording and the max of a wavelet is getting lower with distance between antennas is getting bigger. This means time zero for two neighbor traces may be different. To correct use "Align signal to a chosen amplitude breakpoint"
 
 ---
 
@@ -155,13 +161,11 @@ Then open the URL printed by Vite (default http://localhost:5173).
 
 Planned and welcome contributions, in rough priority order:
 
-1. **Export of SVG chart images** - export the image you see on a chart. In fact there's
-   not a single chart but layers, so it should be put into one image somehow to be used in publications
-2. **Support for non-Loza GPR data** — generalise the parsers and moveout so conventional
+1. **Support for non-Loza GPR data** — generalise the parsers and moveout so conventional
    (fixed zero-time) radars are handled alongside Loza.
-3. **Hyperbola fitting** — interactive diffraction-hyperbola tool to estimate velocity from
+2. **Hyperbola fitting** — interactive diffraction-hyperbola tool to estimate velocity from
    local point objects on a profile, as an alternative to CMP.
-4. **Gain correction** — time-varying gain (AGC / user-defined gain curves) to compensate for
+3. **Gain correction** — time-varying gain (AGC / user-defined gain curves) to compensate for
    signal attenuation with depth.
 
 ---
