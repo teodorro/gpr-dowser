@@ -1,4 +1,4 @@
-import { getCmpLinePoint, getCmpLinePointBackshifted } from '@/shared/gpr-math';
+import { BACKSHIFT_HALFWAVES, getCmpLinePoint } from '@/shared/gpr-math';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import useVisualStore from '@/stores/visual-store';
@@ -115,14 +115,10 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
           const x = i * dx;
           return [
             x,
-            backshift
-              ? getCmpLinePointBackshifted(layer.time, layer.rmsVelocity, x, {
-                  loza: lozaMode,
-                  halfWave: cmpHalfwave,
-                })
-              : getCmpLinePoint(layer.time, layer.rmsVelocity, x, {
-                  loza: lozaMode,
-                }),
+            getCmpLinePoint(layer.time, layer.rmsVelocity, x, {
+              loza: lozaMode,
+              deltaTime: backshift ? cmpHalfwave * BACKSHIFT_HALFWAVES : 0,
+            }),
           ] as [number, number];
         }),
       })),

@@ -28,31 +28,20 @@ export const getCmpTimePoint = (
     : part1 * part2;
 };
 
+export const BACKSHIFT_HALFWAVES = 1.5;
+
 export const getCmpLinePoint = (
   time: number,
   velocity: number,
   distance: number,
-  options?: { loza: boolean },
+  options?: { loza?: boolean; deltaTime?: number },
 ) => {
-  const part1 = 1 / velocity;
-  const part2 = Math.sqrt(Math.pow(time * velocity, 2) + Math.pow(distance, 2));
-  const part3 = options?.loza ? distance / VELOCITY_LIGHT : 0;
-  return part1 * part2 - part3;
-};
-
-export const getCmpLinePointBackshifted = (
-  time: number,
-  velocity: number,
-  distance: number,
-  options?: { loza: boolean; halfWave: number },
-) => {
-  const deltaTime = options?.halfWave ? options.halfWave * 1.5 : 0;
-  const part1 = 1 / velocity;
-  const part2 = Math.sqrt(
-    Math.pow((time - deltaTime) * velocity, 2) + Math.pow(distance, 2),
-  );
-  const part3 = options?.loza ? distance / VELOCITY_LIGHT : 0;
-  return part1 * part2 - part3 + deltaTime;
+  const deltaTime = options?.deltaTime ?? 0;
+  const onset = deltaTime > 0 ? Math.max(0, time - deltaTime) : time;
+  const geom =
+    Math.sqrt(Math.pow(onset * velocity, 2) + Math.pow(distance, 2)) / velocity;
+  const loza = options?.loza ? distance / VELOCITY_LIGHT : 0;
+  return geom - loza + deltaTime;
 };
 
 export const getDixFormula = (
