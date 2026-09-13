@@ -8,13 +8,15 @@ import type { UndoRedoSlice } from './undo-redo-slice';
 import type { Operation } from './undo-redo.types';
 import type { CmpSlice } from './cmp-slice';
 import CmpLayersContainer from './cmp-layers-container';
+import type { HyperbolaSlice } from './hyperbola-slice';
 
 type DataSliceStore = { id: string } & FileSlice &
   DataSlice &
   UnitSlice &
   VisualSlice &
   UndoRedoSlice &
-  CmpSlice;
+  CmpSlice &
+  HyperbolaSlice;
 
 export const TIME_AXIS_WIDTH = 56;
 export const LENGTH_AXIS_HEIGHT = 46;
@@ -148,6 +150,11 @@ export const createDataSliceStore = (
       }),
     setLozaMode: (lozaMode) => set({ lozaMode }),
     setBackshift: (backshift) => set({ backshift }),
+
+    // HyperbolaSlice
+    hyperbolaApex: (options.hyperbolaApex as [number, number]) ?? [0, 0],
+    setHyperbolaApex: (hyperbolaApex: [number, number]) =>
+      set({ hyperbolaApex }),
   }));
 
 // Registry of stores

@@ -101,6 +101,7 @@ i18n
           AddLozaCmpShift: 'Add Loza CMP shift',
           add_loza_cmp_shift: 'Add Loza CMP shift',
           LozaMode: 'Loza mode',
+          HyperbolaMode: 'Measure velocity by hyperbola',
         },
       },
       ru: {
@@ -197,6 +198,7 @@ i18n
           AddLozaCmpShift: 'Добавить сдвиг ОСТ Лозы',
           add_loza_cmp_shift: 'Добавить сдвиг ОСТ Лозы',
           LozaMode: 'Режим Лозы',
+          HyperbolaMode: 'Измерение скорости по гиперболе',
         },
       },
     },

@@ -1,13 +1,13 @@
-import { BACKSHIFT_HALFWAVES, getCmpLinePoint } from '@/shared/gpr-math';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import useVisualStore from '@/stores/visual-store';
 import clamp from '@/visual/clamp';
-import * as d3 from 'd3';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useRef } from 'react';
 import { useStore } from 'zustand';
+import * as d3 from 'd3';
 
-export default function CmpCurves() {
+export default function BScanHyperbola() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const store = selectedFileId
     ? dataSliceStores.get(selectedFileId)
@@ -19,24 +19,22 @@ export default function CmpCurves() {
     );
   }
 
-  return <CmpCurvesInternal store={store} />;
+  return <BScanHyperbolaInternal store={store} />;
 }
 
-function CmpCurvesInternal({ store }: { store: DataStore }) {
+function BScanHyperbolaInternal({ store }: { store: DataStore }) {
   const roRef = useRef<ResizeObserver | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
-  const cmpLayers = useStore(store, (s) => s.cmpLayers);
   const scale = useStore(store, (s) => s.scale);
   const shiftX = useStore(store, (s) => s.shiftX);
   const shiftY = useStore(store, (s) => s.shiftY);
   const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
   const dt = useStore(store, (s) => s.dt);
   const dx = useStore(store, (s) => s.dx);
+  const velocity = useStore(store, (s) => s.velocity);
   const bScan = useStore(store, (s) => s.bScan);
-  const lozaMode = useStore(store, (s) => s.lozaMode);
-  const cmpHalfwave = useStore(store, (s) => s.cmpHalfwave);
-  const backshift = useStore(store, (s) => s.backshift);
+  const hyperbolaApex = useStore(store, (s) => s.hyperbolaApex);
 
   const cmpBScanLinesColor = useVisualStore.use.bScanLinesColor();
   const bScanCmpTransparency = useVisualStore.use.bScanTransparency();
@@ -107,23 +105,21 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
     [distanceToX, timeToY],
   );
 
-  const curvePoints = useMemo(
-    () =>
-      cmpLayers.layers.map((layer) => ({
-        id: layer.id,
-        points: Array.from({ length: bScan.cols }, (_, i) => {
-          const x = i * dx;
-          return [
-            x,
-            getCmpLinePoint(layer.time, layer.rmsVelocity, x, {
-              loza: lozaMode,
-              deltaTime: backshift ? cmpHalfwave * BACKSHIFT_HALFWAVES : 0,
-            }),
-          ] as [number, number];
-        }),
-      })),
-    [cmpLayers.layers, bScan.cols, dx, lozaMode, cmpHalfwave, backshift],
-  );
+  const hyperbolaPoints = useMemo(() => {
+    const x0 = hyperbolaApex[0] * dx;
+    const t0 = (hyperbolaApex[1] - indexTimeZero) * dt;
+    const points: [number, number][] = Array.from(
+      { length: bScan.cols },
+      (_, i) => {
+        const x = i * dx;
+        const t = Math.sqrt(
+          (4 * Math.pow(x - x0, 2)) / velocity ** 2 + Math.pow(t0, 2),
+        );
+        return [x, t];
+      },
+    );
+    return points;
+  }, [bScan.cols, dx, dt, hyperbolaApex, velocity, indexTimeZero]);
 
   return (
     <div
@@ -146,16 +142,13 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
           height={(wyMax - wyMin) * scale}
           fill={`rgba(255, 255, 255, ${bScanCmpTransparency})`}
         />
-        {curvePoints.map(({ id, points }) => (
-          <path
-            key={id}
-            d={pathLineGenerator(points) ?? ''}
-            clipPath="url(#cmp-curves)"
-            fill="none"
-            stroke={cmpBScanLinesColor}
-            strokeWidth={2}
-          />
-        ))}
+        <path
+          d={pathLineGenerator(hyperbolaPoints) ?? ''}
+          clipPath="url(#cmp-curves)"
+          fill="none"
+          stroke={cmpBScanLinesColor}
+          strokeWidth={2}
+        />
       </svg>
     </div>
   );

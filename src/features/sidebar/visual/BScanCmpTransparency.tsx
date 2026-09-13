@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 export default function BScanCmpTransparency() {
   const { t } = useTranslation();
 
-  const bScanCmpTransparency = useVisualStore.use.bScanCmpTransparency();
-  const setBScanCmpTransparency = useVisualStore.use.setBScanCmpTransparency();
+  const bScanCmpTransparency = useVisualStore.use.bScanTransparency();
+  const setBScanCmpTransparency = useVisualStore.use.setBScanTransparency();
 
   return (
     <div className="flex flex-col gap-2 mx-1 my-2 justify-between">

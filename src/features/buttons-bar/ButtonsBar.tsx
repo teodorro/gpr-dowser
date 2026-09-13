@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import {
   ArrowUpWideNarrowIcon,
+  DraftingCompassIcon,
   FolderOpenIcon,
   PaletteIcon,
   PanelLeftIcon,
@@ -30,6 +31,7 @@ import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import { useStore } from 'zustand';
 import type { UndoRedoMessage } from '../sidebar/undo-redo/undo-redo-worker';
 import Grid2D from '@/shared/grid2d';
+import { Separator } from '@/components/ui/separator';
 
 export default function ButtonsBar() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -48,6 +50,7 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
   const {
     aScanVisible,
     cmpMode,
+    hyperbolaMode,
     sideBarVisible,
     splitBScanMode,
     inProgress,
@@ -248,6 +251,8 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <Separator orientation="vertical" className="w-1" />
+
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -279,6 +284,8 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
           <p>{t('Redo')}</p>
         </TooltipContent>
       </Tooltip>
+
+      <Separator orientation="vertical" className="w-1" />
 
       <Tooltip>
         <TooltipTrigger asChild>
@@ -320,6 +327,24 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
         </TooltipTrigger>
         <TooltipContent>
           <p>{t('CmpMode')}</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              setBScanMode(hyperbolaMode ? BScanMode.none : BScanMode.hyperbola)
+            }
+            className={hyperbolaMode ? 'border-primary border-2' : ''}
+          >
+            <DraftingCompassIcon className="w-4 h-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t('HyperbolaMode')}</p>
         </TooltipContent>
       </Tooltip>
     </div>

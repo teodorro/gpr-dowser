@@ -20,6 +20,7 @@ import CmpCurves from '../cmp/CmpCurves';
 import BScanAxes from './BScanAxes';
 import { BSCAN_CHART_ROOT_ID } from '../export/export-consts';
 import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
+import BScanHyperbola from './BScanHyperbola';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -61,6 +62,9 @@ function BScanInternal({ store }: { store: DataStore }) {
   const setIndexSelectedAscan = useStore(store, (s) => s.setIndexSelectedAscan);
   const setBScan = useStore(store, (s) => s.setBScan);
   const addOperation = useStore(store, (s) => s.addOperation);
+  const setHyperbolaApex = useStore(store, (s) => s.setHyperbolaApex);
+
+  const hyperbolaMode = useUiStore.use.hyperbolaMode();
 
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
     x: shiftX,
@@ -379,6 +383,10 @@ function BScanInternal({ store }: { store: DataStore }) {
         }
       }
 
+      if (hyperbolaMode) {
+        setHyperbolaApex([col, row]);
+      }
+
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
         setIndexTimeZero(row);
       }
@@ -439,6 +447,8 @@ function BScanInternal({ store }: { store: DataStore }) {
     addOperation,
     setBScanMode,
     cmpMode,
+    setHyperbolaApex,
+    hyperbolaMode,
   ]);
 
   useEffect(() => {
@@ -455,6 +465,7 @@ function BScanInternal({ store }: { store: DataStore }) {
         className="absolute inset-0 block w-full h-full"
       />
       {cmpMode && <CmpCurves />}
+      {hyperbolaMode && <BScanHyperbola />}
       <BScanAxes />
     </div>
   );

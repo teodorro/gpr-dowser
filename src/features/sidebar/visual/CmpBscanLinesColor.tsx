@@ -5,8 +5,8 @@ import useVisualStore from '@/stores/visual-store';
 
 export default function CmpBscanLinesColor() {
   const { t } = useTranslation();
-  const cmpBScanLinesColor = useVisualStore.use.cmpBScanLinesColor();
-  const setCmpBScanLinesColor = useVisualStore.use.setCmpBScanLinesColor();
+  const cmpBScanLinesColor = useVisualStore.use.bScanLinesColor();
+  const setCmpBScanLinesColor = useVisualStore.use.setBScanLinesColor();
 
   return (
     <div className="flex flex-row gap-2 m-1 justify-between">
