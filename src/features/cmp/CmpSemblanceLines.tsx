@@ -36,6 +36,7 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
 
   const cmpTransparency = useVisualStore.use.cmpTransparency();
   const cmpSemblanceLinesColor = useVisualStore.use.cmpSemblanceLinesColor();
+  const cmpSemblanceLinesWidth = useVisualStore.use.cmpSemblanceLinesWidth();
 
   const dv = useMemo(
     () => (VELOCITY_LIGHT - VELOCITY_WATER) / cmpData.cols,
@@ -146,7 +147,7 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
             clipPath="url(#cmp-chart)"
             fill="none"
             stroke={cmpSemblanceLinesColor}
-            strokeWidth={1.5}
+            strokeWidth={cmpSemblanceLinesWidth}
             strokeDasharray="5,5"
           />
         )}
@@ -164,7 +165,7 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
             clipPath="url(#cmp-chart)"
             fill="none"
             stroke={cmpSemblanceLinesColor}
-            strokeWidth={1}
+            strokeWidth={cmpSemblanceLinesWidth}
           />
         )}
       </svg>

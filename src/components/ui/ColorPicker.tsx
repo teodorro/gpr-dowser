@@ -13,24 +13,25 @@ export function ColorPicker({
   onChange: (c: string) => void;
 }) {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="outline" className="w-30 justify-start">
-          <div
-            className="h-4 w-4 rounded mr-2 border"
-            style={{ background: value }}
+    <>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline">
+            <div
+              className="h-4 w-4 rounded border"
+              style={{ background: value }}
+            />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto">
+          <HexColorPicker color={value} onChange={onChange} />
+          <Input
+            className="mt-2"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
           />
-          {value}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto">
-        <HexColorPicker color={value} onChange={onChange} />
-        <Input
-          className="mt-2"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 }
