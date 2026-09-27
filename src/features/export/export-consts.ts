@@ -19,7 +19,16 @@ export const STYLE_PROPS = [
   'dominant-baseline',
   'visibility',
   'display',
+  'stop-color',
+  'stop-opacity',
 ];
+
+export const COLOR_PROPS: Record<string, string | undefined> = {
+  fill: 'fill-opacity',
+  stroke: 'stroke-opacity',
+  'stop-color': 'stop-opacity',
+  color: undefined,
+};
 
 export const BSCAN_CHART_ROOT_ID = 'bscan-chart-root';
 export const CMP_SEMBLANCE_CHART_ROOT_ID = 'cmp-semblance-chart-root';

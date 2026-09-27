@@ -1,4 +1,65 @@
-import { STYLE_PROPS, SVG_NS, XLINK_NS } from './export-consts';
+import { COLOR_PROPS, STYLE_PROPS, SVG_NS, XLINK_NS } from './export-consts';
+
+type Rgba = { hex: string; alpha: number };
+
+const colorCache = new Map<string, Rgba | null>();
+let colorCtx: CanvasRenderingContext2D | null = null;
+
+function toRgba(color: string): Rgba | null {
+  const cached = colorCache.get(color);
+  if (cached !== undefined) return cached;
+
+  if (!colorCtx) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 1;
+    colorCtx = c.getContext('2d', { willReadFrequently: true });
+  }
+  let result: Rgba | null = null;
+  if (colorCtx && CSS.supports('color', color)) {
+    colorCtx.clearRect(0, 0, 1, 1);
+    colorCtx.fillStyle = '#000';
+    colorCtx.fillStyle = color;
+    colorCtx.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = colorCtx.getImageData(0, 0, 1, 1).data;
+    const hex = (v: number) => v.toString(16).padStart(2, '0');
+    result = {
+      hex: `#${hex(r)}${hex(g)}${hex(b)}`,
+      alpha: Math.round((a / 255) * 1000) / 1000,
+    };
+  }
+  colorCache.set(color, result);
+  return result;
+}
+
+function setColorAttr(
+  target: Element,
+  prop: string,
+  value: string,
+  opacity: number,
+) {
+  const opacityProp = COLOR_PROPS[prop];
+  if (value === 'none' || value.startsWith('url(')) {
+    target.setAttribute(
+      prop,
+      value.replace(/url\(["']?([^"')]+)["']?\)/, 'url($1)'),
+    );
+    if (opacityProp && opacity < 1)
+      target.setAttribute(opacityProp, String(opacity));
+    return;
+  }
+  const rgba = toRgba(value);
+  if (!rgba) {
+    target.setAttribute(prop, value);
+    return;
+  }
+  if (rgba.alpha === 0) {
+    target.setAttribute(prop, 'none');
+    return;
+  }
+  target.setAttribute(prop, rgba.hex);
+  const total = rgba.alpha * opacity;
+  if (opacityProp && total < 1) target.setAttribute(opacityProp, String(total));
+}
 
 function inlineComputedStyles(src: Element, dst: Element) {
   const srcEls = [src, ...src.querySelectorAll('*')];
@@ -6,13 +67,22 @@ function inlineComputedStyles(src: Element, dst: Element) {
   for (let i = 0; i < srcEls.length; i++) {
     const cs = getComputedStyle(srcEls[i]);
     const target = dstEls[i];
-    let style = '';
-    for (const prop of STYLE_PROPS) {
-      const value = cs.getPropertyValue(prop);
-      if (value) style += `${prop}:${value};`;
-    }
-    target.setAttribute('style', style);
+    target.removeAttribute('style');
     target.removeAttribute('class');
+    for (const prop of STYLE_PROPS) {
+      const value = cs.getPropertyValue(prop).trim();
+      if (!value) continue;
+      if (prop in COLOR_PROPS) {
+        const opacityProp = COLOR_PROPS[prop];
+        const parsed = opacityProp
+          ? parseFloat(cs.getPropertyValue(opacityProp))
+          : NaN;
+        const opacity = Number.isNaN(parsed) ? 1 : parsed;
+        setColorAttr(target, prop, value, opacity);
+      } else if (!(Object.values(COLOR_PROPS) as string[]).includes(prop)) {
+        target.setAttribute(prop, value);
+      }
+    }
   }
 }
 
@@ -52,7 +122,7 @@ export function exportChartToSvg(root: HTMLElement | null, name = 'bscan') {
   bg.setAttribute('y', '0');
   bg.setAttribute('width', String(width));
   bg.setAttribute('height', String(height));
-  bg.setAttribute('fill', getComputedStyle(root).backgroundColor || '#000');
+  setColorAttr(bg, 'fill', getComputedStyle(root).backgroundColor || '#000', 1);
   out.appendChild(bg);
 
   const canvas = root.querySelector('canvas');
@@ -63,7 +133,9 @@ export function exportChartToSvg(root: HTMLElement | null, name = 'bscan') {
     image.setAttribute('width', String(width));
     image.setAttribute('height', String(height));
     image.setAttribute('preserveAspectRatio', 'none');
-    image.setAttributeNS(XLINK_NS, 'href', canvas.toDataURL('image/png'));
+    const dataUrl = canvas.toDataURL('image/png');
+    image.setAttribute('href', dataUrl);
+    image.setAttributeNS(XLINK_NS, 'xlink:href', dataUrl);
     out.appendChild(image);
   }
 
@@ -72,6 +144,10 @@ export function exportChartToSvg(root: HTMLElement | null, name = 'bscan') {
     const clone = svg.cloneNode(true) as SVGSVGElement;
     inlineComputedStyles(svg, clone);
     const group = document.createElementNS(SVG_NS, 'g');
+    const svgRect = svg.getBoundingClientRect();
+    const dx = Math.round(svgRect.left - rect.left);
+    const dy = Math.round(svgRect.top - rect.top);
+    if (dx || dy) group.setAttribute('transform', `translate(${dx}, ${dy})`);
     while (clone.firstChild) group.appendChild(clone.firstChild);
     out.appendChild(group);
   });
