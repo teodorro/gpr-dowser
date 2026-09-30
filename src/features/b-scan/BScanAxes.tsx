@@ -45,6 +45,7 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
   const velocity = useStore(store, (s) => s.velocity);
 
   const palette = useVisualStore.use.selectedPalette();
+  const showDepthAxis = useVisualStore.use.showDepthAxis();
 
   const { t } = useTranslation();
 
@@ -152,10 +153,13 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
             (wxMax - wxMin) * scale - TIME_AXIS_WIDTH,
             shiftX + (wxMax - wxMin) * scale - TIME_AXIS_WIDTH,
           ),
-          size.width - TIME_AXIS_WIDTH - DEPTH_AXIS_WIDTH - PALLETTE_WIDTH,
+          size.width -
+            TIME_AXIS_WIDTH -
+            (showDepthAxis ? DEPTH_AXIS_WIDTH : 0) -
+            PALLETTE_WIDTH,
         ),
       ),
-    [shiftX, size.width, wxMax, wxMin, scale],
+    [shiftX, size.width, wxMax, wxMin, scale, showDepthAxis],
   );
 
   const depthLabelX = useMemo(() => {
@@ -179,19 +183,21 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
   const axisXAmpShift = useMemo(
     () =>
       Math.max(
-        DEPTH_AXIS_WIDTH,
+        showDepthAxis ? DEPTH_AXIS_WIDTH : 8,
         Math.min(
           Math.max(
-            (wxMax - wxMin) * scale - TIME_AXIS_WIDTH + DEPTH_AXIS_WIDTH,
+            (wxMax - wxMin) * scale -
+              TIME_AXIS_WIDTH +
+              (showDepthAxis ? DEPTH_AXIS_WIDTH : 8),
             shiftX +
               (wxMax - wxMin) * scale -
               TIME_AXIS_WIDTH +
-              DEPTH_AXIS_WIDTH,
+              (showDepthAxis ? DEPTH_AXIS_WIDTH : 8),
           ),
           size.width - TIME_AXIS_WIDTH - PALLETTE_WIDTH,
         ) - 5,
       ),
-    [shiftX, size.width, wxMax, wxMin, scale],
+    [shiftX, size.width, wxMax, wxMin, scale, showDepthAxis],
   );
 
   useEffect(() => {
@@ -245,7 +251,7 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
       .attr('dx', '0.2em')
       .attr('dy', '0.7em')
       .attr('text-anchor', 'start');
-  }, [zDomainRange]);
+  }, [zDomainRange, showDepthAxis]);
 
   return (
     <div
@@ -289,30 +295,34 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
         </text>
 
         {/* Depth axis */}
-        <rect
-          x={axisXDepthShift + TIME_AXIS_WIDTH}
-          y={0}
-          width={DEPTH_AXIS_WIDTH}
-          height={size.height}
-          className="fill-scan"
-        />
-        <g
-          ref={depthAxisRef}
-          className="text-scan-foreground"
-          transform={`translate(${axisXDepthShift + TIME_AXIS_WIDTH}, 0)`}
-        ></g>
-        <text
-          x={axisXDepthShift + TIME_AXIS_WIDTH + 4}
-          y={depthLabelX + 12}
-          className="text-scan-foreground"
-          fill="currentColor"
-          fontSize={12}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          transform={`rotate(-90, ${axisXDepthShift + TIME_AXIS_WIDTH + 12}, ${timeLabelY - 12})`}
-        >
-          {t('Depth')}
-        </text>
+        {showDepthAxis && (
+          <>
+            <rect
+              x={axisXDepthShift + TIME_AXIS_WIDTH}
+              y={0}
+              width={DEPTH_AXIS_WIDTH}
+              height={size.height}
+              className="fill-scan"
+            />
+            <g
+              ref={depthAxisRef}
+              className="text-scan-foreground"
+              transform={`translate(${axisXDepthShift + TIME_AXIS_WIDTH}, 0)`}
+            ></g>
+            <text
+              x={axisXDepthShift + TIME_AXIS_WIDTH + 4}
+              y={depthLabelX + 12}
+              className="text-scan-foreground"
+              fill="currentColor"
+              fontSize={12}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              transform={`rotate(-90, ${axisXDepthShift + TIME_AXIS_WIDTH + 12}, ${timeLabelY - 12})`}
+            >
+              {t('Depth')}
+            </text>
+          </>
+        )}
 
         {/* Amplitude axis */}
         <rect

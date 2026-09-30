@@ -12,6 +12,7 @@ type VisualState = {
   deltaToUpdateLayer: number;
   bScanTransparency: number;
   cmpTransparency: number;
+  showDepthAxis: boolean;
 };
 
 type VisualActions = {
@@ -23,6 +24,7 @@ type VisualActions = {
   setDeltaToUpdateLayer: (delta: number) => void;
   setBScanTransparency: (transparency: number) => void;
   setCmpTransparency: (transparency: number) => void;
+  setShowDepthAxis: (showDepthAxis: boolean) => void;
 };
 
 type VisualStore = VisualState & VisualActions;
@@ -36,6 +38,7 @@ const INITIAL_STATE: VisualState = {
   deltaToUpdateLayer: DEFAULT_DELTA_TO_UPDATE_LAYER,
   bScanTransparency: 0.0,
   cmpTransparency: 0.33,
+  showDepthAxis: true,
 };
 
 const useVisualBase = create<VisualStore>((set) => ({
@@ -50,6 +53,8 @@ const useVisualBase = create<VisualStore>((set) => ({
     set({ bScanTransparency: transparency }),
   setCmpTransparency: (transparency: number) =>
     set({ cmpTransparency: transparency }),
+  setShowDepthAxis: (showDepthAxis: boolean) =>
+    set({ showDepthAxis: showDepthAxis }),
 }));
 
 const useVisualStore = createSelectors(useVisualBase);

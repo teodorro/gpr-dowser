@@ -39,12 +39,7 @@ const Sidebar = () => {
           <UndoRedo />
         </NavItem>
 
-        <NavItem
-          icon={<WallpaperIcon />}
-          label={t('VisualSettings')}
-          disabled={!cmpMode}
-          expanded={cmpMode}
-        >
+        <NavItem icon={<WallpaperIcon />} label={t('VisualSettings')}>
           <VisualSettings />
         </NavItem>
 

@@ -1,21 +1,23 @@
 import useUiStore from '@/stores/ui-store';
 import BScanCmpTransparency from './BScanCmpTransparency';
-import CmpBscanLinesColor from './CmpBscanLinesColor';
+import BScanCurvesColor from './BScanCurvesColor';
 import CmpSemblanceLinesColor from './CmpSemblanceLinesColor';
 import CmpTransparency from './CmpTransparency';
+import ShowDepthAxis from './ShowDepthAxis';
+import { useTranslation } from 'react-i18next';
 
 export default function VisualSettings() {
   const cmpMode = useUiStore.use.cmpMode();
+  const hyperbolaMode = useUiStore.use.hyperbolaMode();
+  const { t } = useTranslation();
   return (
     <div>
-      {cmpMode && (
-        <>
-          <CmpSemblanceLinesColor />
-          <CmpBscanLinesColor />
-          <CmpTransparency />
-          <BScanCmpTransparency />
-        </>
-      )}
+      <ShowDepthAxis />
+      {cmpMode && <CmpSemblanceLinesColor />}
+      {cmpMode && <BScanCurvesColor label={t('CmpBscanLines')} />}
+      {cmpMode && <CmpTransparency />}
+      {hyperbolaMode && <BScanCurvesColor label={t('Hyperbola')} />}
+      <BScanCmpTransparency />
     </div>
   );
 }

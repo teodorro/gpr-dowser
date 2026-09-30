@@ -102,6 +102,8 @@ i18n
           add_loza_cmp_shift: 'Add Loza CMP shift',
           LozaMode: 'Loza mode',
           HyperbolaMode: 'Measure velocity by hyperbola',
+          ShowDepthAxis: 'Show depth axis',
+          Hyperbola: 'Hyperbola',
         },
       },
       ru: {
@@ -199,6 +201,8 @@ i18n
           add_loza_cmp_shift: 'Добавить сдвиг ОСТ Лозы',
           LozaMode: 'Режим Лозы',
           HyperbolaMode: 'Измерение скорости по гиперболе',
+          ShowDepthAxis: 'Показать ось глубины',
+          Hyperbola: 'Гипербола',
         },
       },
     },
