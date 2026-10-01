@@ -3,6 +3,7 @@ import {
   ArrowUpWideNarrowIcon,
   DraftingCompassIcon,
   FolderOpenIcon,
+  MousePointerClickIcon,
   PaletteIcon,
   PanelLeftIcon,
   PanelRightIcon,
@@ -51,6 +52,7 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
     aScanVisible,
     cmpMode,
     hyperbolaMode,
+    selectMode,
     sideBarVisible,
     splitBScanMode,
     inProgress,
@@ -286,6 +288,24 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
       </Tooltip>
 
       <Separator orientation="vertical" className="w-1" />
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              setBScanMode(selectMode ? BScanMode.none : BScanMode.select)
+            }
+            className={selectMode ? 'border-primary border-2' : ''}
+          >
+            <MousePointerClickIcon className="w-4 h-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t('SelectMode')}</p>
+        </TooltipContent>
+      </Tooltip>
 
       <Tooltip>
         <TooltipTrigger asChild>

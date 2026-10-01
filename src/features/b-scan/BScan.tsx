@@ -48,6 +48,7 @@ function BScanInternal({ store }: { store: DataStore }) {
   const splitBscanMode = useUiStore.use.splitBScanMode();
   const setBScanMode = useUiStore.use.setBScanMode();
   const cmpMode = useUiStore.use.cmpMode();
+  const selectMode = useUiStore.use.selectMode();
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
   const shiftX = useStore(store, (s) => s.shiftX);
@@ -284,7 +285,9 @@ function BScanInternal({ store }: { store: DataStore }) {
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
-      setIndexSelectedAscan(col < 0 || col >= dims.cols ? undefined : col);
+      if (!selectMode) {
+        setIndexSelectedAscan(col < 0 || col >= dims.cols ? undefined : col);
+      }
       const { rows, cols } = dims; // rows = bitmap height, cols = bitmap width
       if (col < 0 || col >= cols || row < 0 || row >= rows) return null;
       if (sx < 0 || sy < 0 || sx > vpRef.current.w || sy > vpRef.current.h) {
@@ -292,7 +295,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
       return { col, row, wx, wy, px, py };
     },
-    [shiftX, shiftY, scale, dims, setIndexSelectedAscan],
+    [shiftX, shiftY, scale, dims, setIndexSelectedAscan, selectMode],
   );
 
   // Mouse interactions: pan + wheel zoom
@@ -385,6 +388,10 @@ function BScanInternal({ store }: { store: DataStore }) {
 
       if (hyperbolaMode) {
         setHyperbolaApex([col, row]);
+      }
+
+      if (selectMode) {
+        setIndexSelectedAscan(col < 0 || col >= dims.cols ? undefined : col);
       }
 
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {

@@ -8,12 +8,14 @@ type UiState = {
   splitBScanMode: boolean;
   cmpMode: boolean;
   hyperbolaMode: boolean;
+  selectMode: boolean;
   cmpTableVisible: boolean;
   progress: number[];
   inProgress: boolean;
 };
 
 export const BScanMode = {
+  select: 'select',
   split: 'split',
   cmp: 'cmp',
   hyperbola: 'hyperbola',
@@ -26,6 +28,7 @@ type UiActions = {
   setSideBarVisible: (visible: boolean) => void;
   setAScanVisible: (visible: boolean) => void;
   setBScanMode: (mode: BScanMode) => void;
+  setSelectMode: (mode: boolean) => void;
   setCmpTableVisible: (visible: boolean) => void;
   addProgress: (progress: number) => void;
   clearProgress: () => void;
@@ -40,6 +43,7 @@ const INITIAL_STATE: UiState = {
   splitBScanMode: false,
   cmpMode: false,
   hyperbolaMode: false,
+  selectMode: false,
   cmpTableVisible: true,
   progress: [],
   inProgress: false,
@@ -62,6 +66,7 @@ const useUiBase = create<Ui>((set) => ({
           splitBScanMode: false,
           cmpMode: false,
           hyperbolaMode: false,
+          selectMode: false,
         }));
         break;
       case BScanMode.split:
@@ -70,6 +75,7 @@ const useUiBase = create<Ui>((set) => ({
           splitBScanMode: true,
           cmpMode: false,
           hyperbolaMode: false,
+          selectMode: false,
         }));
         break;
       case BScanMode.cmp:
@@ -78,6 +84,7 @@ const useUiBase = create<Ui>((set) => ({
           cmpMode: true,
           splitBScanMode: false,
           hyperbolaMode: false,
+          selectMode: false,
         }));
         break;
       case BScanMode.hyperbola:
@@ -86,11 +93,24 @@ const useUiBase = create<Ui>((set) => ({
           hyperbolaMode: true,
           splitBScanMode: false,
           cmpMode: false,
+          selectMode: false,
+        }));
+        break;
+      case BScanMode.select:
+        set((s) => ({
+          ...s,
+          selectMode: true,
+          splitBScanMode: false,
+          cmpMode: false,
+          hyperbolaMode: false,
         }));
         break;
       default:
         unreachable(mode);
     }
+  },
+  setSelectMode: (mode: boolean) => {
+    set((s) => ({ ...s, selectMode: mode }));
   },
   setCmpTableVisible: (visible: boolean) => {
     set((s) => ({ ...s, cmpTableVisible: visible }));

@@ -106,6 +106,7 @@ i18n
           Hyperbola: 'Hyperbola',
           MoveToLeftTopCorner: 'To left top corner',
           MoveToTopBorder: 'To top border',
+          SelectMode: 'Select trace',
         },
       },
       ru: {
@@ -207,6 +208,7 @@ i18n
           Hyperbola: 'Гипербола',
           MoveToLeftTopCorner: 'В левый верхний угол',
           MoveToTopBorder: 'К верхней границе',
+          SelectMode: 'Выбрать волновую форму',
         },
       },
     },
