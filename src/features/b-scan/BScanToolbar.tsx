@@ -35,6 +35,7 @@ function BScanToolbarInternal({ store }: { store: DataStore }) {
 
   const shiftX = useStore(store, (s) => s.shiftX);
   const setShift = useStore(store, (s) => s.setShift);
+  const scale = useStore(store, (s) => s.scale);
 
   const handleMoveToLeftTopCorner = () => {
     setShift(TIME_AXIS_WIDTH, LENGTH_AXIS_HEIGHT);
@@ -45,7 +46,18 @@ function BScanToolbarInternal({ store }: { store: DataStore }) {
   };
 
   return (
-    <div>
+    <div className="flex flex-row gap-1 items-center mr-1">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="text-xs mr-1 text-gray-400">
+            {Math.round(scale * 100)}%
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t('Scale')}</p>
+        </TooltipContent>
+      </Tooltip>
+
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -53,7 +65,7 @@ function BScanToolbarInternal({ store }: { store: DataStore }) {
             size="icon-xs"
             onClick={handleMoveToLeftTopCorner}
           >
-            <ArrowUpLeftIcon className="w-3 h-3" />
+            <ArrowUpLeftIcon className="w-3 h-3 text-gray-400" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>
@@ -68,7 +80,7 @@ function BScanToolbarInternal({ store }: { store: DataStore }) {
             size="icon-xs"
             onClick={handleMoveToTopBorder}
           >
-            <ArrowUpToLineIcon className="w-3 h-3" />
+            <ArrowUpToLineIcon className="w-3 h-3 text-gray-400" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>

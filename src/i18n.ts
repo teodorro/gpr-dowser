@@ -107,6 +107,7 @@ i18n
           MoveToLeftTopCorner: 'To left top corner',
           MoveToTopBorder: 'To top border',
           SelectMode: 'Select trace',
+          Scale: 'Scale',
         },
       },
       ru: {
@@ -209,6 +210,7 @@ i18n
           MoveToLeftTopCorner: 'В левый верхний угол',
           MoveToTopBorder: 'К верхней границе',
           SelectMode: 'Выбрать волновую форму',
+          Scale: 'Масштаб',
         },
       },
     },
