@@ -104,6 +104,8 @@ i18n
           HyperbolaMode: 'Measure velocity by hyperbola',
           ShowDepthAxis: 'Show depth axis',
           Hyperbola: 'Hyperbola',
+          MoveToLeftTopCorner: 'Move radargram to left top corner',
+          MoveToTopBorder: 'Move radargram to top border',
         },
       },
       ru: {
@@ -203,6 +205,8 @@ i18n
           HyperbolaMode: 'Измерение скорости по гиперболе',
           ShowDepthAxis: 'Показать ось глубины',
           Hyperbola: 'Гипербола',
+          MoveToLeftTopCorner: 'Переместить радарограмму в левый верхний угол',
+          MoveToTopBorder: 'Переместить радарограмму к верхней границе',
         },
       },
     },

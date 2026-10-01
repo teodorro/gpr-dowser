@@ -20,6 +20,8 @@ import CmpLayersTable from './features/sidebar/cmp/CmpLayersTable';
 import { Button } from './components/ui/button';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import ProgressBar from './features/progress-bar/ProgressBar';
+import BScanToolbar from './features/b-scan/BScanToolbar';
+import CmpSemblanceToolbar from './features/cmp/CmpSemblanceToolbar';
 
 function App() {
   const fileIds = useFileRegistryStore.use.fileIds();
@@ -68,13 +70,21 @@ function App() {
           {fileIds.length > 0 && <FileTabs />}
           <div className="flex flex-row flex-1 min-w-0 min-h-0 gap-2">
             <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-1">
-              <BScan />
+              <div className="relative flex flex-1 min-w-0 min-h-0">
+                <BScan />
+                <div className="absolute top-0 right-0 z-10">
+                  <BScanToolbar />
+                </div>
+              </div>
               <BScanStatusBar />
             </div>
             {cmpMode && (
               <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-1">
                 <div className="relative flex flex-1 min-w-0 min-h-0">
                   <CmpSemblance />
+                  <div className="absolute top-0 right-0 z-10">
+                    <CmpSemblanceToolbar />
+                  </div>
                   <Button
                     variant="outline"
                     size="icon"

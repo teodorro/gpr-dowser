@@ -396,7 +396,7 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
           className="fill-scan"
         />
         <rect
-          x={TIME_AXIS_WIDTH + axisXDepthShift - 2}
+          x={TIME_AXIS_WIDTH + axisXDepthShift}
           y={axisYShift + LENGTH_AXIS_HEIGHT - 8}
           width={TIME_AXIS_WIDTH + DEPTH_AXIS_WIDTH}
           height={8}
