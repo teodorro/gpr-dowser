@@ -17,7 +17,7 @@ export default function VisualSettings() {
       {cmpMode && <BScanCurvesColor label={t('CmpBscanLines')} />}
       {cmpMode && <CmpTransparency />}
       {hyperbolaMode && <BScanCurvesColor label={t('Hyperbola')} />}
-      <BScanCmpTransparency />
+      {(cmpMode || hyperbolaMode) && <BScanCmpTransparency />}
     </div>
   );
 }

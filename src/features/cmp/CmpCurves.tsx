@@ -40,7 +40,7 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
 
   const cmpBScanLinesColor = useVisualStore.use.bScanLinesColor();
   const bScanLinesWidth = useVisualStore.use.bScanLinesWidth();
-  const bScanCmpTransparency = useVisualStore.use.bScanTransparency();
+  const bScanTransparency = useVisualStore.use.bScanTransparency();
 
   const setContainer = useCallback((node: HTMLDivElement | null) => {
     roRef.current?.disconnect();
@@ -145,7 +145,7 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
           y={wyMin * scale + shiftY}
           width={(wxMax - wxMin) * scale}
           height={(wyMax - wyMin) * scale}
-          fill={`rgba(255, 255, 255, ${bScanCmpTransparency})`}
+          fill={`rgba(255, 255, 255, ${bScanTransparency})`}
         />
         {curvePoints.map(({ id, points }) => (
           <path

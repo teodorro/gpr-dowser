@@ -456,6 +456,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     cmpMode,
     setHyperbolaApex,
     hyperbolaMode,
+    selectMode,
   ]);
 
   useEffect(() => {
