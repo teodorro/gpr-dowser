@@ -121,7 +121,7 @@ export const createDataSliceStore = (
       (options.cmpLayers as CmpLayersContainer) ?? new CmpLayersContainer(),
     cmpHalfwave: (options.cmpHalfwave as number) ?? 1,
     lozaMode: (options.lozaMode as boolean) ?? true,
-    backshift: (options.backshift as boolean) ?? false,
+    backshift: (options.backshift as boolean) ?? true,
     setCmpData: (cmpData) => set({ cmpData }),
     setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
     setCmpHalfwave: (cmpHalfwave) => set({ cmpHalfwave }),
