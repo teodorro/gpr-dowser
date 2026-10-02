@@ -147,11 +147,11 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
   const axisXDepthShift = useMemo(
     () =>
       Math.max(
-        8,
+        0,
         Math.min(
           Math.max(
-            (wxMax - wxMin) * scale - TIME_AXIS_WIDTH + 8,
-            shiftX + (wxMax - wxMin) * scale - TIME_AXIS_WIDTH + 8,
+            (wxMax - wxMin) * scale - TIME_AXIS_WIDTH,
+            shiftX + (wxMax - wxMin) * scale - TIME_AXIS_WIDTH,
           ),
           size.width -
             TIME_AXIS_WIDTH -
