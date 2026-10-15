@@ -13,11 +13,13 @@ type Props = {
 };
 
 export default function FileTab({ id, label }: Props) {
-  const closeTab = useFileRegistryStore.use.removeFile();
+  const removeFile = useFileRegistryStore.use.removeFile();
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
 
   const setBScanMode = useUiStore.use.setBScanMode();
   const cmpMode = useUiStore.use.cmpMode();
+
+  const selectFile = useFileRegistryStore.use.selectFile();
 
   const isSelected = id === selectedFileId;
 
@@ -25,7 +27,13 @@ export default function FileTab({ id, label }: Props) {
     return label.length > maxLength ? label.slice(0, maxLength) + '...' : label;
   };
 
-  const selectFile = useFileRegistryStore.use.selectFile();
+  const handleCloseTab = (id: string) => {
+    if (cmpMode) {
+      setBScanMode(BScanMode.none);
+    }
+    removeFile(id);
+    dataSliceStores.delete(id);
+  };
 
   return (
     <div
@@ -58,7 +66,7 @@ export default function FileTab({ id, label }: Props) {
           if (cmpMode) {
             setBScanMode(BScanMode.none);
           }
-          closeTab(id);
+          handleCloseTab(id);
         }}
       >
         <XIcon className="w-4 h-4" />
