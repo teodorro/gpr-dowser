@@ -51,12 +51,12 @@ function CmpLayersTableInternal({ store }: { store: DataStore }) {
       <Table containerClassName="h-full min-h-0">
         <TableHeader className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-background">
           <TableRow>
+            <TableHead></TableHead>
             <TableHead>{t('Time')}</TableHead>
             <TableHead>{t('Velocity')}</TableHead>
             <TableHead>{t('PermittivityShort')}</TableHead>
             <TableHead>{t('Thickness')}</TableHead>
             <TableHead>{t('TotalThickness')}</TableHead>
-            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -65,6 +65,15 @@ function CmpLayersTableInternal({ store }: { store: DataStore }) {
               key={layer.id}
               className={cn(isWrongLayer(layer) ? 'bg-red-500' : '')}
             >
+              <TableCell className="p-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeCmpLayer(layer.id)}
+                >
+                  <Trash2Icon />
+                </Button>
+              </TableCell>
               <TableCell>{getRound(layer.time, 0)}</TableCell>
               <TableCell
                 className={cn(
@@ -100,15 +109,6 @@ function CmpLayersTableInternal({ store }: { store: DataStore }) {
                 {getRound(layer.thickness)}
               </TableCell>
               <TableCell>{getRound(layer.totalThickness)}</TableCell>
-              <TableCell className="p-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeCmpLayer(layer.id)}
-                >
-                  <Trash2Icon />
-                </Button>
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
