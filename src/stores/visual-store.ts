@@ -13,6 +13,8 @@ type VisualState = {
   bScanTransparency: number;
   cmpTransparency: number;
   showDepthAxis: boolean;
+  showIntervalLines: boolean;
+  showTotalLines: boolean;
 };
 
 type VisualActions = {
@@ -25,20 +27,25 @@ type VisualActions = {
   setBScanTransparency: (transparency: number) => void;
   setCmpTransparency: (transparency: number) => void;
   setShowDepthAxis: (showDepthAxis: boolean) => void;
+  setShowIntervalLines: (showIntervalLines: boolean) => void;
+  setShowTotalLines: (showTotalLines: boolean) => void;
 };
 
 type VisualStore = VisualState & VisualActions;
 
 const INITIAL_STATE: VisualState = {
   selectedPalette: 'greys',
-  cmpSemblanceLinesColor: '#000',
+  // cmpSemblanceLinesColor: '#000',
+  cmpSemblanceLinesColor: 'oklch(0.7051 0.2004 37.45)',
   cmpSemblanceLinesWidth: 2,
-  bScanLinesColor: '#ffff00',
-  bScanLinesWidth: 2,
+  bScanLinesColor: 'oklch(0.7051 0.2004 37.45)',
+  bScanLinesWidth: 3,
   deltaToUpdateLayer: DEFAULT_DELTA_TO_UPDATE_LAYER,
   bScanTransparency: 0.0,
-  cmpTransparency: 0.33,
+  cmpTransparency: 0.0,
   showDepthAxis: true,
+  showIntervalLines: true,
+  showTotalLines: true,
 };
 
 const useVisualBase = create<VisualStore>((set) => ({
@@ -55,6 +62,10 @@ const useVisualBase = create<VisualStore>((set) => ({
     set({ cmpTransparency: transparency }),
   setShowDepthAxis: (showDepthAxis: boolean) =>
     set({ showDepthAxis: showDepthAxis }),
+  setShowIntervalLines: (showIntervalLines: boolean) =>
+    set({ showIntervalLines: showIntervalLines }),
+  setShowTotalLines: (showTotalLines: boolean) =>
+    set({ showTotalLines: showTotalLines }),
 }));
 
 const useVisualStore = createSelectors(useVisualBase);

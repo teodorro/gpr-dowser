@@ -5,6 +5,8 @@ import CmpSemblanceLinesColor from './CmpSemblanceLinesColor';
 import CmpTransparency from './CmpTransparency';
 import ShowDepthAxis from './ShowDepthAxis';
 import { useTranslation } from 'react-i18next';
+import ShowTotalLines from './ShowTotalLines';
+import ShowIntervalLines from './ShowIntervalLines';
 
 export default function VisualSettings() {
   const cmpMode = useUiStore.use.cmpMode();
@@ -13,9 +15,11 @@ export default function VisualSettings() {
   return (
     <div>
       <ShowDepthAxis />
+      <ShowIntervalLines />
+      <ShowTotalLines />
       {cmpMode && <CmpSemblanceLinesColor />}
-      {cmpMode && <BScanCurvesColor label={t('CmpBscanLines')} />}
       {cmpMode && <CmpTransparency />}
+      {cmpMode && <BScanCurvesColor label={t('CmpBscanLines')} />}
       {hyperbolaMode && <BScanCurvesColor label={t('Hyperbola')} />}
       {(cmpMode || hyperbolaMode) && <BScanCmpTransparency />}
     </div>

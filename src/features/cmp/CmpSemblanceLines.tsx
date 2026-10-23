@@ -37,6 +37,8 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
   const cmpTransparency = useVisualStore.use.cmpTransparency();
   const cmpSemblanceLinesColor = useVisualStore.use.cmpSemblanceLinesColor();
   const cmpSemblanceLinesWidth = useVisualStore.use.cmpSemblanceLinesWidth();
+  const showIntervalLines = useVisualStore.use.showIntervalLines();
+  const showTotalLines = useVisualStore.use.showTotalLines();
 
   const dv = useMemo(
     () => (VELOCITY_LIGHT - VELOCITY_WATER) / cmpData.cols,
@@ -133,7 +135,7 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
           height={(wyMax - wyMin) * cmpScale}
           fill={`rgba(255, 255, 255, ${cmpTransparency})`}
         />
-        {cmpLayers.layers.length > 0 && (
+        {cmpLayers.layers.length > 0 && showIntervalLines && (
           <path
             d={
               pathLineGenerator([
@@ -151,7 +153,7 @@ function CmpSemblanceLinesInternal({ store }: { store: DataStore }) {
             strokeDasharray="5,5"
           />
         )}
-        {cmpLayers.layers.length > 0 && (
+        {cmpLayers.layers.length > 0 && showTotalLines && (
           <path
             d={
               pathLineGenerator([

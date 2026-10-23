@@ -8,7 +8,7 @@ export default function ShowDepthAxis() {
   const showDepthAxis = useVisualStore.use.showDepthAxis();
   const setShowDepthAxis = useVisualStore.use.setShowDepthAxis();
   return (
-    <div className="flex flex-row gap-2 m-1 justify-between">
+    <div className="flex flex-row gap-2 mx-1 my-3 justify-between">
       <FieldLabel className="shrink-0 ml-2" htmlFor="showDepthAxis">
         {t('ShowDepthAxis')}
       </FieldLabel>
