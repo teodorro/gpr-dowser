@@ -1,5 +1,9 @@
 import { getCmpTimePoint, getDepth } from '@/shared/gpr-math';
 import Grid2D from '@/shared/grid2d';
+import {
+  SEMBLANCE_MAX_WIDTH,
+  SEMBLANCE_MIN_WIDTH,
+} from '@/stores/data-slice-stores';
 
 export type SemblanceMessage =
   | {
@@ -25,12 +29,16 @@ export type DataContainer = {
 
 self.onmessage = (e: MessageEvent<{ d: DataContainer }>) => {
   const dc = e.data as unknown as DataContainer;
-  const res = new Grid2D(dc.data.cols, dc.data.rows);
+  const colsNumber = Math.min(
+    Math.max(dc.data.cols, SEMBLANCE_MIN_WIDTH),
+    SEMBLANCE_MAX_WIDTH,
+  );
+  const res = new Grid2D(colsNumber, dc.data.rows);
   const data = new Grid2D(dc.data.cols, dc.data.rows, dc.data.buf);
-  for (let i = 0; i < dc.data.cols; i++) {
+  for (let i = 0; i < colsNumber; i++) {
     const velocity =
       dc.minVelocity +
-      (i / (dc.data.cols - 1)) * (dc.maxVelocity - dc.minVelocity);
+      (i / (colsNumber - 1)) * (dc.maxVelocity - dc.minVelocity);
     for (let j = 0; j < dc.data.rows; j++) {
       const time =
         dc.minTime + (j / (dc.data.rows - 1)) * (dc.maxTime - dc.minTime);
@@ -48,7 +56,7 @@ self.onmessage = (e: MessageEvent<{ d: DataContainer }>) => {
       );
       res.set(i, j, semblance);
     }
-    self.postMessage({ type: 'progress', progress: (i + 1) / dc.data.cols });
+    self.postMessage({ type: 'progress', progress: (i + 1) / colsNumber });
   }
   self.postMessage({ type: 'complete', result: res });
   return res;

@@ -387,9 +387,16 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
-      if (col < 0 || col >= bScan.cols || row < 0 || row >= bScan.rows) return;
+      if (
+        col < 0 ||
+        col >= cmpData.cols ||
+        row < 0 ||
+        row >= cmpDisplayBuffer.rows
+      )
+        return;
       const avgVelocity =
-        (col * (VELOCITY_LIGHT - VELOCITY_WATER)) / bScan.cols + VELOCITY_WATER;
+        (col * (VELOCITY_LIGHT - VELOCITY_WATER)) / cmpData.cols +
+        VELOCITY_WATER;
       const time = row * dt - indexTimeZero * dt;
 
       const layers = cmpLayers.layers.filter(
