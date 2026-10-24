@@ -15,8 +15,8 @@ export default function VisualSettings() {
   return (
     <div>
       <ShowDepthAxis />
-      <ShowIntervalLines />
-      <ShowTotalLines />
+      {cmpMode && <ShowIntervalLines />}
+      {cmpMode && <ShowTotalLines />}
       {cmpMode && <CmpSemblanceLinesColor />}
       {cmpMode && <CmpTransparency />}
       {cmpMode && <BScanCurvesColor label={t('CmpBscanLines')} />}
