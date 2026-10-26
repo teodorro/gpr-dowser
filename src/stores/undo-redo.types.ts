@@ -8,6 +8,7 @@ export const OperationTypeList = {
   CmpAlignSignal: 'cmp_align_signal',
   SetLeftAScansToZero: 'set_left_ascans_to_zero',
   AddLozaCmpShift: 'add_loza_cmp_shift',
+  TurnAroundBscan: 'turn_around_bscan',
 } as const;
 
 export type OperationType =
@@ -54,6 +55,9 @@ export type Operation =
       type: typeof OperationTypeList.AddLozaCmpShift;
       dx: number;
       dt: number;
+    }
+  | {
+      type: typeof OperationTypeList.TurnAroundBscan;
     };
 
 export type OperationHistory = {

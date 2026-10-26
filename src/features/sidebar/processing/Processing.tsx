@@ -3,6 +3,7 @@ import DewowInput from './statistical-processing/dewow/DewowInput';
 import SavitzkyGolay from './statistical-processing/savitzky-golay/SavitzkyGolay';
 import SubtractAvg from './statistical-processing/subtract-avg/SubtractAvg';
 import GaussSmooth from './statistical-processing/gauss-smooth/GaussSmooth';
+import TurnAround from './statistical-processing/turn-around/TurnAround';
 
 export default function Processing() {
   return (
@@ -14,6 +15,8 @@ export default function Processing() {
       <GaussSmooth />
       <Separator />
       <SavitzkyGolay />
+      <Separator />
+      <TurnAround />
     </div>
   );
 }

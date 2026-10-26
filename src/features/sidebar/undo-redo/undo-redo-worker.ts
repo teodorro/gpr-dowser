@@ -9,6 +9,7 @@ import { gaussianSmooth } from '../processing/statistical-processing/gauss-smoot
 import { alignSignal } from '../cmp/signal-aligner/align-signal';
 import { setLeftAScansToZero } from '../cmp/left-ascans-to-zero/set-left-ascans-to-zero';
 import addLozaCmpShift from '../cmp/add-loza-cmp-shift/add-loza-shift';
+import turnAroundBscan from '../processing/statistical-processing/turn-around/turn-around-bscan';
 
 export type UndoRedoMessage =
   | {
@@ -110,6 +111,9 @@ self.onmessage = (e: MessageEvent<DataContainer>) => {
         break;
       case OperationTypeList.AddLozaCmpShift:
         bScan = addLozaCmpShift(bScan, operation.dx, operation.dt);
+        break;
+      case OperationTypeList.TurnAroundBscan:
+        bScan = turnAroundBscan(bScan);
         break;
       default:
         unreachable(operation);

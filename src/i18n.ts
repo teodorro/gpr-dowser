@@ -110,6 +110,8 @@ i18n
           ShowDepthAxis: 'Depth axis',
           ShowIntervalLines: 'Show interval CMP lines',
           ShowTotalLines: 'Show total CMP lines',
+          TurnAround: 'Turn around',
+          turn_around_bscan: 'Turn around',
         },
       },
       ru: {
@@ -215,6 +217,8 @@ i18n
           ShowDepthAxis: 'Ось глубины',
           ShowIntervalLines: 'Интервальные линии подобия ОСТ',
           ShowTotalLines: 'Общие линии подобия ОСТ',
+          TurnAround: 'Повернуть наоборот',
+          turn_around_bscan: 'Повернуть наоборот',
         },
       },
     },
