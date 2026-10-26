@@ -79,6 +79,7 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
     undoRedoWorker.current?.postMessage({
       bScan: bScanInitial,
       history,
+      start: 1,
       target: position - 1,
       operationType: 'undo',
     });
@@ -88,6 +89,7 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
     undoRedoWorker.current?.postMessage({
       bScan: bScanInitial,
       history,
+      start: 1,
       target: position + 1,
       operationType: 'redo',
     });
@@ -99,6 +101,7 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
       { type: 'module' },
     );
     undoRedoWorker.current.onmessage = (e: MessageEvent<UndoRedoMessage>) => {
+      let tmpBscan: unknown;
       switch (e.data.type) {
         case 'progress':
           addProgress(e.data.progress);
@@ -119,13 +122,37 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
           setInProgress(false);
           clearProgress();
           break;
+        case 'split-bscan':
+          tmpBscan = new Grid2D(
+            e.data.result.cols,
+            e.data.result.rows,
+            e.data.result.buf,
+          ).split(e.data.operation.splitIndex)[0];
+          undoRedoWorker.current?.postMessage({
+            bScan: tmpBscan,
+            history,
+            start: e.data.start + 1,
+            target: e.data.target,
+            operationType: e.data.operationType,
+          });
+          break;
       }
     };
     return () => {
       undoRedoWorker.current?.terminate();
       undoRedoWorker.current = null;
     };
-  }, [store, addProgress, clearProgress, setBScan, setInProgress, undo, redo]);
+  }, [
+    store,
+    addProgress,
+    clearProgress,
+    setBScan,
+    setInProgress,
+    undo,
+    redo,
+    position,
+    history,
+  ]);
 
   return (
     <div className="flex flex-row gap-1 p-1">

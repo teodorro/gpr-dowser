@@ -4,7 +4,6 @@ import { OperationTypeList, type Operation } from '@/stores/undo-redo.types';
 import subtractMean from '../processing/statistical-processing/subtract-avg/subtract-mean';
 import subtractMedian from '../processing/statistical-processing/subtract-avg/subtract-median';
 import dewow from '../processing/statistical-processing/dewow/dewow';
-import { splitBscan } from '@/features/b-scan/splitBscan';
 import { savGolayFilter } from '../processing/statistical-processing/savitzky-golay/sav-golay-filter';
 import { gaussianSmooth } from '../processing/statistical-processing/gauss-smooth/gaussian-smooth';
 import { alignSignal } from '../cmp/signal-aligner/align-signal';
@@ -17,6 +16,20 @@ export type UndoRedoMessage =
       progress: number;
     }
   | {
+      type: 'split-bscan';
+      progress: number;
+      start: number;
+      target: number;
+      operationType: 'undo' | 'redo';
+      result: { cols: number; rows: number; buf: Float32Array };
+      operation: {
+        type: typeof OperationTypeList.SplitBscan;
+        splitIndex: number;
+        leftDataSliceId: string;
+        rightDataSliceId: string;
+      };
+    }
+  | {
       type: 'complete';
       result: { cols: number; rows: number; buf: Float32Array };
       operationType: 'undo' | 'redo';
@@ -25,12 +38,14 @@ export type UndoRedoMessage =
 export type DataContainer = {
   bScan: { cols: number; rows: number; buf: Float32Array };
   history: Map<number, Operation>;
+  start: number;
   target: number;
   operationType: 'undo' | 'redo';
 };
 
 self.onmessage = (e: MessageEvent<DataContainer>) => {
   const operationType = e.data.operationType;
+  const start = e.data.start;
   const target = e.data.target;
   const history = e.data.history;
   let bScan = new Grid2D(
@@ -38,7 +53,7 @@ self.onmessage = (e: MessageEvent<DataContainer>) => {
     e.data.bScan.rows,
     e.data.bScan.buf,
   );
-  for (let i = 1; i <= target; i++) {
+  for (let i = start; i <= target; i++) {
     const operation = history.get(i);
     if (!operation) {
       continue;
@@ -54,13 +69,21 @@ self.onmessage = (e: MessageEvent<DataContainer>) => {
         bScan = dewow(bScan, operation.windowSize);
         break;
       case OperationTypeList.SplitBscan:
-        [bScan] = splitBscan(
-          bScan,
-          operation.splitIndex,
-          operation.leftDataSliceId,
-          operation.rightDataSliceId,
-        );
-        break;
+        self.postMessage({
+          type: 'split-bscan',
+          progress: i / target,
+          start: i,
+          target: target,
+          operationType: operationType,
+          result: { cols: bScan.cols, rows: bScan.rows, buf: bScan.buffer },
+          operation: {
+            type: OperationTypeList.SplitBscan,
+            splitIndex: operation.splitIndex,
+            leftDataSliceId: operation.leftDataSliceId,
+            rightDataSliceId: operation.rightDataSliceId,
+          },
+        });
+        return;
       case OperationTypeList.SavitzkyGolay:
         bScan = Grid2D.fromArray(
           savGolayFilter(
