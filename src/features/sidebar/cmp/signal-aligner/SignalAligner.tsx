@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/popover';
 import Grid2D from '@/shared/grid2d';
 import useUiStore from '@/stores/ui-store';
-import { SaveIcon, SignpostIcon } from 'lucide-react';
+import { SignpostIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
@@ -20,9 +20,13 @@ export default function SignalAligner({ store }: { store: DataStore }) {
   const { t } = useTranslation();
 
   const initialBScan = useRef<Grid2D | null>(null);
+  const initialAmpBreakpoint = useRef<number>(0);
+
   const bScan = useStore(store, (state) => state.bScan);
   const setBScan = useStore(store, (state) => state.setBScan);
   const addOperation = useStore(store, (state) => state.addOperation);
+
+  const setStopSemblanceMode = useUiStore.use.setStopSemblanceMode();
 
   const [open, setOpen] = useState(false);
 
@@ -35,10 +39,14 @@ export default function SignalAligner({ store }: { store: DataStore }) {
     setOpen(openState);
     if (openState) {
       initialBScan.current = bScan.clone();
+      initialAmpBreakpoint.current = ampBreakpoint;
+      setStopSemblanceMode(true);
       onAmpBreakpointChange(internalAmpBreakpoint);
     } else {
-      setBScan(initialBScan.current ?? new Grid2D(0, 0, []));
-      setInternalAmpBreakpoint('0');
+      setStopSemblanceMode(false);
+      if (ampBreakpoint !== initialAmpBreakpoint.current) {
+        addOperation({ type: 'cmp_align_signal', ampBreakpoint });
+      }
     }
   };
 
@@ -58,12 +66,6 @@ export default function SignalAligner({ store }: { store: DataStore }) {
         ),
       );
     }
-  };
-
-  const onSaveBscan = () => {
-    setOpen(false);
-    addOperation({ type: 'cmp_align_signal', ampBreakpoint });
-    setInternalAmpBreakpoint('0');
   };
 
   return (
@@ -99,9 +101,6 @@ export default function SignalAligner({ store }: { store: DataStore }) {
               className="flex-1 max-w-24"
             />
           </div>
-          <Button variant="outline" className="shrink-0" onClick={onSaveBscan}>
-            <SaveIcon /> {t('Save')}
-          </Button>
         </PopoverContent>
       </Popover>
       <FieldLabel className="flex-1 w-24 ml-2" htmlFor="align-signal">

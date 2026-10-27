@@ -65,6 +65,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
   const setInProgress = useUiStore.use.setInProgress();
   const addProgress = useUiStore.use.addProgress();
   const clearProgress = useUiStore.use.clearProgress();
+  const stopSemblanceMode = useUiStore.use.stopSemblanceMode();
 
   const semblanceWorker = useRef<Worker | null>(null);
 
@@ -472,10 +473,12 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     cmpLayers,
     deltaToUpdateLayer,
     removeCmpLayer,
+    cmpData.cols,
+    cmpDisplayBuffer.rows,
   ]);
 
   useEffect(() => {
-    if (!semblanceWorker.current) return;
+    if (!semblanceWorker.current || stopSemblanceMode) return;
     clearProgress();
     setInProgress(true);
     semblanceWorker.current.postMessage({
@@ -500,6 +503,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
     addProgress,
     clearProgress,
     lozaMode,
+    stopSemblanceMode,
   ]);
 
   useEffect(() => {
