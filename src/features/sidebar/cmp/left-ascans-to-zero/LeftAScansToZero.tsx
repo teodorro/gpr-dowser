@@ -9,36 +9,49 @@ import {
 import Grid2D from '@/shared/grid2d';
 import { type DataStore } from '@/stores/data-slice-stores';
 import useUiStore from '@/stores/ui-store';
-import { RectangleVerticalIcon, SaveIcon } from 'lucide-react';
+import { RectangleVerticalIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import { setLeftAScansToZero } from './set-left-ascans-to-zero';
 
 export default function SetToZero({ store }: { store: DataStore }) {
+  const DEFAULT_ZERO_BREAKPOINT = 3;
+
   const { t } = useTranslation();
   const cmpMode = useUiStore.use.cmpMode();
 
   const initialBScan = useRef<Grid2D | null>(null);
+  const initialZeroBreakpoint = useRef<number>(0);
+
   const bScan = useStore(store, (state) => state.bScan);
   const setBScan = useStore(store, (state) => state.setBScan);
   const addOperation = useStore(store, (state) => state.addOperation);
 
+  const setStopSemblanceMode = useUiStore.use.setStopSemblanceMode();
+
   const [open, setOpen] = useState(false);
 
-  const [zeroBreakpoint, setZeroBreakpoint] = useState<number>(5);
+  const [zeroBreakpoint, setZeroBreakpoint] = useState<number>(
+    DEFAULT_ZERO_BREAKPOINT,
+  );
 
-  const [internalZeroBreakpoint, setInternalZeroBreakpoint] =
-    useState<string>('5');
+  const [internalZeroBreakpoint, setInternalZeroBreakpoint] = useState<string>(
+    DEFAULT_ZERO_BREAKPOINT.toString(),
+  );
 
   const onOpenChange = (openState: boolean) => {
     setOpen(openState);
     if (openState) {
       initialBScan.current = bScan.clone();
+      initialZeroBreakpoint.current = zeroBreakpoint;
+      setStopSemblanceMode(true);
       onZeroBreakpointChange(internalZeroBreakpoint);
     } else {
-      setBScan(initialBScan.current ?? new Grid2D(0, 0, []));
-      setInternalZeroBreakpoint('0');
+      setStopSemblanceMode(false);
+      if (zeroBreakpoint !== initialZeroBreakpoint.current) {
+        addOperation({ type: 'set_left_ascans_to_zero', zeroBreakpoint });
+      }
     }
   };
 
@@ -58,12 +71,6 @@ export default function SetToZero({ store }: { store: DataStore }) {
         ),
       );
     }
-  };
-
-  const onSaveBscan = () => {
-    setOpen(false);
-    addOperation({ type: 'set_left_ascans_to_zero', zeroBreakpoint });
-    setInternalZeroBreakpoint('0');
   };
 
   return (
@@ -98,9 +105,6 @@ export default function SetToZero({ store }: { store: DataStore }) {
               className="flex-1 max-w-24"
             />
           </div>
-          <Button variant="outline" className="shrink-0" onClick={onSaveBscan}>
-            <SaveIcon /> {t('Save')}
-          </Button>
         </PopoverContent>
       </Popover>
       <FieldLabel className="flex-1 w-24 ml-2" htmlFor="set-to-zero">
