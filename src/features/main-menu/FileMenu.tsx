@@ -14,11 +14,13 @@ import {
   BSCAN_CHART_ROOT_ID,
   CMP_SEMBLANCE_CHART_ROOT_ID,
 } from '../export/export-consts';
+import useUiStore from '@/stores/ui-store';
 
 export default function FileMenu() {
   const { t } = useTranslation();
 
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
+  const cmpMode = useUiStore.use.cmpMode();
 
   const handleExportBScan = () => {
     const root = document.getElementById(BSCAN_CHART_ROOT_ID);
@@ -55,7 +57,11 @@ export default function FileMenu() {
             </MenubarItem>
           </MenubarGroup>
           <MenubarGroup>
-            <MenubarItem onClick={handleExportSemblanceAnalysis}>
+            <MenubarItem
+              onClick={handleExportSemblanceAnalysis}
+              disabled={!cmpMode}
+              className={!cmpMode ? 'text-muted-foreground' : ''}
+            >
               {t('ExportSemblanceAnalysis')}
             </MenubarItem>
           </MenubarGroup>

@@ -102,6 +102,141 @@ function sanitizeFileName(name: string): string {
   return `${base.replace(/[^\w.-]+/g, '_')}.svg`;
 }
 
+type Box = { left: number; top: number; right: number; bottom: number };
+
+const CROP_PADDING = 4;
+const SHAPE_SELECTOR =
+  'text, line, path, rect, circle, ellipse, polyline, polygon, image';
+
+function unionBox(a: Box | null, b: Box): Box {
+  if (!a) return b;
+  return {
+    left: Math.min(a.left, b.left),
+    top: Math.min(a.top, b.top),
+    right: Math.max(a.right, b.right),
+    bottom: Math.max(a.bottom, b.bottom),
+  };
+}
+
+// Bounds of non-transparent pixels in CSS px relative to the canvas
+function canvasContentBox(canvas: HTMLCanvasElement): Box | null {
+  const { width, height } = canvas;
+  if (!width || !height || !canvas.clientWidth || !canvas.clientHeight) {
+    return null;
+  }
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  const data = ctx.getImageData(0, 0, width, height).data;
+
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < height; y++) {
+    const row = y * width * 4;
+    for (let x = 0; x < width; x++) {
+      if (data[row + x * 4 + 3] === 0) continue;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      maxY = y;
+    }
+  }
+  if (maxX < 0) return null;
+
+  const kx = canvas.clientWidth / width;
+  const ky = canvas.clientHeight / height;
+  return {
+    left: minX * kx,
+    top: minY * ky,
+    right: (maxX + 1) * kx,
+    bottom: (maxY + 1) * ky,
+  };
+}
+
+// Paint that is invisible or merely masks content with the background color
+function isBackgroundPaint(value: string, bgHex: string | undefined): boolean {
+  if (!value || value === 'none') return true;
+  if (value.startsWith('url(')) return false;
+  const rgba = toRgba(value);
+  if (!rgba) return false;
+  return rgba.alpha === 0 || rgba.hex === bgHex;
+}
+
+// Bounds of overlay shapes that carry information, in viewport coordinates
+function overlayContentBox(svg: SVGSVGElement, bgHex: string | undefined) {
+  let box: Box | null = null;
+  svg.querySelectorAll(SHAPE_SELECTOR).forEach((el) => {
+    if (el.closest('defs, clipPath, mask, pattern')) return;
+    const cs = getComputedStyle(el);
+    if (
+      cs.display === 'none' ||
+      cs.visibility === 'hidden' ||
+      parseFloat(cs.opacity) === 0
+    ) {
+      return;
+    }
+    if (
+      el.tagName !== 'image' &&
+      isBackgroundPaint(cs.fill, bgHex) &&
+      isBackgroundPaint(cs.stroke, bgHex)
+    ) {
+      return;
+    }
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) return;
+    box = unionBox(box, {
+      left: r.left,
+      top: r.top,
+      right: r.right,
+      bottom: r.bottom,
+    });
+  });
+  return box as Box | null;
+}
+
+// Region of the root (in root-local px) that holds the chart itself,
+// without the empty space around it
+function contentCropBox(root: HTMLElement, rootRect: DOMRect, bg: string) {
+  const bgHex = toRgba(bg)?.hex;
+  let box: Box | null = null;
+
+  const canvas = root.querySelector('canvas');
+  if (canvas) {
+    const c = canvasContentBox(canvas);
+    if (c) {
+      const cr = canvas.getBoundingClientRect();
+      box = unionBox(box, {
+        left: c.left + cr.left - rootRect.left,
+        top: c.top + cr.top - rootRect.top,
+        right: c.right + cr.left - rootRect.left,
+        bottom: c.bottom + cr.top - rootRect.top,
+      });
+    }
+  }
+
+  root.querySelectorAll('svg').forEach((svg) => {
+    const o = overlayContentBox(svg, bgHex);
+    if (!o) return;
+    box = unionBox(box, {
+      left: o.left - rootRect.left,
+      top: o.top - rootRect.top,
+      right: o.right - rootRect.left,
+      bottom: o.bottom - rootRect.top,
+    });
+  });
+
+  const full = { x: 0, y: 0, width: rootRect.width, height: rootRect.height };
+  if (!box) return full;
+  const b = box as Box;
+  const left = Math.max(0, Math.floor(b.left - CROP_PADDING));
+  const top = Math.max(0, Math.floor(b.top - CROP_PADDING));
+  const right = Math.min(rootRect.width, Math.ceil(b.right + CROP_PADDING));
+  const bottom = Math.min(rootRect.height, Math.ceil(b.bottom + CROP_PADDING));
+  if (right <= left || bottom <= top) return full;
+  return { x: left, y: top, width: right - left, height: bottom - top };
+}
+
 export function exportChartToSvg(root: HTMLElement | null, name = 'bscan') {
   if (!root) return;
 
@@ -110,19 +245,25 @@ export function exportChartToSvg(root: HTMLElement | null, name = 'bscan') {
   const height = Math.round(rect.height);
   if (width === 0 || height === 0) return;
 
+  const bgColor = getComputedStyle(root).backgroundColor || '#000';
+  const crop = contentCropBox(root, rect, bgColor);
+
   const out = document.createElementNS(SVG_NS, 'svg');
   out.setAttribute('xmlns', SVG_NS);
   out.setAttribute('xmlns:xlink', XLINK_NS);
-  out.setAttribute('width', String(width));
-  out.setAttribute('height', String(height));
-  out.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  out.setAttribute('width', String(crop.width));
+  out.setAttribute('height', String(crop.height));
+  out.setAttribute(
+    'viewBox',
+    `${crop.x} ${crop.y} ${crop.width} ${crop.height}`,
+  );
 
   const bg = document.createElementNS(SVG_NS, 'rect');
-  bg.setAttribute('x', '0');
-  bg.setAttribute('y', '0');
-  bg.setAttribute('width', String(width));
-  bg.setAttribute('height', String(height));
-  setColorAttr(bg, 'fill', getComputedStyle(root).backgroundColor || '#000', 1);
+  bg.setAttribute('x', String(crop.x));
+  bg.setAttribute('y', String(crop.y));
+  bg.setAttribute('width', String(crop.width));
+  bg.setAttribute('height', String(crop.height));
+  setColorAttr(bg, 'fill', bgColor, 1);
   out.appendChild(bg);
 
   const canvas = root.querySelector('canvas');
