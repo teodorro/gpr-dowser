@@ -7,6 +7,7 @@ import ShowDepthAxis from './ShowDepthAxis';
 import { useTranslation } from 'react-i18next';
 import ShowTotalLines from './ShowTotalLines';
 import ShowIntervalLines from './ShowIntervalLines';
+import PointAspectRatio from './PointAspectRatio';
 
 export default function VisualSettings() {
   const cmpMode = useUiStore.use.cmpMode();
@@ -15,6 +16,7 @@ export default function VisualSettings() {
   return (
     <div>
       <ShowDepthAxis />
+      <PointAspectRatio />
       {cmpMode && <ShowIntervalLines />}
       {cmpMode && <ShowTotalLines />}
       {cmpMode && <CmpSemblanceLinesColor />}

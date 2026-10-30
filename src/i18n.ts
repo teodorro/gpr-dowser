@@ -112,6 +112,7 @@ i18n
           ShowTotalLines: 'Show total CMP lines',
           TurnAround: 'Turn around',
           turn_around_bscan: 'Turn around',
+          PointAspectRatio: 'Point aspect ratio',
         },
       },
       ru: {
@@ -219,6 +220,7 @@ i18n
           ShowTotalLines: 'Общие линии подобия ОСТ',
           TurnAround: 'Повернуть наоборот',
           turn_around_bscan: 'Повернуть наоборот',
+          PointAspectRatio: 'Отношение сторон точки',
         },
       },
     },

@@ -10,6 +10,7 @@ type VisualState = {
   indexTimeZero: number;
   averageAscan: number[];
   indexSelectedAscan: number | undefined;
+  pointAspectRatio: number;
 };
 
 type VisualActions = {
@@ -21,6 +22,7 @@ type VisualActions = {
   setIndexTimeZero: (indexTimeZero: number) => void;
   setAverageAscan: (averageAscan: number[]) => void;
   setIndexSelectedAscan: (indexSelectedAscan: number | undefined) => void;
+  setPointAspectRatio: (pointAspectRatio: number) => void;
 };
 
 export type VisualSlice = VisualState & VisualActions;

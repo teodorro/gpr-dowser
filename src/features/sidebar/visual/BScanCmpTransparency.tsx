@@ -11,7 +11,7 @@ export default function BScanCmpTransparency() {
 
   return (
     <div className="flex flex-col gap-2 mx-1 my-2 justify-between">
-      <FieldLabel className="shrink-0 ml-2" htmlFor="cmpTransparency">
+      <FieldLabel className="shrink-0 ml-2" htmlFor="cmpTransparencyTitle">
         {t('BScanCmpTransparency')}
       </FieldLabel>
       <div className="flex flex-row gap-2 mx-1">
