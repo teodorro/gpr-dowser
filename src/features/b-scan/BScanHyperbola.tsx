@@ -109,7 +109,7 @@ function BScanHyperbolaInternal({ store }: { store: DataStore }) {
   const hyperbolaPoints = useMemo(() => {
     const x0 = hyperbolaApex[0] * dx;
     const t0 = (hyperbolaApex[1] - indexTimeZero) * dt;
-    const points: [number, number][] = Array.from(
+    let points: [number, number][] = Array.from(
       { length: bScan.cols },
       (_, i) => {
         const x = i * dx;
@@ -119,8 +119,9 @@ function BScanHyperbolaInternal({ store }: { store: DataStore }) {
         return [x, t];
       },
     );
+    points = points.filter((point) => point[1] < bScan.rows * dt);
     return points;
-  }, [bScan.cols, dx, dt, hyperbolaApex, velocity, indexTimeZero]);
+  }, [bScan.cols, dx, dt, hyperbolaApex, velocity, indexTimeZero, bScan.rows]);
 
   return (
     <div
