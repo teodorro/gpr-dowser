@@ -12,6 +12,7 @@ type UiState = {
   cmpTableVisible: boolean;
   progress: number[];
   inProgress: boolean;
+  stopSemblanceMode: boolean;
 };
 
 export const BScanMode = {
@@ -33,13 +34,14 @@ type UiActions = {
   addProgress: (progress: number) => void;
   clearProgress: () => void;
   setInProgress: (show: boolean) => void;
+  setStopSemblanceMode: (mode: boolean) => void;
 };
 
 type Ui = UiState & UiActions;
 
 const INITIAL_STATE: UiState = {
   sideBarVisible: true,
-  aScanVisible: true,
+  aScanVisible: false,
   splitBScanMode: false,
   cmpMode: false,
   hyperbolaMode: false,
@@ -47,6 +49,7 @@ const INITIAL_STATE: UiState = {
   cmpTableVisible: true,
   progress: [],
   inProgress: false,
+  stopSemblanceMode: false,
 };
 
 const useUiBase = create<Ui>((set) => ({
@@ -123,6 +126,9 @@ const useUiBase = create<Ui>((set) => ({
   },
   setInProgress: (show: boolean) => {
     set((s) => ({ ...s, inProgress: show }));
+  },
+  setStopSemblanceMode: (mode: boolean) => {
+    set((s) => ({ ...s, stopSemblanceMode: mode }));
   },
 }));
 

@@ -19,7 +19,6 @@ export default function SetToZero({ store }: { store: DataStore }) {
   const DEFAULT_ZERO_BREAKPOINT = 3;
 
   const { t } = useTranslation();
-  const cmpMode = useUiStore.use.cmpMode();
 
   const initialBScan = useRef<Grid2D | null>(null);
   const initialZeroBreakpoint = useRef<number>(0);
@@ -28,6 +27,7 @@ export default function SetToZero({ store }: { store: DataStore }) {
   const setBScan = useStore(store, (state) => state.setBScan);
   const addOperation = useStore(store, (state) => state.addOperation);
 
+  const cmpMode = useUiStore.use.cmpMode();
   const setStopSemblanceMode = useUiStore.use.setStopSemblanceMode();
 
   const [open, setOpen] = useState(false);

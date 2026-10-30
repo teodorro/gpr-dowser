@@ -16,7 +16,6 @@ import { alignSignal } from './align-signal';
 import type { DataStore } from '@/stores/data-slice-stores';
 
 export default function SignalAligner({ store }: { store: DataStore }) {
-  const cmpMode = useUiStore.use.cmpMode();
   const { t } = useTranslation();
 
   const initialBScan = useRef<Grid2D | null>(null);
@@ -26,6 +25,7 @@ export default function SignalAligner({ store }: { store: DataStore }) {
   const setBScan = useStore(store, (state) => state.setBScan);
   const addOperation = useStore(store, (state) => state.addOperation);
 
+  const cmpMode = useUiStore.use.cmpMode();
   const setStopSemblanceMode = useUiStore.use.setStopSemblanceMode();
 
   const [open, setOpen] = useState(false);
