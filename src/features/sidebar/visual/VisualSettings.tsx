@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import ShowTotalLines from './ShowTotalLines';
 import ShowIntervalLines from './ShowIntervalLines';
 import PointAspectRatio from './PointAspectRatio';
+import { Separator } from '@/components/ui/separator';
 
 export default function VisualSettings() {
   const cmpMode = useUiStore.use.cmpMode();
@@ -15,8 +16,10 @@ export default function VisualSettings() {
   const { t } = useTranslation();
   return (
     <div>
-      <ShowDepthAxis />
       <PointAspectRatio />
+      <Separator />
+      <ShowDepthAxis />
+      {(cmpMode || hyperbolaMode) && <Separator />}
       {cmpMode && <ShowIntervalLines />}
       {cmpMode && <ShowTotalLines />}
       {cmpMode && <CmpSemblanceLinesColor />}

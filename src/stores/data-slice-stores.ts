@@ -80,7 +80,8 @@ export const createDataSliceStore = (
     indexTimeZero: (options.indexTimeZero as number) ?? 0,
     averageAscan: (options.averageAscan as number[]) ?? [],
     indexSelectedAscan: (options.indexSelectedAscan as number) ?? 0,
-    pointAspectRatio: (options.pointAspectRatio as number) ?? 0.5,
+    pointAspectRatioWidth: (options.pointAspectRatioWidth as number) ?? 1,
+    pointAspectRatioHeight: (options.pointAspectRatioHeight as number) ?? 1,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
     setScale: (scale) => set({ scale }),
     setShift: (shiftX, shiftY) => set({ shiftX, shiftY }),
@@ -89,7 +90,10 @@ export const createDataSliceStore = (
     setIndexTimeZero: (indexTimeZero) => set({ indexTimeZero }),
     setAverageAscan: (averageAscan) => set({ averageAscan }),
     setIndexSelectedAscan: (indexSelectedAscan) => set({ indexSelectedAscan }),
-    setPointAspectRatio: (pointAspectRatio) => set({ pointAspectRatio }),
+    setPointAspectRatioWidth: (pointAspectRatioWidth) =>
+      set({ pointAspectRatioWidth }),
+    setPointAspectRatioHeight: (pointAspectRatioHeight) =>
+      set({ pointAspectRatioHeight }),
 
     // UndoRedoSlice
     history: (options.history as Map<number, Operation>) ?? new Map(),

@@ -8,6 +8,7 @@ import {
 } from '@/stores/data-slice-stores';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
+import { selectScaleY } from '@/stores/visual-slice';
 import * as d3 from 'd3';
 
 const MARGIN = { right: 8, left: 8 };
@@ -32,7 +33,7 @@ export default function AScan() {
 const AScanInternal = ({ store }: { store: DataStore }) => {
   const indexSelectedAscan = useStore(store, (s) => s.indexSelectedAscan);
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
-  const scale = useStore(store, (s) => s.scale);
+  const scaleY = useStore(store, selectScaleY);
   const shiftY = useStore(store, (s) => s.shiftY);
   const roRef = useRef<ResizeObserver | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -58,7 +59,7 @@ const AScanInternal = ({ store }: { store: DataStore }) => {
         column={indexSelectedAscan}
         width={size.width}
         height={size.height}
-        scale={scale}
+        scaleY={scaleY}
         shiftY={shiftY}
       />
     </div>
@@ -70,14 +71,14 @@ const AScanChart = ({
   column,
   width,
   height,
-  scale,
+  scaleY,
   shiftY,
 }: {
   displayBuffer: Grid2D;
   column: number | undefined;
   width: number;
   height: number;
-  scale: number;
+  scaleY: number;
   shiftY: number;
 }) => {
   const chart = useMemo(() => {
@@ -103,15 +104,15 @@ const AScanChart = ({
     const aScan = d3
       .line<number>()
       .x((v) => xScale(v))
-      .y((_, i) => shiftY + i * scale);
+      .y((_, i) => shiftY + i * scaleY);
 
     const verticalLine = d3
       .line<number>()
       .x(() => xScale(0))
-      .y((_, i) => shiftY + i * scale);
+      .y((_, i) => shiftY + i * scaleY);
 
     return { d: aScan(values), xScale, verticalLineD: verticalLine(values) };
-  }, [displayBuffer, column, width, height, scale, shiftY]);
+  }, [displayBuffer, column, width, height, scaleY, shiftY]);
 
   const axisRef = useRef<SVGGElement>(null);
 

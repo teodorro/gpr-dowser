@@ -113,6 +113,8 @@ i18n
           TurnAround: 'Turn around',
           turn_around_bscan: 'Turn around',
           PointAspectRatio: 'Point aspect ratio',
+          PointWidth: 'Width',
+          PointHeight: 'Height',
         },
       },
       ru: {
@@ -221,6 +223,8 @@ i18n
           TurnAround: 'Повернуть наоборот',
           turn_around_bscan: 'Повернуть наоборот',
           PointAspectRatio: 'Отношение сторон точки',
+          PointWidth: 'Ширина',
+          PointHeight: 'Высота',
         },
       },
     },

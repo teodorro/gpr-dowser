@@ -9,6 +9,7 @@ import getPalette from '@/visual/get-palette';
 import * as d3 from 'd3';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useStore } from 'zustand';
+import { selectScaleX, selectScaleY } from '@/stores/visual-slice';
 import useVisualStore from '@/stores/visual-store';
 import { logTransformGrid2D } from '@/shared/log-transform';
 import { useTranslation } from 'react-i18next';
@@ -51,6 +52,8 @@ function BScanInternal({ store }: { store: DataStore }) {
   const selectMode = useUiStore.use.selectMode();
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
+  const scaleX = useStore(store, selectScaleX);
+  const scaleY = useStore(store, selectScaleY);
   const shiftX = useStore(store, (s) => s.shiftX);
   const shiftY = useStore(store, (s) => s.shiftY);
   const setScale = useStore(store, (s) => s.setScale);
@@ -144,12 +147,12 @@ function BScanInternal({ store }: { store: DataStore }) {
 
       ctx.save();
       ctx.translate(vp.x + shiftX, vp.y + shiftY);
-      ctx.scale(scale, scale);
+      ctx.scale(scaleX, scaleY);
       ctx.drawImage(bmp, 0, 0);
       ctx.restore();
     }
     ctx.restore();
-  }, [scale, shiftX, shiftY, bitmapRef]);
+  }, [scaleX, scaleY, shiftX, shiftY, bitmapRef]);
 
   const redrawRef = useRef<() => void>(redraw);
 
@@ -256,7 +259,6 @@ function BScanInternal({ store }: { store: DataStore }) {
     dims.cols,
     valueRange,
     palette,
-    scale,
     shiftX,
     shiftY,
     setShift,
@@ -279,8 +281,8 @@ function BScanInternal({ store }: { store: DataStore }) {
       const sx = px - vpRef.current.x;
       const sy = py - vpRef.current.y;
 
-      const wx = (sx - shiftX) / scale;
-      const wy = (sy - shiftY) / scale;
+      const wx = (sx - shiftX) / scaleX;
+      const wy = (sy - shiftY) / scaleY;
 
       const col = Math.floor(wx);
       const row = Math.floor(wy);
@@ -295,7 +297,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
       return { col, row, wx, wy, px, py };
     },
-    [shiftX, shiftY, scale, dims, setIndexSelectedAscan, selectMode],
+    [shiftX, shiftY, scaleX, scaleY, dims, setIndexSelectedAscan, selectMode],
   );
 
   // Mouse interactions: pan + wheel zoom
@@ -363,8 +365,8 @@ function BScanInternal({ store }: { store: DataStore }) {
       const sy = py - vpRef.current.y;
 
       // world coordinates
-      const wx = (sx - shiftX) / scale;
-      const wy = (sy - shiftY) / scale;
+      const wx = (sx - shiftX) / scaleX;
+      const wy = (sy - shiftY) / scaleY;
       const col = Math.floor(wx);
       const row = Math.floor(wy);
 
@@ -413,9 +415,14 @@ function BScanInternal({ store }: { store: DataStore }) {
       const next = clamp(scale * zoom, 0.1, 40);
 
       // Zoom around cursor: adjust shiftX/shiftY so the point under cursor stays put
-      const wx = (mx - shiftX) / scale;
-      const wy = (my - shiftY) / scale;
-      setShift(mx - wx * next, my - wy * next);
+      const { pointAspectRatioWidth, pointAspectRatioHeight } =
+        store.getState();
+      const wx = (mx - shiftX) / scaleX;
+      const wy = (my - shiftY) / scaleY;
+      setShift(
+        mx - wx * next * pointAspectRatioWidth,
+        my - wy * next * pointAspectRatioHeight,
+      );
       setScale(next);
     };
 
@@ -435,7 +442,10 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
     };
   }, [
+    store,
     scale,
+    scaleX,
+    scaleY,
     shiftX,
     shiftY,
     dims,

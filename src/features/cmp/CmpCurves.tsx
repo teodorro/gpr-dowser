@@ -6,6 +6,7 @@ import clamp from '@/visual/clamp';
 import * as d3 from 'd3';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
+import { selectScaleX, selectScaleY } from '@/stores/visual-slice';
 
 export default function CmpCurves() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -27,7 +28,8 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   const cmpLayers = useStore(store, (s) => s.cmpLayers);
-  const scale = useStore(store, (s) => s.scale);
+  const scaleX = useStore(store, selectScaleX);
+  const scaleY = useStore(store, selectScaleY);
   const shiftX = useStore(store, (s) => s.shiftX);
   const shiftY = useStore(store, (s) => s.shiftY);
   const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
@@ -54,20 +56,20 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
   }, []);
 
   const wyMin = useMemo(
-    () => clamp((0 - shiftY) / scale, 0, bScan.rows),
-    [bScan.rows, scale, shiftY],
+    () => clamp((0 - shiftY) / scaleY, 0, bScan.rows),
+    [bScan.rows, scaleY, shiftY],
   );
   const wyMax = useMemo(
-    () => clamp((size.height - shiftY) / scale, 0, bScan.rows),
-    [bScan.rows, scale, shiftY, size.height],
+    () => clamp((size.height - shiftY) / scaleY, 0, bScan.rows),
+    [bScan.rows, scaleY, shiftY, size.height],
   );
   const wxMin = useMemo(
-    () => clamp((0 - shiftX) / scale, 0, bScan.cols),
-    [bScan.cols, scale, shiftX],
+    () => clamp((0 - shiftX) / scaleX, 0, bScan.cols),
+    [bScan.cols, scaleX, shiftX],
   );
   const wxMax = useMemo(
-    () => clamp((size.width - shiftX) / scale, 0, bScan.cols),
-    [bScan.cols, scale, shiftX, size.width],
+    () => clamp((size.width - shiftX) / scaleX, 0, bScan.cols),
+    [bScan.cols, scaleX, shiftX, size.width],
   );
 
   const tToWy = useMemo(
@@ -89,13 +91,13 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
   );
 
   const timeToY = useCallback(
-    (time: number) => tToWy(time) * scale + shiftY,
-    [scale, shiftY, tToWy],
+    (time: number) => tToWy(time) * scaleY + shiftY,
+    [scaleY, shiftY, tToWy],
   );
 
   const distanceToX = useCallback(
-    (distance: number) => xToWx(distance) * scale + shiftX,
-    [scale, shiftX, xToWx],
+    (distance: number) => xToWx(distance) * scaleX + shiftX,
+    [scaleX, shiftX, xToWx],
   );
 
   const pathLineGenerator = useMemo(
@@ -141,10 +143,10 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
           <rect x={0} y={0} width={size.width} height={size.height} />
         </clipPath>
         <rect
-          x={wxMin * scale + shiftX}
-          y={wyMin * scale + shiftY}
-          width={(wxMax - wxMin) * scale}
-          height={(wyMax - wyMin) * scale}
+          x={wxMin * scaleX + shiftX}
+          y={wyMin * scaleY + shiftY}
+          width={(wxMax - wxMin) * scaleX}
+          height={(wyMax - wyMin) * scaleY}
           fill={`rgba(255, 255, 255, ${bScanTransparency})`}
         />
         {curvePoints.map(({ id, points }) => (

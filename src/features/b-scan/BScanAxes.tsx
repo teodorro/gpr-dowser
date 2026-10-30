@@ -11,6 +11,7 @@ import useFileRegistryStore from '@/stores/file-registry-store';
 import clamp from '@/visual/clamp';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useStore } from 'zustand';
+import { selectScaleX, selectScaleY } from '@/stores/visual-slice';
 import * as d3 from 'd3';
 import getPalette from '@/visual/get-palette';
 import useVisualStore from '@/stores/visual-store';
@@ -36,7 +37,8 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   const bScan = useStore(store, (s) => s.bScan);
-  const scale = useStore(store, (s) => s.scale);
+  const scaleX = useStore(store, selectScaleX);
+  const scaleY = useStore(store, selectScaleY);
   const shiftX = useStore(store, (s) => s.shiftX);
   const shiftY = useStore(store, (s) => s.shiftY);
   const indexTimeZero = useStore(store, (s) => s.indexTimeZero);
@@ -61,20 +63,20 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
   }, []);
 
   const wyMin = useMemo(
-    () => clamp((0 - shiftY) / scale, 0, bScan.rows),
-    [bScan.rows, scale, shiftY],
+    () => clamp((0 - shiftY) / scaleY, 0, bScan.rows),
+    [bScan.rows, scaleY, shiftY],
   );
   const wyMax = useMemo(
-    () => clamp((size.height - shiftY) / scale, 0, bScan.rows),
-    [bScan.rows, scale, shiftY, size.height],
+    () => clamp((size.height - shiftY) / scaleY, 0, bScan.rows),
+    [bScan.rows, scaleY, shiftY, size.height],
   );
   const wxMin = useMemo(
-    () => clamp((0 - shiftX) / scale, 0, bScan.cols),
-    [bScan.cols, scale, shiftX],
+    () => clamp((0 - shiftX) / scaleX, 0, bScan.cols),
+    [bScan.cols, scaleX, shiftX],
   );
   const wxMax = useMemo(
-    () => clamp((size.width - shiftX) / scale, 0, bScan.cols),
-    [bScan.cols, scale, shiftX, size.width],
+    () => clamp((size.width - shiftX) / scaleX, 0, bScan.cols),
+    [bScan.cols, scaleX, shiftX, size.width],
   );
 
   const dz = useMemo(() => (velocity / 2) * dt, [velocity, dt]);
@@ -85,8 +87,8 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
     return d3
       .scaleLinear()
       .domain([xMin, xMax])
-      .range([wxMin * scale + shiftX, wxMax * scale + shiftX]);
-  }, [dx, wxMin, wxMax, scale, shiftX]);
+      .range([wxMin * scaleX + shiftX, wxMax * scaleX + shiftX]);
+  }, [dx, wxMin, wxMax, scaleX, shiftX]);
 
   const tDomainRange = useMemo(() => {
     const tMin = (-indexTimeZero + wyMin) * dt;
@@ -94,8 +96,8 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
     return d3
       .scaleLinear()
       .domain([tMin, tMax])
-      .range([wyMin * scale + shiftY, wyMax * scale + shiftY]);
-  }, [indexTimeZero, dt, scale, shiftY, wyMin, wyMax]);
+      .range([wyMin * scaleY + shiftY, wyMax * scaleY + shiftY]);
+  }, [indexTimeZero, dt, scaleY, shiftY, wyMin, wyMax]);
 
   const zDomainRange = useMemo(() => {
     const zMin = (-indexTimeZero + wyMin) * dz;
@@ -103,8 +105,8 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
     return d3
       .scaleLinear()
       .domain([zMin, zMax])
-      .range([wyMin * scale + shiftY, wyMax * scale + shiftY]);
-  }, [indexTimeZero, dz, scale, shiftY, wyMin, wyMax]);
+      .range([wyMin * scaleY + shiftY, wyMax * scaleY + shiftY]);
+  }, [indexTimeZero, dz, scaleY, shiftY, wyMin, wyMax]);
 
   const axisYShift = useMemo(() => {
     return Math.max(
@@ -150,8 +152,8 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
         0,
         Math.min(
           Math.max(
-            (wxMax - wxMin) * scale - TIME_AXIS_WIDTH,
-            shiftX + (wxMax - wxMin) * scale - TIME_AXIS_WIDTH,
+            (wxMax - wxMin) * scaleX - TIME_AXIS_WIDTH,
+            shiftX + (wxMax - wxMin) * scaleX - TIME_AXIS_WIDTH,
           ),
           size.width -
             TIME_AXIS_WIDTH -
@@ -159,7 +161,7 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
             PALLETTE_WIDTH,
         ),
       ),
-    [shiftX, size.width, wxMax, wxMin, scale, showDepthAxis],
+    [shiftX, size.width, wxMax, wxMin, scaleX, showDepthAxis],
   );
 
   const depthLabelX = useMemo(() => {
@@ -173,12 +175,12 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
     const h = Math.max(
       0,
       Math.min(
-        bScan.rows * scale + shiftY,
+        bScan.rows * scaleY + shiftY,
         size.height - BOTTOM_BORDER_HEIGHT,
       ) - Math.max(shiftY, LENGTH_AXIS_HEIGHT),
     );
     return h;
-  }, [bScan.rows, scale, shiftY, size.height]);
+  }, [bScan.rows, scaleY, shiftY, size.height]);
 
   const axisXAmpShift = useMemo(
     () =>
@@ -186,18 +188,18 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
         showDepthAxis ? DEPTH_AXIS_WIDTH : 8,
         Math.min(
           Math.max(
-            (wxMax - wxMin) * scale -
+            (wxMax - wxMin) * scaleX -
               TIME_AXIS_WIDTH +
               (showDepthAxis ? DEPTH_AXIS_WIDTH : 8),
             shiftX +
-              (wxMax - wxMin) * scale -
+              (wxMax - wxMin) * scaleX -
               TIME_AXIS_WIDTH +
               (showDepthAxis ? DEPTH_AXIS_WIDTH : 8),
           ),
           size.width - TIME_AXIS_WIDTH - PALLETTE_WIDTH,
         ) - 5,
       ),
-    [shiftX, size.width, wxMax, wxMin, scale, showDepthAxis],
+    [shiftX, size.width, wxMax, wxMin, scaleX, showDepthAxis],
   );
 
   useEffect(() => {
