@@ -311,13 +311,13 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
             ></g>
             <text
               x={axisXDepthShift + TIME_AXIS_WIDTH + 4}
-              y={depthLabelX + 12}
+              y={depthLabelX + 2}
               className="text-scan-foreground"
               fill="currentColor"
               fontSize={12}
               textAnchor="middle"
               dominantBaseline="middle"
-              transform={`rotate(-90, ${axisXDepthShift + TIME_AXIS_WIDTH + 12}, ${timeLabelY - 12})`}
+              transform={`rotate(-90, ${axisXDepthShift + TIME_AXIS_WIDTH + 22}, ${timeLabelY - 22})`}
             >
               {t('Depth')}
             </text>
