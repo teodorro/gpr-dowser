@@ -205,7 +205,7 @@ function BScanAxesInternal({ store }: { store: DataStore }) {
     if (!g) return;
     const [r0, r1] = xDomainRange.range();
     const pixelWidth = Math.abs(r1 - r0);
-    const tickCount = Math.max(1, Math.round(pixelWidth / 70));
+    const tickCount = Math.max(1, Math.round(pixelWidth / 50));
     const xAxis = d3
       .axisTop(xDomainRange)
       .ticks(tickCount)
