@@ -51,7 +51,7 @@ function CmpLayersTableInternal({ store }: { store: DataStore }) {
       <Table containerClassName="h-full min-h-0">
         <TableHeader className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-background">
           <TableRow>
-            <TableHead></TableHead>
+            <TableHead className="text-gray-400">{'-'} </TableHead>
             <TableHead>{t('Time')}</TableHead>
             <TableHead>{t('Velocity')}</TableHead>
             <TableHead>{t('PermittivityShort')}</TableHead>
