@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import {
   ArrowUpWideNarrowIcon,
+  DownloadIcon,
   DraftingCompassIcon,
   FolderOpenIcon,
   MousePointerClickIcon,
@@ -33,6 +34,10 @@ import { useStore } from 'zustand';
 import type { UndoRedoMessage } from '../sidebar/undo-redo/undo-redo-worker';
 import Grid2D from '@/shared/grid2d';
 import { Separator } from '@/components/ui/separator';
+import {
+  exportBScanHandler,
+  exportSemblanceAnalysisHandler,
+} from '../main-menu/shared-handlers';
 
 export default function ButtonsBar() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -40,13 +45,25 @@ export default function ButtonsBar() {
     ? dataSliceStores.get(selectedFileId)
     : undefined;
 
-  if (!store) {
+  if (!store || !selectedFileId) {
     return null;
   }
-  return <ButtonsBarInternal key={selectedFileId} store={store} />;
+  return (
+    <ButtonsBarInternal
+      key={selectedFileId}
+      store={store}
+      selectedFileId={selectedFileId}
+    />
+  );
 }
 
-function ButtonsBarInternal({ store }: { store: DataStore }) {
+function ButtonsBarInternal({
+  store,
+  selectedFileId,
+}: {
+  store: DataStore;
+  selectedFileId: string;
+}) {
   const { t } = useTranslation();
   const {
     aScanVisible,
@@ -171,6 +188,51 @@ function ButtonsBarInternal({ store }: { store: DataStore }) {
           </TooltipContent>
         </Tooltip>
       </div>
+
+      {cmpMode ? (
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <DownloadIcon className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t('Export')}</p>
+            </TooltipContent>
+          </Tooltip>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={() => exportBScanHandler(selectedFileId)}
+            >
+              {t('ExportBScan')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => exportSemblanceAnalysisHandler(selectedFileId)}
+            >
+              {t('ExportSemblanceAnalysis')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => exportBScanHandler(selectedFileId)}
+            >
+              <DownloadIcon className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t('ExportBScan')}</p>
+          </TooltipContent>
+        </Tooltip>
+      )}
+
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
