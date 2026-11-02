@@ -19,7 +19,7 @@ export default function SignalAligner({ store }: { store: DataStore }) {
   const { t } = useTranslation();
 
   const initialBScan = useRef<Grid2D | null>(null);
-  const initialAmpBreakpoint = useRef<number>(0);
+  const initialAmpBreakpoint = useRef<number | undefined>(undefined);
 
   const bScan = useStore(store, (state) => state.bScan);
   const setBScan = useStore(store, (state) => state.setBScan);
@@ -30,10 +30,12 @@ export default function SignalAligner({ store }: { store: DataStore }) {
 
   const [open, setOpen] = useState(false);
 
-  const [ampBreakpoint, setAmpBreakpoint] = useState<number>(0);
+  const [ampBreakpoint, setAmpBreakpoint] = useState<number | undefined>(
+    undefined,
+  );
 
   const [internalAmpBreakpoint, setInternalAmpBreakpoint] =
-    useState<string>('0');
+    useState<string>('undefined');
 
   const onOpenChange = (openState: boolean) => {
     setOpen(openState);
@@ -44,7 +46,7 @@ export default function SignalAligner({ store }: { store: DataStore }) {
       onAmpBreakpointChange(internalAmpBreakpoint);
     } else {
       setStopSemblanceMode(false);
-      if (ampBreakpoint !== initialAmpBreakpoint.current) {
+      if (ampBreakpoint !== undefined) {
         addOperation({ type: 'cmp_align_signal', ampBreakpoint });
       }
     }

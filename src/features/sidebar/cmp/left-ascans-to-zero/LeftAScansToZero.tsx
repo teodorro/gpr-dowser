@@ -16,12 +16,10 @@ import { useStore } from 'zustand';
 import { setLeftAScansToZero } from './set-left-ascans-to-zero';
 
 export default function SetToZero({ store }: { store: DataStore }) {
-  const DEFAULT_ZERO_BREAKPOINT = 3;
-
   const { t } = useTranslation();
 
   const initialBScan = useRef<Grid2D | null>(null);
-  const initialZeroBreakpoint = useRef<number>(0);
+  const initialZeroBreakpoint = useRef<number | undefined>(undefined);
 
   const bScan = useStore(store, (state) => state.bScan);
   const setBScan = useStore(store, (state) => state.setBScan);
@@ -32,13 +30,12 @@ export default function SetToZero({ store }: { store: DataStore }) {
 
   const [open, setOpen] = useState(false);
 
-  const [zeroBreakpoint, setZeroBreakpoint] = useState<number>(
-    DEFAULT_ZERO_BREAKPOINT,
+  const [zeroBreakpoint, setZeroBreakpoint] = useState<number | undefined>(
+    undefined,
   );
 
-  const [internalZeroBreakpoint, setInternalZeroBreakpoint] = useState<string>(
-    DEFAULT_ZERO_BREAKPOINT.toString(),
-  );
+  const [internalZeroBreakpoint, setInternalZeroBreakpoint] =
+    useState<string>('undefined');
 
   const onOpenChange = (openState: boolean) => {
     setOpen(openState);
@@ -49,7 +46,7 @@ export default function SetToZero({ store }: { store: DataStore }) {
       onZeroBreakpointChange(internalZeroBreakpoint);
     } else {
       setStopSemblanceMode(false);
-      if (zeroBreakpoint !== initialZeroBreakpoint.current) {
+      if (zeroBreakpoint !== undefined) {
         addOperation({ type: 'set_left_ascans_to_zero', zeroBreakpoint });
       }
     }
