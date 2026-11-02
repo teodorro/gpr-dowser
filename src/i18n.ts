@@ -58,6 +58,9 @@ i18n
           DewowWindowSizeInvalid:
             'Window size must be an odd number ≥ 3 and ≤ trace length',
           subtractAvg: 'Subtract',
+          subtractAvgWindowSizeTooLarge:
+            'Value greater than the width of the radargram',
+          subtractAvgWindowSizeInvalid: 'The value is invalid',
           median: 'Median',
           mean: 'Mean',
           Processing: 'Processing',
@@ -169,6 +172,8 @@ i18n
           DewowWindowSizeInvalid:
             'Размер окна должен быть нечётным ≥ 3 и ≤ длины волновой формы',
           subtractAvg: 'Вычитание',
+          subtractAvgWindowSizeTooLarge: 'Значение больше ширины радарограммы',
+          subtractAvgWindowSizeInvalid: 'Значение невалидно',
           median: 'Медиана',
           mean: 'Среднее',
           Processing: 'Обработка',

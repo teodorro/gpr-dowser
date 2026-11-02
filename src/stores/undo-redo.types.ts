@@ -21,9 +21,11 @@ export type Operation =
     }
   | {
       type: typeof OperationTypeList.SubtractMedian;
+      windowSize: number;
     }
   | {
       type: typeof OperationTypeList.SubtractMean;
+      windowSize: number;
     }
   | {
       type: typeof OperationTypeList.SplitBscan;

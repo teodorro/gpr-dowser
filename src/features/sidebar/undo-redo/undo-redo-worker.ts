@@ -61,10 +61,10 @@ self.onmessage = (e: MessageEvent<DataContainer>) => {
     }
     switch (operation.type) {
       case OperationTypeList.SubtractMean:
-        bScan = subtractMean(bScan);
+        bScan = subtractMean(bScan, operation.windowSize);
         break;
       case OperationTypeList.SubtractMedian:
-        bScan = subtractMedian(bScan);
+        bScan = subtractMedian(bScan, operation.windowSize);
         break;
       case OperationTypeList.Dewow:
         bScan = dewow(bScan, operation.windowSize);

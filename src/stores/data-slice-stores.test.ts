@@ -8,8 +8,14 @@ const dewow = (windowSize: number): Operation => ({
   windowSize,
 });
 
-const subtractMedian: Operation = { type: OperationTypeList.SubtractMedian };
-const subtractMean: Operation = { type: OperationTypeList.SubtractMean };
+const subtractMedian = (windowSize: number): Operation => ({
+  type: OperationTypeList.SubtractMedian,
+  windowSize,
+});
+const subtractMean = (windowSize: number): Operation => ({
+  type: OperationTypeList.SubtractMean,
+  windowSize,
+});
 
 function createTestStore() {
   const grid = new Grid2D(2, 2);
@@ -35,33 +41,33 @@ describe('undo/redo history', () => {
     const store = createTestStore();
 
     store.getState().addOperation(dewow(5));
-    store.getState().addOperation(subtractMedian);
+    store.getState().addOperation(subtractMedian(1));
 
     expect(store.getState().position).toBe(2);
     expect(historyEntries(store)).toEqual([
       [1, dewow(5)],
-      [2, subtractMedian],
+      [2, subtractMedian(1)],
     ]);
   });
 
   it('undo decreases position', () => {
     const store = createTestStore();
     store.getState().addOperation(dewow(5));
-    store.getState().addOperation(subtractMedian);
+    store.getState().addOperation(subtractMedian(1));
 
     store.getState().undo();
 
     expect(store.getState().position).toBe(1);
     expect(historyEntries(store)).toEqual([
       [1, dewow(5)],
-      [2, subtractMedian],
+      [2, subtractMedian(1)],
     ]);
   });
 
   it('redo increases position', () => {
     const store = createTestStore();
     store.getState().addOperation(dewow(5));
-    store.getState().addOperation(subtractMedian);
+    store.getState().addOperation(subtractMedian(1));
     store.getState().undo();
 
     store.getState().redo();
@@ -92,8 +98,8 @@ describe('undo/redo history', () => {
   it('addOperation drops future history when position is in the middle', () => {
     const store = createTestStore();
     store.getState().addOperation(dewow(5));
-    store.getState().addOperation(subtractMedian);
-    store.getState().addOperation(subtractMean);
+    store.getState().addOperation(subtractMedian(1));
+    store.getState().addOperation(subtractMean(1));
     expect(store.getState().position).toBe(3);
 
     store.getState().undo();
@@ -114,7 +120,7 @@ describe('undo/redo history', () => {
     store.getState().addOperation(dewow(5));
     const historyBefore = store.getState().history;
 
-    store.getState().addOperation(subtractMedian);
+    store.getState().addOperation(subtractMedian(1));
 
     expect(historyBefore.size).toBe(1);
     expect(historyBefore.get(1)).toEqual(dewow(5));
