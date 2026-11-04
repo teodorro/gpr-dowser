@@ -1,3 +1,4 @@
+import ScaleControl from '@/components/ScaleControl';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -34,8 +35,19 @@ function CmpSemblanceToolbarInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
 
   const cmpShiftX = useStore(store, (s) => s.cmpShiftX);
+  const cmpShiftY = useStore(store, (s) => s.cmpShiftY);
   const setCmpShift = useStore(store, (s) => s.setCmpShift);
   const cmpScale = useStore(store, (s) => s.cmpScale);
+  const setCmpScale = useStore(store, (s) => s.setCmpScale);
+
+  const handleScaleChange = (next: number) => {
+    const ratio = next / cmpScale;
+    setCmpShift(
+      TIME_AXIS_WIDTH - (TIME_AXIS_WIDTH - cmpShiftX) * ratio,
+      LENGTH_AXIS_HEIGHT - (LENGTH_AXIS_HEIGHT - cmpShiftY) * ratio,
+    );
+    setCmpScale(next);
+  };
 
   const handleMoveToLeftTopCorner = () => {
     setCmpShift(TIME_AXIS_WIDTH, LENGTH_AXIS_HEIGHT);
@@ -47,16 +59,7 @@ function CmpSemblanceToolbarInternal({ store }: { store: DataStore }) {
 
   return (
     <div className="flex flex-row gap-1 items-center mr-1">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="text-xs mr-1 text-gray-400">
-            {Math.round(cmpScale * 100)}%
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{t('Scale')}</p>
-        </TooltipContent>
-      </Tooltip>
+      <ScaleControl scale={cmpScale} onScaleChange={handleScaleChange} />
 
       <Tooltip>
         <TooltipTrigger asChild>

@@ -1,5 +1,7 @@
 import {
   dataSliceStores,
+  MAX_SCALE,
+  MIN_SCALE,
   TIME_AXIS_WIDTH,
   type DataStore,
 } from '@/stores/data-slice-stores';
@@ -412,7 +414,7 @@ function BScanInternal({ store }: { store: DataStore }) {
 
       // Zoom factor
       const zoom = Math.exp(-e.deltaY * 0.001);
-      const next = clamp(scale * zoom, 0.1, 40);
+      const next = clamp(scale * zoom, MIN_SCALE, MAX_SCALE);
 
       // Zoom around cursor: adjust shiftX/shiftY so the point under cursor stays put
       const { pointAspectRatioWidth, pointAspectRatioHeight } =

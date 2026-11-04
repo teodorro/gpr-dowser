@@ -24,6 +24,9 @@ export const DEPTH_AXIS_WIDTH = 66;
 export const BOTTOM_BORDER_HEIGHT = 0;
 export const PALLETTE_WIDTH = 20;
 
+export const MIN_SCALE = 0.1;
+export const MAX_SCALE = 40;
+
 export const SEMBLANCE_MIN_WIDTH = 150;
 export const SEMBLANCE_MAX_WIDTH = 500;
 

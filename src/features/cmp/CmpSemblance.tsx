@@ -1,6 +1,11 @@
 import { VELOCITY_LIGHT, VELOCITY_WATER } from '@/shared/gpr-math';
 import { logTransformGrid2D } from '@/shared/log-transform';
-import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
+import {
+  dataSliceStores,
+  MAX_SCALE,
+  MIN_SCALE,
+  type DataStore,
+} from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import useUiStore from '@/stores/ui-store';
 import useVisualStore from '@/stores/visual-store';
@@ -430,7 +435,7 @@ function CmpSemblanceInternal({ store }: { store: DataStore }) {
 
       // Zoom factor
       const zoom = Math.exp(-e.deltaY * 0.001);
-      const next = clamp(cmpScale * zoom, 0.1, 40);
+      const next = clamp(cmpScale * zoom, MIN_SCALE, MAX_SCALE);
 
       // Zoom around cursor: adjust shiftX/shiftY so the point under cursor stays put
       const wx = (mx - cmpShiftX) / cmpScale;

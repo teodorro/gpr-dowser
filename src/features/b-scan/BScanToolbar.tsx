@@ -1,3 +1,4 @@
+import ScaleControl from '@/components/ScaleControl';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -34,8 +35,19 @@ function BScanToolbarInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
 
   const shiftX = useStore(store, (s) => s.shiftX);
+  const shiftY = useStore(store, (s) => s.shiftY);
   const setShift = useStore(store, (s) => s.setShift);
   const scale = useStore(store, (s) => s.scale);
+  const setScale = useStore(store, (s) => s.setScale);
+
+  const handleScaleChange = (next: number) => {
+    const ratio = next / scale;
+    setShift(
+      TIME_AXIS_WIDTH - (TIME_AXIS_WIDTH - shiftX) * ratio,
+      LENGTH_AXIS_HEIGHT - (LENGTH_AXIS_HEIGHT - shiftY) * ratio,
+    );
+    setScale(next);
+  };
 
   const handleMoveToLeftTopCorner = () => {
     setShift(TIME_AXIS_WIDTH, LENGTH_AXIS_HEIGHT);
@@ -47,16 +59,7 @@ function BScanToolbarInternal({ store }: { store: DataStore }) {
 
   return (
     <div className="flex flex-row gap-1 items-center mr-1">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="text-xs mr-1 text-gray-400">
-            {Math.round(scale * 100)}%
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{t('Scale')}</p>
-        </TooltipContent>
-      </Tooltip>
+      <ScaleControl scale={scale} onScaleChange={handleScaleChange} />
 
       <Tooltip>
         <TooltipTrigger asChild>
