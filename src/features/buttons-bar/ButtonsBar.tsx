@@ -9,6 +9,7 @@ import {
   PanelLeftIcon,
   PanelRightIcon,
   RedoIcon,
+  RollerCoasterIcon,
   UndoIcon,
   UnfoldHorizontalIcon,
 } from 'lucide-react';
@@ -69,6 +70,7 @@ function ButtonsBarInternal({
     aScanVisible,
     cmpMode,
     hyperbolaMode,
+    reliefMode,
     selectMode,
     sideBarVisible,
     splitBScanMode,
@@ -454,6 +456,24 @@ function ButtonsBarInternal({
         </TooltipTrigger>
         <TooltipContent>
           <p>{t('HyperbolaMode')}</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              setBScanMode(reliefMode ? BScanMode.none : BScanMode.relief)
+            }
+            className={reliefMode ? 'border-primary border-2' : ''}
+          >
+            <RollerCoasterIcon className="w-4 h-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t('ReliefMode')}</p>
         </TooltipContent>
       </Tooltip>
     </div>

@@ -38,7 +38,7 @@ function BScanHyperbolaInternal({ store }: { store: DataStore }) {
   const bScan = useStore(store, (s) => s.bScan);
   const hyperbolaApex = useStore(store, (s) => s.hyperbolaApex);
 
-  const cmpBScanLinesColor = useVisualStore.use.bScanLinesColor();
+  const bScanLinesColor = useVisualStore.use.bScanLinesColor();
   const bScanLinesWidth = useVisualStore.use.bScanLinesWidth();
   const bScanTransparency = useVisualStore.use.bScanTransparency();
 
@@ -150,7 +150,7 @@ function BScanHyperbolaInternal({ store }: { store: DataStore }) {
           d={pathLineGenerator(hyperbolaPoints) ?? ''}
           clipPath="url(#cmp-curves)"
           fill="none"
-          stroke={cmpBScanLinesColor}
+          stroke={bScanLinesColor}
           strokeWidth={bScanLinesWidth}
         />
       </svg>

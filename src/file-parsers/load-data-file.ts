@@ -46,6 +46,7 @@ const loadTxtFile = async (file: File) => {
     const data = readKrotTxtFile(raw);
     useUiStore.getState().setBScanMode(BScanMode.none);
     const id = crypto.randomUUID();
+    const grid = Grid2D.fromArray(logTransform(data));
     dataSliceStores.set(
       id,
       createDataSliceStore(id, {
@@ -58,7 +59,11 @@ const loadTxtFile = async (file: File) => {
         dx: 0.1,
         velocity: 0.1,
         epsilon: 9,
-        displayBuffer: Grid2D.fromArray(logTransform(data)),
+        displayBuffer: grid,
+        relief: [
+          [0, 0],
+          [data.length - 1, 0],
+        ],
       }),
     );
     useFileRegistryStore.getState().addFile(id);
@@ -81,6 +86,7 @@ const loadGemFile = async (file: File) => {
     const data = readGemFile(uint8);
     useUiStore.getState().setBScanMode(BScanMode.none);
     const id = crypto.randomUUID();
+    const grid = Grid2D.fromArray(logTransform(data));
     dataSliceStores.set(
       id,
       createDataSliceStore(id, {
@@ -93,7 +99,11 @@ const loadGemFile = async (file: File) => {
         dx: 0.1,
         velocity: 0.1,
         epsilon: 9,
-        displayBuffer: Grid2D.fromArray(logTransform(data)),
+        displayBuffer: grid,
+        relief: [
+          [0, 0],
+          [data.length - 1, 0],
+        ],
       }),
     );
     useFileRegistryStore.getState().addFile(id);
@@ -121,6 +131,7 @@ const loadGeoFile = async (file: File) => {
     const data = readGeoFile(uint8);
     useUiStore.getState().setBScanMode(BScanMode.none);
     const id = crypto.randomUUID();
+    const grid = Grid2D.fromArray(logTransform(data));
     dataSliceStores.set(
       id,
       createDataSliceStore(id, {
@@ -133,7 +144,11 @@ const loadGeoFile = async (file: File) => {
         dx: 0.1,
         velocity: 0.1,
         epsilon: 9,
-        displayBuffer: Grid2D.fromArray(logTransform(data)),
+        displayBuffer: grid,
+        relief: [
+          [0, 0],
+          [grid.cols - 1, 0],
+        ],
       }),
     );
     useFileRegistryStore.getState().addFile(id);

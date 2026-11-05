@@ -9,6 +9,7 @@ import type { Operation } from './undo-redo.types';
 import type { CmpSlice } from './cmp-slice';
 import CmpLayersContainer from './cmp-layers-container';
 import type { HyperbolaSlice } from './hyperbola-slice';
+import type { ReliefSlice } from './relief-slice';
 
 type DataSliceStore = { id: string } & FileSlice &
   DataSlice &
@@ -16,7 +17,8 @@ type DataSliceStore = { id: string } & FileSlice &
   VisualSlice &
   UndoRedoSlice &
   CmpSlice &
-  HyperbolaSlice;
+  HyperbolaSlice &
+  ReliefSlice;
 
 export const TIME_AXIS_WIDTH = 56;
 export const LENGTH_AXIS_HEIGHT = 46;
@@ -167,6 +169,10 @@ export const createDataSliceStore = (
     hyperbolaApex: (options.hyperbolaApex as [number, number]) ?? [0, 0],
     setHyperbolaApex: (hyperbolaApex: [number, number]) =>
       set({ hyperbolaApex }),
+
+    // ReliefSlice
+    relief: (options.relief as [number, number][]) ?? [],
+    setRelief: (relief: [number, number][]) => set({ relief }),
   }));
 
 // Registry of stores

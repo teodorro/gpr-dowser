@@ -9,6 +9,7 @@ type UiState = {
   cmpMode: boolean;
   hyperbolaMode: boolean;
   selectMode: boolean;
+  reliefMode: boolean;
   cmpTableVisible: boolean;
   progress: number[];
   inProgress: boolean;
@@ -20,6 +21,7 @@ export const BScanMode = {
   split: 'split',
   cmp: 'cmp',
   hyperbola: 'hyperbola',
+  relief: 'relief',
   none: 'none',
 } as const;
 
@@ -46,6 +48,7 @@ const INITIAL_STATE: UiState = {
   cmpMode: false,
   hyperbolaMode: false,
   selectMode: false,
+  reliefMode: false,
   cmpTableVisible: true,
   progress: [],
   inProgress: false,
@@ -70,6 +73,7 @@ const useUiBase = create<Ui>((set) => ({
           cmpMode: false,
           hyperbolaMode: false,
           selectMode: false,
+          reliefMode: false,
         }));
         break;
       case BScanMode.split:
@@ -79,6 +83,7 @@ const useUiBase = create<Ui>((set) => ({
           cmpMode: false,
           hyperbolaMode: false,
           selectMode: false,
+          reliefMode: false,
         }));
         break;
       case BScanMode.cmp:
@@ -88,6 +93,7 @@ const useUiBase = create<Ui>((set) => ({
           splitBScanMode: false,
           hyperbolaMode: false,
           selectMode: false,
+          reliefMode: false,
         }));
         break;
       case BScanMode.hyperbola:
@@ -97,6 +103,7 @@ const useUiBase = create<Ui>((set) => ({
           splitBScanMode: false,
           cmpMode: false,
           selectMode: false,
+          reliefMode: false,
         }));
         break;
       case BScanMode.select:
@@ -106,6 +113,17 @@ const useUiBase = create<Ui>((set) => ({
           splitBScanMode: false,
           cmpMode: false,
           hyperbolaMode: false,
+          reliefMode: false,
+        }));
+        break;
+      case BScanMode.relief:
+        set((s) => ({
+          ...s,
+          reliefMode: true,
+          splitBScanMode: false,
+          cmpMode: false,
+          hyperbolaMode: false,
+          selectMode: false,
         }));
         break;
       default:
@@ -114,6 +132,9 @@ const useUiBase = create<Ui>((set) => ({
   },
   setSelectMode: (mode: boolean) => {
     set((s) => ({ ...s, selectMode: mode }));
+  },
+  setReliefMode: (mode: boolean) => {
+    set((s) => ({ ...s, reliefMode: mode }));
   },
   setCmpTableVisible: (visible: boolean) => {
     set((s) => ({ ...s, cmpTableVisible: visible }));

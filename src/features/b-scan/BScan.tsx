@@ -24,6 +24,7 @@ import BScanAxes from './BScanAxes';
 import { BSCAN_CHART_ROOT_ID } from '../export/export-consts';
 import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
 import BScanHyperbola from './BScanHyperbola';
+import BScanReliefEditor from './BScanReliefEditor';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -52,6 +53,9 @@ function BScanInternal({ store }: { store: DataStore }) {
   const setBScanMode = useUiStore.use.setBScanMode();
   const cmpMode = useUiStore.use.cmpMode();
   const selectMode = useUiStore.use.selectMode();
+  const reliefMode = useUiStore.use.reliefMode();
+  const hyperbolaMode = useUiStore.use.hyperbolaMode();
+
   const displayBuffer = useStore(store, (s) => s.displayBuffer);
   const scale = useStore(store, (s) => s.scale);
   const scaleX = useStore(store, selectScaleX);
@@ -69,8 +73,7 @@ function BScanInternal({ store }: { store: DataStore }) {
   const setBScan = useStore(store, (s) => s.setBScan);
   const addOperation = useStore(store, (s) => s.addOperation);
   const setHyperbolaApex = useStore(store, (s) => s.setHyperbolaApex);
-
-  const hyperbolaMode = useUiStore.use.hyperbolaMode();
+  const setRelief = useStore(store, (s) => s.setRelief);
 
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
     x: shiftX,
@@ -398,6 +401,13 @@ function BScanInternal({ store }: { store: DataStore }) {
         setIndexSelectedAscan(col < 0 || col >= dims.cols ? undefined : col);
       }
 
+      if (reliefMode) {
+        const r = [...store.getState().relief];
+        r.push([col, row]);
+        r.sort((a, b) => a[0] - b[0]);
+        setRelief(r);
+      }
+
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
         setIndexTimeZero(row);
       }
@@ -469,6 +479,8 @@ function BScanInternal({ store }: { store: DataStore }) {
     setHyperbolaApex,
     hyperbolaMode,
     selectMode,
+    reliefMode,
+    setRelief,
   ]);
 
   useEffect(() => {
@@ -487,6 +499,7 @@ function BScanInternal({ store }: { store: DataStore }) {
       {cmpMode && <CmpCurves />}
       {hyperbolaMode && <BScanHyperbola />}
       <BScanAxes />
+      {reliefMode && <BScanReliefEditor />}
     </div>
   );
 }
