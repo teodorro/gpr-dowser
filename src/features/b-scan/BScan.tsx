@@ -310,6 +310,47 @@ function BScanInternal({ store }: { store: DataStore }) {
     [shiftX, shiftY, scaleX, scaleY, dims, setIndexSelectedAscan, selectMode],
   );
 
+  const handleReliefSelectAndEdit = (
+    col: number,
+    row: number,
+    relief: [number, number][],
+    selectedReliefPoint: [number, number] | undefined,
+  ) => {
+    let closestPoint: [number, number] | undefined = undefined;
+    const distances = relief.map((point) => ({
+      point: point,
+      distance: Math.hypot(col - point[0], row - point[1]),
+    }));
+    const minDistancePoint =
+      distances.length > 0
+        ? distances.find(
+            (d) => d.distance === Math.min(...distances.map((d) => d.distance)),
+          )
+        : undefined;
+    if (
+      minDistancePoint != null &&
+      minDistancePoint.distance < RELIEF_POINT_GAP
+    ) {
+      closestPoint = minDistancePoint.point;
+    }
+    if (
+      selectedReliefPoint &&
+      selectedReliefPoint[0] === col &&
+      selectedReliefPoint[1] === row
+    ) {
+      setSelectedReliefPoint(undefined);
+    } else if (closestPoint) {
+      setSelectedReliefPoint(closestPoint);
+    } else {
+      let r = [...store.getState().relief];
+      r = r.filter((point) => point[0] !== col);
+      r.push([col, row]);
+      r.sort((a, b) => a[0] - b[0]);
+      setRelief(r);
+      setSelectedReliefPoint([col, row]);
+    }
+  };
+
   // Mouse interactions: pan + wheel zoom
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -407,42 +448,12 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
 
       if (reliefMode) {
-        const selectedReliefPoint = store.getState().selectedReliefPoint;
-        const relief = store.getState().relief;
-        let closestPoint: [number, number] | undefined = undefined;
-        const distances = relief.map((point) => ({
-          point: point,
-          distance: Math.hypot(col - point[0], row - point[1]),
-        }));
-        const minDistancePoint =
-          distances.length > 0
-            ? distances.find(
-                (d) =>
-                  d.distance === Math.min(...distances.map((d) => d.distance)),
-              )
-            : undefined;
-        if (
-          minDistancePoint != null &&
-          minDistancePoint.distance < RELIEF_POINT_GAP
-        ) {
-          closestPoint = minDistancePoint.point;
-        }
-        if (
-          selectedReliefPoint &&
-          selectedReliefPoint[0] === col &&
-          selectedReliefPoint[1] === row
-        ) {
-          setSelectedReliefPoint(undefined);
-        } else if (closestPoint) {
-          setSelectedReliefPoint(closestPoint);
-        } else {
-          let r = [...store.getState().relief];
-          r = r.filter((point) => point[0] !== col);
-          r.push([col, row]);
-          r.sort((a, b) => a[0] - b[0]);
-          setRelief(r);
-          setSelectedReliefPoint([col, row]);
-        }
+        handleReliefSelectAndEdit(
+          col,
+          row,
+          store.getState().relief,
+          store.getState().selectedReliefPoint,
+        );
       }
 
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
