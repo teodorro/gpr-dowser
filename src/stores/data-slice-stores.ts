@@ -172,7 +172,13 @@ export const createDataSliceStore = (
 
     // ReliefSlice
     relief: (options.relief as [number, number][]) ?? [],
+    selectedReliefPoint:
+      (options.selectedReliefPoint as [number, number] | undefined) ??
+      undefined,
     setRelief: (relief: [number, number][]) => set({ relief }),
+    setSelectedReliefPoint: (
+      selectedReliefPoint: [number, number] | undefined,
+    ) => set({ selectedReliefPoint }),
   }));
 
 // Registry of stores

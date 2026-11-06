@@ -36,6 +36,7 @@ function BScanReliefEditorInternal({ store }: { store: DataStore }) {
   const bScanLinesWidth = useVisualStore.use.bScanLinesWidth();
 
   const relief = useStore(store, (s) => s.relief);
+  const selectedReliefPoint = useStore(store, (s) => s.selectedReliefPoint);
 
   const setContainer = useCallback((node: HTMLDivElement | null) => {
     roRef.current?.disconnect();
@@ -107,6 +108,23 @@ function BScanReliefEditorInternal({ store }: { store: DataStore }) {
           stroke={bScanLinesColor}
           strokeWidth={bScanLinesWidth}
         />
+        {reliefPoints.map((point) => (
+          <circle
+            cx={distanceToX(point[0])}
+            cy={timeToY(point[1])}
+            r={3 * Math.log(scaleX + scaleY + 1)}
+            fill={bScanLinesColor}
+          ></circle>
+        ))}
+        {selectedReliefPoint != null && (
+          <circle
+            cx={distanceToX(selectedReliefPoint[0])}
+            cy={timeToY(selectedReliefPoint[1])}
+            r={3 * Math.log(scaleX + scaleY + 1)}
+            fill="magenta"
+            stroke="black"
+          ></circle>
+        )}
       </svg>
     </div>
   );

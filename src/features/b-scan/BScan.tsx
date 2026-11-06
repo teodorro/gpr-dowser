@@ -25,6 +25,7 @@ import { BSCAN_CHART_ROOT_ID } from '../export/export-consts';
 import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
 import BScanHyperbola from './BScanHyperbola';
 import BScanReliefEditor from './BScanReliefEditor';
+import { RELIEF_POINT_GAP } from '@/stores/relief-slice';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -70,6 +71,10 @@ function BScanInternal({ store }: { store: DataStore }) {
   const bScan = useStore(store, (s) => s.bScan);
   const setIndexTimeZero = useStore(store, (s) => s.setIndexTimeZero);
   const setIndexSelectedAscan = useStore(store, (s) => s.setIndexSelectedAscan);
+  const setSelectedReliefPoint = useStore(
+    store,
+    (s) => s.setSelectedReliefPoint,
+  );
   const setBScan = useStore(store, (s) => s.setBScan);
   const addOperation = useStore(store, (s) => s.addOperation);
   const setHyperbolaApex = useStore(store, (s) => s.setHyperbolaApex);
@@ -402,11 +407,42 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
 
       if (reliefMode) {
-        let r = [...store.getState().relief];
-        r = r.filter((point) => point[0] !== col);
-        r.push([col, row]);
-        r.sort((a, b) => a[0] - b[0]);
-        setRelief(r);
+        const selectedReliefPoint = store.getState().selectedReliefPoint;
+        const relief = store.getState().relief;
+        let closestPoint: [number, number] | undefined = undefined;
+        const distances = relief.map((point) => ({
+          point: point,
+          distance: Math.hypot(col - point[0], row - point[1]),
+        }));
+        const minDistancePoint =
+          distances.length > 0
+            ? distances.find(
+                (d) =>
+                  d.distance === Math.min(...distances.map((d) => d.distance)),
+              )
+            : undefined;
+        if (
+          minDistancePoint != null &&
+          minDistancePoint.distance < RELIEF_POINT_GAP
+        ) {
+          closestPoint = minDistancePoint.point;
+        }
+        if (
+          selectedReliefPoint &&
+          selectedReliefPoint[0] === col &&
+          selectedReliefPoint[1] === row
+        ) {
+          setSelectedReliefPoint(undefined);
+        } else if (closestPoint) {
+          setSelectedReliefPoint(closestPoint);
+        } else {
+          let r = [...store.getState().relief];
+          r = r.filter((point) => point[0] !== col);
+          r.push([col, row]);
+          r.sort((a, b) => a[0] - b[0]);
+          setRelief(r);
+          setSelectedReliefPoint([col, row]);
+        }
       }
 
       if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
@@ -439,16 +475,41 @@ function BScanInternal({ store }: { store: DataStore }) {
       setScale(next);
     };
 
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Delete') {
+        const relief = store.getState().relief;
+        const selectedReliefPoint = store.getState().selectedReliefPoint;
+        if (selectedReliefPoint != null) {
+          const newRelief = relief.filter(
+            (point) =>
+              point[0] !== selectedReliefPoint[0] ||
+              point[1] !== selectedReliefPoint[1],
+          );
+          setRelief(newRelief);
+          setSelectedReliefPoint(undefined);
+        }
+      }
+    };
+
+    const onBlur = () => {
+      if (!document.hasFocus()) return;
+      setSelectedReliefPoint(undefined);
+    };
+
     canvas.addEventListener('mousedown', onDown);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     canvas.addEventListener('wheel', onWheel, { passive: false });
+    canvas.addEventListener('keyup', onKeyUp);
+    canvas.addEventListener('blur', onBlur);
 
     return () => {
       canvas.removeEventListener('mousedown', onDown);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
       canvas.removeEventListener('wheel', onWheel);
+      canvas.removeEventListener('keyup', onKeyUp);
+      canvas.removeEventListener('blur', onBlur);
       if (panRaf.current != null) {
         cancelAnimationFrame(panRaf.current);
         panRaf.current = null;
@@ -482,6 +543,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     selectMode,
     reliefMode,
     setRelief,
+    setSelectedReliefPoint,
   ]);
 
   useEffect(() => {
@@ -495,6 +557,7 @@ function BScanInternal({ store }: { store: DataStore }) {
     >
       <canvas
         ref={canvasRef}
+        tabIndex={0}
         className="absolute inset-0 block w-full h-full"
       />
       {cmpMode && <CmpCurves />}
