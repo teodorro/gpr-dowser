@@ -402,7 +402,8 @@ function BScanInternal({ store }: { store: DataStore }) {
       }
 
       if (reliefMode) {
-        const r = [...store.getState().relief];
+        let r = [...store.getState().relief];
+        r = r.filter((point) => point[0] !== col);
         r.push([col, row]);
         r.sort((a, b) => a[0] - b[0]);
         setRelief(r);
