@@ -4,6 +4,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 
 type Props = {
   icon: React.ReactNode;
@@ -20,8 +21,14 @@ export default function NavItem({
   disabled,
   expanded,
 }: Props) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Collapsible disabled={disabled} open={expanded}>
+    <Collapsible
+      disabled={disabled}
+      open={!disabled && (expanded ?? open)}
+      onOpenChange={setOpen}
+    >
       <CollapsibleTrigger
         disabled={disabled}
         className="flex w-full items-center gap-3 px-3 py-2 hover:bg-accent rounded-md disabled:pointer-events-none disabled:opacity-50"

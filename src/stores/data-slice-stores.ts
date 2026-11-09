@@ -5,11 +5,11 @@ import type { UnitSlice } from './unit-slice';
 import type { DataSlice } from './data-slice';
 import type { FileSlice } from './file-slice';
 import type { UndoRedoSlice } from './undo-redo-slice';
-import type { Operation } from './undo-redo.types';
+import { OperationTypeList, type Operation } from './undo-redo.types';
 import type { CmpSlice } from './cmp-slice';
 import CmpLayersContainer from './cmp-layers-container';
 import type { HyperbolaSlice } from './hyperbola-slice';
-import type { ReliefSlice } from './relief-slice';
+import { mirrorRelief, splitRelief, type ReliefSlice } from './relief-slice';
 
 type DataSliceStore = { id: string } & FileSlice &
   DataSlice &
@@ -106,10 +106,12 @@ export const createDataSliceStore = (
     undo: () =>
       set((state) => ({
         position: Math.max(0, state.position - 1),
+        ...getReliefAfterUndo(state.history.get(state.position), state),
       })),
     redo: () =>
       set((state) => ({
         position: Math.min(state.history.size, state.position + 1),
+        ...getReliefAfterRedo(state.history.get(state.position + 1), state),
       })),
     addOperation: (operation: Operation) =>
       set((state) => {
@@ -121,6 +123,14 @@ export const createDataSliceStore = (
           history,
           position: state.position + 1,
         };
+      }),
+    replaceOperation: (operation: Operation) =>
+      set((state) => {
+        const history = new Map(
+          [...state.history].filter(([key]) => key < state.position),
+        );
+        history.set(state.position, operation);
+        return { history };
       }),
 
     // CmpSlice
@@ -180,6 +190,50 @@ export const createDataSliceStore = (
       selectedReliefPoint: [number, number] | undefined,
     ) => set({ selectedReliefPoint }),
   }));
+
+const getReliefAfterUndo = (
+  operation: Operation | undefined,
+  state: DataSliceStore,
+): Partial<DataSliceStore> => {
+  switch (operation?.type) {
+    case OperationTypeList.ApplyRelief:
+      return {
+        relief: operation.previousPoints,
+        selectedReliefPoint: undefined,
+      };
+    case OperationTypeList.TurnAroundBscan:
+      return {
+        relief: mirrorRelief(state.relief, state.bScan.cols),
+        selectedReliefPoint: undefined,
+      };
+    case OperationTypeList.SplitBscan:
+      return { relief: operation.relief, selectedReliefPoint: undefined };
+    default:
+      return {};
+  }
+};
+
+const getReliefAfterRedo = (
+  operation: Operation | undefined,
+  state: DataSliceStore,
+): Partial<DataSliceStore> => {
+  switch (operation?.type) {
+    case OperationTypeList.ApplyRelief:
+      return { relief: operation.points, selectedReliefPoint: undefined };
+    case OperationTypeList.TurnAroundBscan:
+      return {
+        relief: mirrorRelief(state.relief, state.bScan.cols),
+        selectedReliefPoint: undefined,
+      };
+    case OperationTypeList.SplitBscan:
+      return {
+        relief: splitRelief(operation.relief, operation.splitIndex)[0],
+        selectedReliefPoint: undefined,
+      };
+    default:
+      return {};
+  }
+};
 
 // Registry of stores
 export const dataSliceStores = new Map<

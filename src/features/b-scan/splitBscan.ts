@@ -4,9 +4,9 @@ import { logTransformGrid2D } from '@/shared/log-transform';
 import {
   createDataSliceStore,
   dataSliceStores,
-  type DataStore,
 } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
+import { splitRelief } from '@/stores/relief-slice';
 
 export const splitBscan = (
   bscan: Grid2D,
@@ -20,7 +20,11 @@ export const splitBscan = (
     throw new Error('Data slice not found');
   }
 
-  dataSlice.getState().setRelief(getLeftBscanRelief(dataSlice, splitIndex));
+  const [leftRelief, rightRelief] = splitRelief(
+    dataSlice.getState().relief,
+    splitIndex,
+  );
+  dataSlice.getState().setRelief(leftRelief);
 
   if (!rightDataSliceId) {
     rightDataSliceId = `__from__${leftDataSliceId}__${crypto.randomUUID()}`;
@@ -44,27 +48,10 @@ export const splitBscan = (
       velocity: 0.1,
       epsilon: 9,
       displayBuffer: gridRight,
-      relief: getRightBscanRelief(dataSlice, splitIndex),
+      relief: rightRelief,
     }),
   );
   useFileRegistryStore.getState().addFile(rightDataSliceId, false);
 
   return [leftBScan, rightDataSliceId];
-};
-
-const getLeftBscanRelief = (dataSlice: DataStore, splitIndex: number) => {
-  return [
-    ...dataSlice.getState().relief.filter((i) => i[0] < splitIndex),
-    [splitIndex, 0],
-  ] as [number, number][];
-};
-
-const getRightBscanRelief = (dataSlice: DataStore, splitIndex: number) => {
-  return [
-    [0, 0],
-    ...(dataSlice
-      .getState()
-      .relief.filter((i) => i[0] > splitIndex)
-      .map((i) => [i[0] - splitIndex, i[1]]) as [number, number][]),
-  ];
 };

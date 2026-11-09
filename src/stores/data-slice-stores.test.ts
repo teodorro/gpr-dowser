@@ -126,4 +126,115 @@ describe('undo/redo history', () => {
     expect(historyBefore.get(1)).toEqual(dewow(5));
     expect(historyBefore.has(2)).toBe(false);
   });
+
+  describe('relief', () => {
+    const previousPoints: [number, number][] = [
+      [0, 0],
+      [1, 0],
+    ];
+    const points: [number, number][] = [
+      [0, 3],
+      [1, 5],
+    ];
+    const applyRelief: Operation = {
+      type: OperationTypeList.ApplyRelief,
+      previousPoints,
+      points,
+    };
+
+    it('undo brings back the curve before the relief operation', () => {
+      const store = createTestStore();
+      store.getState().addOperation(applyRelief);
+      store.getState().setRelief(points);
+      store.getState().setSelectedReliefPoint([1, 5]);
+
+      store.getState().undo();
+
+      expect(store.getState().relief).toEqual(previousPoints);
+      expect(store.getState().selectedReliefPoint).toBeUndefined();
+    });
+
+    it('redo brings back the curve of the relief operation', () => {
+      const store = createTestStore();
+      store.getState().addOperation(applyRelief);
+      store.getState().undo();
+
+      store.getState().redo();
+
+      expect(store.getState().relief).toEqual(points);
+    });
+
+    it('undo and redo of turn around mirror the curve', () => {
+      const store = createTestStore();
+      store.getState().setRelief(points);
+      store.getState().addOperation({
+        type: OperationTypeList.TurnAroundBscan,
+      });
+
+      store.getState().undo();
+      expect(store.getState().relief).toEqual([
+        [0, 5],
+        [1, 3],
+      ]);
+
+      store.getState().redo();
+      expect(store.getState().relief).toEqual(points);
+    });
+
+    it('undo of a split brings back the whole curve', () => {
+      const store = createTestStore();
+      const whole: [number, number][] = [
+        [0, 2],
+        [10, 2],
+      ];
+      store.getState().addOperation({
+        type: OperationTypeList.SplitBscan,
+        splitIndex: 4,
+        leftDataSliceId: 'left',
+        rightDataSliceId: 'right',
+        relief: whole,
+      });
+      store.getState().setRelief([
+        [0, 2],
+        [4, 2],
+      ]);
+
+      store.getState().undo();
+      expect(store.getState().relief).toEqual(whole);
+
+      store.getState().redo();
+      expect(store.getState().relief).toEqual([
+        [0, 2],
+        [4, 2],
+      ]);
+    });
+
+    it('replaceOperation swaps the current step and drops later ones', () => {
+      const store = createTestStore();
+      store.getState().addOperation(dewow(5));
+      store.getState().addOperation(applyRelief);
+      store.getState().addOperation(dewow(7));
+      store.getState().undo();
+
+      store.getState().replaceOperation(subtractMean(1));
+
+      expect(store.getState().position).toBe(2);
+      expect(historyEntries(store)).toEqual([
+        [1, dewow(5)],
+        [2, subtractMean(1)],
+      ]);
+    });
+
+    it('other operations leave the curve alone', () => {
+      const store = createTestStore();
+      store.getState().setRelief(points);
+      store.getState().addOperation(dewow(5));
+
+      store.getState().undo();
+      expect(store.getState().relief).toEqual(points);
+
+      store.getState().redo();
+      expect(store.getState().relief).toEqual(points);
+    });
+  });
 });

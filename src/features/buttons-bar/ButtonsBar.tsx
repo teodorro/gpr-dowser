@@ -28,12 +28,10 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/components/ui/tooltip';
-import { useEffect, useRef } from 'react';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import { useStore } from 'zustand';
-import type { UndoRedoMessage } from '../sidebar/undo-redo/undo-redo-worker';
-import Grid2D from '@/shared/grid2d';
+import { useUndoRedo } from '../sidebar/undo-redo/use-undo-redo';
 import { Separator } from '@/components/ui/separator';
 import {
   exportBScanHandler,
@@ -75,9 +73,6 @@ function ButtonsBarInternal({
     sideBarVisible,
     splitBScanMode,
     inProgress,
-    addProgress,
-    clearProgress,
-    setInProgress,
     setAScanVisible,
     setBScanMode,
     setSideBarVisible,
@@ -87,91 +82,7 @@ function ButtonsBarInternal({
 
   const history = useStore(store, (state) => state.history);
   const position = useStore(store, (state) => state.position);
-  const undo = useStore(store, (state) => state.undo);
-  const redo = useStore(store, (state) => state.redo);
-  const bScanInitial = useStore(store, (state) => state.bScanInitial);
-  const setBScan = useStore(store, (state) => state.setBScan);
-
-  const undoRedoWorker = useRef<Worker | null>(null);
-
-  const handleUndo = () => {
-    undoRedoWorker.current?.postMessage({
-      bScan: bScanInitial,
-      history,
-      start: 1,
-      target: position - 1,
-      operationType: 'undo',
-    });
-  };
-
-  const handleRedo = () => {
-    undoRedoWorker.current?.postMessage({
-      bScan: bScanInitial,
-      history,
-      start: 1,
-      target: position + 1,
-      operationType: 'redo',
-    });
-  };
-
-  useEffect(() => {
-    undoRedoWorker.current = new Worker(
-      new URL('../sidebar/undo-redo/undo-redo-worker.ts', import.meta.url),
-      { type: 'module' },
-    );
-    undoRedoWorker.current.onmessage = (e: MessageEvent<UndoRedoMessage>) => {
-      let tmpBscan: unknown;
-      switch (e.data.type) {
-        case 'progress':
-          addProgress(e.data.progress);
-          break;
-        case 'complete':
-          if (e.data.operationType === 'undo') {
-            undo();
-          } else {
-            redo();
-          }
-          setBScan(
-            new Grid2D(
-              e.data.result.cols,
-              e.data.result.rows,
-              e.data.result.buf,
-            ),
-          );
-          setInProgress(false);
-          clearProgress();
-          break;
-        case 'split-bscan':
-          tmpBscan = new Grid2D(
-            e.data.result.cols,
-            e.data.result.rows,
-            e.data.result.buf,
-          ).split(e.data.operation.splitIndex)[0];
-          undoRedoWorker.current?.postMessage({
-            bScan: tmpBscan,
-            history,
-            start: e.data.start + 1,
-            target: e.data.target,
-            operationType: e.data.operationType,
-          });
-          break;
-      }
-    };
-    return () => {
-      undoRedoWorker.current?.terminate();
-      undoRedoWorker.current = null;
-    };
-  }, [
-    store,
-    addProgress,
-    clearProgress,
-    setBScan,
-    setInProgress,
-    undo,
-    redo,
-    position,
-    history,
-  ]);
+  const { handleUndo, handleRedo } = useUndoRedo(store);
 
   return (
     <div className="flex flex-row gap-1 p-1">

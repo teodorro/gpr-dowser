@@ -10,6 +10,7 @@ import { alignSignal } from '../cmp/signal-aligner/align-signal';
 import { setLeftAScansToZero } from '../cmp/left-ascans-to-zero/set-left-ascans-to-zero';
 import addLozaCmpShift from '../cmp/add-loza-cmp-shift/add-loza-shift';
 import turnAroundBscan from '../processing/statistical-processing/turn-around/turn-around-bscan';
+import applyRelief from '@/features/b-scan/apply-relief';
 
 export type UndoRedoMessage =
   | {
@@ -114,6 +115,9 @@ self.onmessage = (e: MessageEvent<DataContainer>) => {
         break;
       case OperationTypeList.TurnAroundBscan:
         bScan = turnAroundBscan(bScan);
+        break;
+      case OperationTypeList.ApplyRelief:
+        bScan = applyRelief(bScan, operation.previousPoints, operation.points);
         break;
       default:
         unreachable(operation);

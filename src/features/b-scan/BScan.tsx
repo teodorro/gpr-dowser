@@ -26,6 +26,7 @@ import { CLICK_MOVE_THRESHOLD } from '@/shared/constants';
 import BScanHyperbola from './BScanHyperbola';
 import BScanReliefEditor from './BScanReliefEditor';
 import { RELIEF_POINT_GAP } from '@/stores/relief-slice';
+import { editRelief } from './edit-relief';
 
 export default function BScan() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -78,7 +79,6 @@ function BScanInternal({ store }: { store: DataStore }) {
   const setBScan = useStore(store, (s) => s.setBScan);
   const addOperation = useStore(store, (s) => s.addOperation);
   const setHyperbolaApex = useStore(store, (s) => s.setHyperbolaApex);
-  const setRelief = useStore(store, (s) => s.setRelief);
 
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
     x: shiftX,
@@ -310,46 +310,45 @@ function BScanInternal({ store }: { store: DataStore }) {
     [shiftX, shiftY, scaleX, scaleY, dims, setIndexSelectedAscan, selectMode],
   );
 
-  const handleReliefSelectAndEdit = (
-    col: number,
-    row: number,
-    relief: [number, number][],
-    selectedReliefPoint: [number, number] | undefined,
-  ) => {
-    let closestPoint: [number, number] | undefined = undefined;
-    const distances = relief.map((point) => ({
-      point: point,
-      distance: Math.hypot(col - point[0], row - point[1]),
-    }));
-    const minDistancePoint =
-      distances.length > 0
-        ? distances.find(
-            (d) => d.distance === Math.min(...distances.map((d) => d.distance)),
-          )
-        : undefined;
-    if (
-      minDistancePoint != null &&
-      minDistancePoint.distance < RELIEF_POINT_GAP
-    ) {
-      closestPoint = minDistancePoint.point;
-    }
-    if (
-      selectedReliefPoint &&
-      selectedReliefPoint[0] === col &&
-      selectedReliefPoint[1] === row
-    ) {
-      setSelectedReliefPoint(undefined);
-    } else if (closestPoint) {
-      setSelectedReliefPoint(closestPoint);
-    } else {
-      let r = [...store.getState().relief];
-      r = r.filter((point) => point[0] !== col);
-      r.push([col, row]);
-      r.sort((a, b) => a[0] - b[0]);
-      setRelief(r);
-      setSelectedReliefPoint([col, row]);
-    }
-  };
+  const handleReliefSelectAndEdit = useCallback(
+    (
+      col: number,
+      row: number,
+      relief: [number, number][],
+      selectedReliefPoint: [number, number] | undefined,
+    ) => {
+      const distances = relief.map((point) => ({
+        point: point,
+        distance: Math.hypot(col - point[0], row - point[1]),
+      }));
+      const smallDistancePoints = distances.filter(
+        (d) => d.distance < RELIEF_POINT_GAP,
+      );
+      if (row < 0 || row >= dims.rows || col < 0 || col >= dims.cols) return;
+      else if (
+        selectedReliefPoint &&
+        selectedReliefPoint[0] === col &&
+        selectedReliefPoint[1] === row
+      ) {
+        setSelectedReliefPoint(undefined);
+      } else {
+        let r = [...store.getState().relief];
+        r = r
+          .filter((point) => point[0] !== col)
+          .filter(
+            (point) =>
+              !smallDistancePoints.some(
+                (d) => d.point[0] === point[0] && d.point[1] === point[1],
+              ),
+          );
+        r.push([col, row]);
+        r.sort((a, b) => a[0] - b[0]);
+        editRelief(store, r);
+        setSelectedReliefPoint([col, row]);
+      }
+    },
+    [store, setSelectedReliefPoint],
+  );
 
   // Mouse interactions: pan + wheel zoom
   useEffect(() => {
@@ -423,6 +422,7 @@ function BScanInternal({ store }: { store: DataStore }) {
 
       if (splitBscanMode) {
         if (selectedFileId && col > 0 && col <= dims.cols) {
+          const relief = store.getState().relief;
           const [leftBscan, rightBscanId] = splitBscan(
             bScan,
             col,
@@ -434,6 +434,7 @@ function BScanInternal({ store }: { store: DataStore }) {
             splitIndex: col,
             leftDataSliceId: selectedFileId,
             rightDataSliceId: rightBscanId,
+            relief,
           });
           setBScanMode(splitBscanMode ? BScanMode.none : BScanMode.split);
         }
@@ -496,7 +497,7 @@ function BScanInternal({ store }: { store: DataStore }) {
               point[0] !== selectedReliefPoint[0] ||
               point[1] !== selectedReliefPoint[1],
           );
-          setRelief(newRelief);
+          editRelief(store, newRelief);
           setSelectedReliefPoint(undefined);
         }
       }
@@ -553,8 +554,8 @@ function BScanInternal({ store }: { store: DataStore }) {
     hyperbolaMode,
     selectMode,
     reliefMode,
-    setRelief,
     setSelectedReliefPoint,
+    handleReliefSelectAndEdit,
   ]);
 
   useEffect(() => {
@@ -573,8 +574,8 @@ function BScanInternal({ store }: { store: DataStore }) {
       />
       {cmpMode && <CmpCurves />}
       {hyperbolaMode && <BScanHyperbola />}
-      <BScanAxes />
       {reliefMode && <BScanReliefEditor />}
+      <BScanAxes />
     </div>
   );
 }

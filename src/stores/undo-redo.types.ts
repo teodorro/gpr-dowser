@@ -9,6 +9,7 @@ export const OperationTypeList = {
   SetLeftAScansToZero: 'set_left_ascans_to_zero',
   AddLozaCmpShift: 'add_loza_cmp_shift',
   TurnAroundBscan: 'turn_around_bscan',
+  ApplyRelief: 'apply_relief',
 } as const;
 
 export type OperationType =
@@ -32,6 +33,7 @@ export type Operation =
       splitIndex: number;
       leftDataSliceId: string;
       rightDataSliceId: string;
+      relief: [number, number][];
     }
   | {
       type: typeof OperationTypeList.SavitzkyGolay;
@@ -60,7 +62,17 @@ export type Operation =
     }
   | {
       type: typeof OperationTypeList.TurnAroundBscan;
+    }
+  | {
+      type: typeof OperationTypeList.ApplyRelief;
+      previousPoints: [number, number][];
+      points: [number, number][];
     };
+
+export type ReliefOperation = Extract<
+  Operation,
+  { type: typeof OperationTypeList.ApplyRelief }
+>;
 
 export type OperationHistory = {
   undo: Operation[];

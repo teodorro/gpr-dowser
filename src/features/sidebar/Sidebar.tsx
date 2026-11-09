@@ -18,6 +18,7 @@ const Sidebar = () => {
   const { sideBarVisible } = useUiStore();
   const { t } = useTranslation();
   const cmpMode = useUiStore.use.cmpMode();
+  const reliefMode = useUiStore.use.reliefMode();
 
   if (!sideBarVisible) return null;
 
@@ -31,7 +32,11 @@ const Sidebar = () => {
           <UnitsMeasurement />
         </NavItem>
 
-        <NavItem icon={<CalculatorIcon />} label={t('Processing')}>
+        <NavItem
+          icon={<CalculatorIcon />}
+          label={t('Processing')}
+          disabled={reliefMode}
+        >
           <Processing />
         </NavItem>
 

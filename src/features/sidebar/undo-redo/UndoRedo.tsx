@@ -13,8 +13,7 @@ import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import useUiStore from '@/stores/ui-store';
-import type { UndoRedoMessage } from './undo-redo-worker';
-import Grid2D from '@/shared/grid2d';
+import { useUndoRedo } from './use-undo-redo';
 
 export default function UndoRedo() {
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
@@ -33,78 +32,18 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
 
   const history = useStore(store, (state) => state.history);
   const position = useStore(store, (state) => state.position);
-  const undo = useStore(store, (state) => state.undo);
-  const redo = useStore(store, (state) => state.redo);
-
-  const bScanInitial = useStore(store, (state) => state.bScanInitial);
-  const setBScan = useStore(store, (state) => state.setBScan);
 
   const inProgress = useUiStore.use.inProgress();
-  const addProgress = useUiStore.use.addProgress();
-  const clearProgress = useUiStore.use.clearProgress();
-  const setInProgress = useUiStore.use.setInProgress();
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const undoRedoWorker = useRef<Worker | null>(null);
-
-  const handleUndo = () => {
-    undoRedoWorker.current?.postMessage({
-      bScan: bScanInitial,
-      history,
-      target: position - 1,
-      operationType: 'undo',
-    });
-  };
-
-  const handleRedo = () => {
-    undoRedoWorker.current?.postMessage({
-      bScan: bScanInitial,
-      history,
-      target: position + 1,
-      operationType: 'redo',
-    });
-  };
+  const { handleUndo, handleRedo } = useUndoRedo(store);
 
   useEffect(() => {
     if (viewportRef.current) {
       viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
     }
   }, [history.size, position]);
-
-  useEffect(() => {
-    undoRedoWorker.current = new Worker(
-      new URL('./undo-redo-worker.ts', import.meta.url),
-      { type: 'module' },
-    );
-    undoRedoWorker.current.onmessage = (e: MessageEvent<UndoRedoMessage>) => {
-      switch (e.data.type) {
-        case 'progress':
-          addProgress(e.data.progress);
-          break;
-        case 'complete':
-          if (e.data.operationType === 'undo') {
-            undo();
-          } else {
-            redo();
-          }
-          setBScan(
-            new Grid2D(
-              e.data.result.cols,
-              e.data.result.rows,
-              e.data.result.buf,
-            ),
-          );
-          setInProgress(false);
-          clearProgress();
-          break;
-      }
-    };
-    return () => {
-      undoRedoWorker.current?.terminate();
-      undoRedoWorker.current = null;
-    };
-  }, [store, addProgress, clearProgress, setBScan, setInProgress, undo, redo]);
 
   return (
     <div className="flex flex-col gap-2">

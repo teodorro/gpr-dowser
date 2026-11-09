@@ -9,6 +9,7 @@ type UndoRedoActions = {
   undo: () => void;
   redo: () => void;
   addOperation: (operation: Operation) => void;
+  replaceOperation: (operation: Operation) => void;
 };
 
 export type UndoRedoSlice = UndoRedoState & UndoRedoActions;

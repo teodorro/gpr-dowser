@@ -80,9 +80,9 @@ function BScanReliefEditorInternal({ store }: { store: DataStore }) {
   );
 
   const reliefPoints = useMemo(() => {
-    const points: [number, number][] = relief.map(([x, y]) => [
-      xToWx(x),
-      tToWy(y),
+    const points: [number, number][] = relief.map(([x, t]) => [
+      xToWx(x) + 1 / 2,
+      tToWy(t) + 1 / 2,
     ]);
     return points;
   }, [relief, xToWx, tToWy]);
@@ -118,8 +118,8 @@ function BScanReliefEditorInternal({ store }: { store: DataStore }) {
         ))}
         {selectedReliefPoint != null && (
           <circle
-            cx={distanceToX(selectedReliefPoint[0])}
-            cy={timeToY(selectedReliefPoint[1])}
+            cx={distanceToX(selectedReliefPoint[0] + 1 / 2)}
+            cy={timeToY(selectedReliefPoint[1] + 1 / 2)}
             r={3 * Math.log(scaleX + scaleY + 1)}
             fill="magenta"
             stroke="black"
