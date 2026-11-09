@@ -110,6 +110,7 @@ function BScanReliefEditorInternal({ store }: { store: DataStore }) {
         />
         {reliefPoints.map((point) => (
           <circle
+            key={'relief-point-' + point[0] + '-' + point[1]}
             cx={distanceToX(point[0])}
             cy={timeToY(point[1])}
             r={3 * Math.log(scaleX + scaleY + 1)}
@@ -118,6 +119,7 @@ function BScanReliefEditorInternal({ store }: { store: DataStore }) {
         ))}
         {selectedReliefPoint != null && (
           <circle
+            key="selected-relief-point"
             cx={distanceToX(selectedReliefPoint[0] + 1 / 2)}
             cy={timeToY(selectedReliefPoint[1] + 1 / 2)}
             r={3 * Math.log(scaleX + scaleY + 1)}
