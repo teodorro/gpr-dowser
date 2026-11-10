@@ -161,12 +161,13 @@ Then open the URL printed by Vite (default http://localhost:5173).
 
 Planned and welcome contributions, in rough priority order:
 
-1. **Support for non-Loza GPR data** — generalise the parsers and moveout so conventional
-   (fixed zero-time) radars are handled alongside Loza.
-2. **Hyperbola fitting** — interactive diffraction-hyperbola tool to estimate velocity from
-   local point objects on a profile, as an alternative to CMP.
-3. **Gain correction** — time-varying gain (AGC / user-defined gain curves) to compensate for
+1. **Undo/Redo** change concept to saving snapshots\*\*
+2. **Undo/Reod** add opportunity to transfer scenario of operations from one radargram to another
+3. **Python code** - attach Pyodide and run scientific calculations using Python
+4. **Gain correction** — time-varying gain (AGC / user-defined gain curves) to compensate for
    signal attenuation with depth.
+5. **Band pass** filter
+6. **Read SEG-Y and other file formats** to be able to work with files created by popular devices.
 
 ---
 
