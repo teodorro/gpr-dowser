@@ -38,7 +38,12 @@ function AddLozaCmpShiftInternal({ store }: { store: DataStore }) {
   const handleAddShiftClick = () => {
     const newBScan = addLozaShift(bScan, dx, dt);
     setBScan(newBScan);
-    addOperation({ type: OperationTypeList.AddLozaCmpShift, dx, dt });
+    addOperation({
+      type: OperationTypeList.AddLozaCmpShift,
+      snapshot: newBScan,
+      dx,
+      dt,
+    });
   };
 
   return (

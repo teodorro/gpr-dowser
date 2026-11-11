@@ -10,7 +10,7 @@ import Grid2D from '@/shared/grid2d';
 import { type DataStore } from '@/stores/data-slice-stores';
 import useUiStore from '@/stores/ui-store';
 import { RectangleVerticalIcon } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import { setLeftAScansToZero } from './set-left-ascans-to-zero';
@@ -26,6 +26,7 @@ export default function SetToZero({ store }: { store: DataStore }) {
   const addOperation = useStore(store, (state) => state.addOperation);
 
   const cmpMode = useUiStore.use.cmpMode();
+  const stopSemblanceMode = useUiStore.use.stopSemblanceMode();
   const setStopSemblanceMode = useUiStore.use.setStopSemblanceMode();
 
   const [open, setOpen] = useState(false);
@@ -46,9 +47,6 @@ export default function SetToZero({ store }: { store: DataStore }) {
       onZeroBreakpointChange(internalZeroBreakpoint);
     } else {
       setStopSemblanceMode(false);
-      if (zeroBreakpoint !== undefined) {
-        addOperation({ type: 'set_left_ascans_to_zero', zeroBreakpoint });
-      }
     }
   };
 
@@ -69,6 +67,18 @@ export default function SetToZero({ store }: { store: DataStore }) {
       );
     }
   };
+
+  useEffect(() => {
+    if (stopSemblanceMode === false) {
+      if (zeroBreakpoint !== undefined) {
+        addOperation({
+          type: 'set_left_ascans_to_zero',
+          snapshot: bScan,
+          zeroBreakpoint,
+        });
+      }
+    }
+  }, [stopSemblanceMode]); // do not add zeroBreakpoint, bScan, addOperation to dependencies
 
   return (
     <div className="flex flex-row items-center my-1 ">

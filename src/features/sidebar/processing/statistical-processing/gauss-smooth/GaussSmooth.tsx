@@ -38,6 +38,7 @@ function GaussSmoothInternal({ store }: { store: DataStore }) {
     setBScan(newBScan);
     addOperation({
       type: OperationTypeList.GaussSmooth,
+      snapshot: newBScan,
       sigmaHorizontal,
       sigmaVertical,
     });

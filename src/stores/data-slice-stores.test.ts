@@ -5,15 +5,18 @@ import { OperationTypeList, type Operation } from './undo-redo.types';
 
 const dewow = (windowSize: number): Operation => ({
   type: OperationTypeList.Dewow,
+  snapshot: new Grid2D(2, 2),
   windowSize,
 });
 
 const subtractMedian = (windowSize: number): Operation => ({
   type: OperationTypeList.SubtractMedian,
+  snapshot: new Grid2D(2, 2),
   windowSize,
 });
 const subtractMean = (windowSize: number): Operation => ({
   type: OperationTypeList.SubtractMean,
+  snapshot: new Grid2D(2, 2),
   windowSize,
 });
 
@@ -138,6 +141,7 @@ describe('undo/redo history', () => {
     ];
     const applyRelief: Operation = {
       type: OperationTypeList.ApplyRelief,
+      snapshot: new Grid2D(2, 2),
       previousPoints,
       points,
     };
@@ -169,6 +173,7 @@ describe('undo/redo history', () => {
       store.getState().setRelief(points);
       store.getState().addOperation({
         type: OperationTypeList.TurnAroundBscan,
+        snapshot: new Grid2D(2, 2),
       });
 
       store.getState().undo();
@@ -189,6 +194,7 @@ describe('undo/redo history', () => {
       ];
       store.getState().addOperation({
         type: OperationTypeList.SplitBscan,
+        snapshot: new Grid2D(2, 2),
         splitIndex: 4,
         leftDataSliceId: 'left',
         rightDataSliceId: 'right',

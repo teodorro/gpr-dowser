@@ -9,7 +9,7 @@ import {
 import Grid2D from '@/shared/grid2d';
 import useUiStore from '@/stores/ui-store';
 import { SignpostIcon } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
 import { alignSignal } from './align-signal';
@@ -26,6 +26,7 @@ export default function SignalAligner({ store }: { store: DataStore }) {
   const addOperation = useStore(store, (state) => state.addOperation);
 
   const cmpMode = useUiStore.use.cmpMode();
+  const stopSemblanceMode = useUiStore.use.stopSemblanceMode();
   const setStopSemblanceMode = useUiStore.use.setStopSemblanceMode();
 
   const [open, setOpen] = useState(false);
@@ -46,9 +47,6 @@ export default function SignalAligner({ store }: { store: DataStore }) {
       onAmpBreakpointChange(internalAmpBreakpoint);
     } else {
       setStopSemblanceMode(false);
-      if (ampBreakpoint !== undefined) {
-        addOperation({ type: 'cmp_align_signal', ampBreakpoint });
-      }
     }
   };
 
@@ -69,6 +67,18 @@ export default function SignalAligner({ store }: { store: DataStore }) {
       );
     }
   };
+
+  useEffect(() => {
+    if (stopSemblanceMode === false) {
+      if (ampBreakpoint !== undefined) {
+        addOperation({
+          type: 'cmp_align_signal',
+          snapshot: bScan,
+          ampBreakpoint,
+        });
+      }
+    }
+  }, [stopSemblanceMode]); // do not add ampBreakpoint, bScan, addOperation to dependencies
 
   return (
     <div className="flex flex-row items-center">

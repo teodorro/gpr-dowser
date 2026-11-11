@@ -15,6 +15,7 @@ const sessions = new WeakMap<DataStore, ReliefSession>();
 
 export const editRelief = (store: DataStore, points: [number, number][]) => {
   const state = store.getState();
+
   const session = sessions.get(store);
   const isSameSession =
     session != null && state.history.get(state.position) === session.operation;
@@ -23,18 +24,20 @@ export const editRelief = (store: DataStore, points: [number, number][]) => {
   const previousPoints = isSameSession
     ? session.operation.previousPoints
     : state.relief;
+
+  const newBScan = applyRelief(base, previousPoints, points);
   const operation: ReliefOperation = {
     type: OperationTypeList.ApplyRelief,
+    snapshot: newBScan,
     previousPoints,
     points,
   };
-
   if (isSameSession) {
     state.replaceOperation(operation);
   } else {
     state.addOperation(operation);
   }
-  state.setBScan(applyRelief(base, previousPoints, points));
+  state.setBScan(newBScan);
   state.setRelief(points);
   sessions.set(store, { operation, base });
 };

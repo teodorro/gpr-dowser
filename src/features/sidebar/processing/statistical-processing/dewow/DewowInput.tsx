@@ -54,8 +54,13 @@ function DewowInternal({ store }: { store: DataStore }) {
       setShowError(true);
       return;
     }
-    setBScan(dewow(bScan, Number(internalWindowSize)));
-    addOperation({ type: 'dewow', windowSize: Number(internalWindowSize) });
+    const data = dewow(bScan, Number(internalWindowSize));
+    setBScan(data);
+    addOperation({
+      type: 'dewow',
+      snapshot: data,
+      windowSize: Number(internalWindowSize),
+    });
   };
 
   return (

@@ -47,6 +47,7 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
     setBScan(grid2d);
     addOperation({
       type: OperationTypeList.SavitzkyGolay,
+      snapshot: grid2d,
       horizontalWindowSize: Number(horizontalWindowSize),
       horizontalPolynomialSize: Number(horizontalPolynomialSize),
       verticalWindowSize: Number(verticalWindowSize),

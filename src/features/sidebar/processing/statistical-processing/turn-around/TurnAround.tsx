@@ -29,9 +29,10 @@ function TurnAroundInternal({ store }: { store: DataStore }) {
 
   const handleTurnAroundSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setBScan(turnAroundBscan(bScan));
+    const data = turnAroundBscan(bScan);
+    setBScan(data);
     setRelief(mirrorRelief(store.getState().relief, bScan.cols));
-    addOperation({ type: 'turn_around_bscan' });
+    addOperation({ type: 'turn_around_bscan', snapshot: data });
   };
 
   return (

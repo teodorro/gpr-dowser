@@ -61,7 +61,12 @@ describe('editRelief', () => {
 
     expect(store.getState().position).toBe(1);
     expect(operations(store)).toEqual([
-      { type: OperationTypeList.ApplyRelief, previousPoints: FLAT, points },
+      {
+        type: OperationTypeList.ApplyRelief,
+        snapshot: store.getState().bScan,
+        previousPoints: FLAT,
+        points,
+      },
     ]);
     expect(store.getState().bScan.toArray()).toEqual([
       [0, 1, 2],
@@ -77,15 +82,18 @@ describe('editRelief', () => {
       [2, 2],
     ];
     editRelief(store, first);
-    store
-      .getState()
-      .addOperation({ type: OperationTypeList.Dewow, windowSize: 3 });
+    store.getState().addOperation({
+      type: OperationTypeList.Dewow,
+      snapshot: store.getState().bScan,
+      windowSize: 3,
+    });
 
     editRelief(store, FLAT);
 
     expect(store.getState().position).toBe(3);
     expect(operations(store)[2]).toEqual({
       type: OperationTypeList.ApplyRelief,
+      snapshot: store.getState().bScan,
       previousPoints: first,
       points: FLAT,
     });

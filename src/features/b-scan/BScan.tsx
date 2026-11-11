@@ -347,7 +347,7 @@ function BScanInternal({ store }: { store: DataStore }) {
         setSelectedReliefPoint([col, row]);
       }
     },
-    [store, setSelectedReliefPoint],
+    [store, setSelectedReliefPoint, dims],
   );
 
   // Mouse interactions: pan + wheel zoom
@@ -431,6 +431,7 @@ function BScanInternal({ store }: { store: DataStore }) {
           setBScan(leftBscan);
           addOperation({
             type: OperationTypeList.SplitBscan,
+            snapshot: leftBscan,
             splitIndex: col,
             leftDataSliceId: selectedFileId,
             rightDataSliceId: rightBscanId,

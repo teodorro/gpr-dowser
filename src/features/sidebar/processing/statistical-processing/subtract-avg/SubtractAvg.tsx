@@ -68,9 +68,11 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
       setShowError(true);
       return;
     }
-    setBScan(subtractAvg(bScan, selectedOption));
+    const data = subtractAvg(bScan, selectedOption);
+    setBScan(data);
     addOperation({
       type: `subtract_${selectedOption}`,
+      snapshot: data,
       windowSize: Number(internalWindowSize),
     });
   };
