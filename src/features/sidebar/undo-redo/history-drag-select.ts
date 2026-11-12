@@ -17,7 +17,6 @@ export function selectionIncludes(
   return key >= lo && key <= hi;
 }
 
-/** Row under the pointer, using the visible edge when the pointer is outside the viewport. */
 export function historyKeyAtClientY(viewport: HTMLElement, clientY: number) {
   const viewportRect = viewport.getBoundingClientRect();
   const rows = viewport.querySelectorAll<HTMLElement>('[data-history-key]');
@@ -53,7 +52,6 @@ export function historyKeyAtClientY(viewport: HTMLElement, clientY: number) {
   return closest ? readKey(closest) : null;
 }
 
-/** Pixels to scroll this frame while the pointer is held near a vertical edge. */
 export function scrollDeltaForEdge(viewport: HTMLElement, clientY: number) {
   const rect = viewport.getBoundingClientRect();
   if (clientY < rect.top + EDGE_PX) {

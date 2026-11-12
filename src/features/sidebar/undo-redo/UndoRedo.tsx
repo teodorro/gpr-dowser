@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import useUiStore from '@/stores/ui-store';
+import type { Operation } from '@/stores/undo-redo.types';
 import {
   ArrowRightIcon,
   ClipboardPasteIcon,
@@ -65,6 +66,18 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
   const stepAutoScrollRef = useRef<() => void>(() => {});
 
   const [selection, setSelection] = useState<HistorySelection | null>(null);
+
+  const selectedOperations = useMemo(() => {
+    const selected = new Map<number, Operation>();
+    if (!selection) return selected;
+    const lo = Math.min(selection.anchor, selection.focus);
+    const hi = Math.max(selection.anchor, selection.focus);
+    for (let key = lo; key <= hi; key += 1) {
+      const operation = history.get(key);
+      if (operation) selected.set(key, operation);
+    }
+    return selected;
+  }, [history, selection]);
 
   const { handleUndo, handleRedo } = useUndoRedo(store);
 
@@ -127,6 +140,15 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
     autoScrollRef.current = requestAnimationFrame(() => {
       stepAutoScrollRef.current();
     });
+  };
+
+  const copyOperationsToAnotherRadargram = (fileId: string) => {
+    const fileStore = dataSliceStores.get(fileId);
+    if (!fileStore) return;
+
+    for (const operation of selectedOperations.values()) {
+      fileStore.getState().addOperation(operation);
+    }
   };
 
   useEffect(() => {
@@ -234,7 +256,12 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
           </Tooltip>
           <DropdownMenuContent>
             {files.map((file) => (
-              <DropdownMenuItem key={file.id}>
+              <DropdownMenuItem
+                key={file.id}
+                onClick={() => {
+                  copyOperationsToAnotherRadargram(file.id);
+                }}
+              >
                 <p>{file.label}</p>
               </DropdownMenuItem>
             ))}
