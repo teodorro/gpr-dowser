@@ -57,6 +57,7 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
 
   const inProgress = useUiStore.use.inProgress();
 
+  const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const fileIds = useFileRegistryStore.use.fileIds();
 
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -255,16 +256,18 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
             </TooltipContent>
           </Tooltip>
           <DropdownMenuContent>
-            {files.map((file) => (
-              <DropdownMenuItem
-                key={file.id}
-                onClick={() => {
-                  copyOperationsToAnotherRadargram(file.id);
-                }}
-              >
-                <p>{file.label}</p>
-              </DropdownMenuItem>
-            ))}
+            {files
+              .filter((file) => file.id !== selectedFileId)
+              .map((file) => (
+                <DropdownMenuItem
+                  key={file.id}
+                  onClick={() => {
+                    copyOperationsToAnotherRadargram(file.id);
+                  }}
+                >
+                  <p>{file.label}</p>
+                </DropdownMenuItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
