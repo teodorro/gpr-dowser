@@ -14,6 +14,8 @@ type UiState = {
   progress: number[];
   inProgress: boolean;
   stopSemblanceMode: boolean;
+  operationsBusy: boolean;
+  transfer: { done: number; total: number } | null;
 };
 
 export const BScanMode = {
@@ -37,6 +39,8 @@ type UiActions = {
   clearProgress: () => void;
   setInProgress: (show: boolean) => void;
   setStopSemblanceMode: (mode: boolean) => void;
+  setOperationsBusy: (busy: boolean) => void;
+  setTransfer: (transfer: UiState['transfer']) => void;
 };
 
 type Ui = UiState & UiActions;
@@ -53,6 +57,8 @@ const INITIAL_STATE: UiState = {
   progress: [],
   inProgress: false,
   stopSemblanceMode: false,
+  operationsBusy: false,
+  transfer: null,
 };
 
 const useUiBase = create<Ui>((set) => ({
@@ -150,6 +156,12 @@ const useUiBase = create<Ui>((set) => ({
   },
   setStopSemblanceMode: (mode: boolean) => {
     set((s) => ({ ...s, stopSemblanceMode: mode }));
+  },
+  setOperationsBusy: (busy: boolean) => {
+    set((s) => ({ ...s, operationsBusy: busy }));
+  },
+  setTransfer: (transfer: UiState['transfer']) => {
+    set((s) => ({ ...s, transfer }));
   },
 }));
 
