@@ -125,6 +125,7 @@ i18n
             'Perform selected operations on another radargram',
           OperationFailed: 'Operation failed',
           OperationsTransferred: 'Operations performed',
+          SelectAll: 'Select all',
         },
       },
       ru: {
@@ -244,6 +245,7 @@ i18n
             'Выполнить выбранные операции на другой радарограмме',
           OperationFailed: 'Не удалось выполнить операцию',
           OperationsTransferred: 'Выполнено операций',
+          SelectAll: 'Выбрать все',
         },
       },
     },

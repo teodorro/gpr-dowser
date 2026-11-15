@@ -10,6 +10,7 @@ import {
   ArrowRightIcon,
   ClipboardPasteIcon,
   RedoIcon,
+  SquareStackIcon,
   UndoIcon,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
@@ -249,6 +250,24 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
         >
           <RedoIcon className="w-4 h-4" />
         </Button>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled={operationsBusy || history.size === 0}
+              onClick={() => {
+                setSelection({ anchor: 0, focus: history.size });
+              }}
+            >
+              <SquareStackIcon className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t('SelectAll')}</p>
+          </TooltipContent>
+        </Tooltip>
 
         <DropdownMenu>
           <Tooltip>
