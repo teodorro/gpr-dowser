@@ -6,9 +6,8 @@ import useFileRegistryStore from '@/stores/file-registry-store';
 import { AudioWaveformIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from 'zustand';
-import { savGolayFilter } from './sav-golay-filter';
-import Grid2D from '@/shared/grid2d';
+import { runOperation } from '@/features/operations/apply-operation';
+import useUiStore from '@/stores/ui-store';
 import { OperationTypeList } from '@/stores/undo-redo.types';
 
 export default function SavitzkyGolay() {
@@ -25,9 +24,7 @@ export default function SavitzkyGolay() {
 
 function SavitzkyGolayInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
-  const bScan = useStore(store, (state) => state.bScan);
-  const setBScan = useStore(store, (state) => state.setBScan);
-  const addOperation = useStore(store, (state) => state.addOperation);
+  const operationsBusy = useUiStore.use.operationsBusy();
 
   const [horizontalWindowSize, setHorizontalWindowSize] = useState<string>('7');
   const [verticalWindowSize, setVerticalWindowSize] = useState<string>('7');
@@ -36,18 +33,8 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
 
   const handleSmoothSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = savGolayFilter(
-      bScan.toArray(),
-      Number(horizontalWindowSize),
-      Number(horizontalPolynomialSize),
-      Number(verticalWindowSize),
-      Number(verticalPolynomialSize),
-    );
-    const grid2d = Grid2D.fromArray(data);
-    setBScan(grid2d);
-    addOperation({
+    void runOperation(store, {
       type: OperationTypeList.SavitzkyGolay,
-      snapshot: grid2d,
       horizontalWindowSize: Number(horizontalWindowSize),
       horizontalPolynomialSize: Number(horizontalPolynomialSize),
       verticalWindowSize: Number(verticalWindowSize),
@@ -66,6 +53,7 @@ function SavitzkyGolayInternal({ store }: { store: DataStore }) {
             variant="outline"
             size="icon"
             type="submit"
+            disabled={operationsBusy}
             className="shrink-0"
           >
             <AudioWaveformIcon />

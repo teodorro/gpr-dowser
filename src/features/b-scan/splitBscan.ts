@@ -8,13 +8,12 @@ import {
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { splitRelief } from '@/stores/relief-slice';
 
-export const splitBscan = (
-  bscan: Grid2D,
+export const registerSplitRight = (
+  rightBScan: Grid2D,
   splitIndex: number,
   leftDataSliceId: string,
   rightDataSliceId?: string,
-): [Grid2D, string] => {
-  const [leftBScan, rightBScan] = bscan.split(splitIndex);
+): string => {
   const dataSlice = dataSliceStores.get(leftDataSliceId);
   if (!dataSlice) {
     throw new Error('Data slice not found');
@@ -53,5 +52,23 @@ export const splitBscan = (
   );
   useFileRegistryStore.getState().addFile(rightDataSliceId, false);
 
-  return [leftBScan, rightDataSliceId];
+  return rightDataSliceId;
+};
+
+export const splitBscan = (
+  bscan: Grid2D,
+  splitIndex: number,
+  leftDataSliceId: string,
+  rightDataSliceId?: string,
+): [Grid2D, string] => {
+  const [leftBScan, rightBScan] = bscan.split(splitIndex);
+  return [
+    leftBScan,
+    registerSplitRight(
+      rightBScan,
+      splitIndex,
+      leftDataSliceId,
+      rightDataSliceId,
+    ),
+  ];
 };

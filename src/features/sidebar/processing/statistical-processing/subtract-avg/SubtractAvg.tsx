@@ -6,9 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { ListMinusIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import type Grid2D from '@/shared/grid2d';
-import subtractMean from './subtract-mean';
-import subtractMedian from './subtract-median';
+import { runOperation } from '@/features/operations/apply-operation';
+import useUiStore from '@/stores/ui-store';
 import { useStore } from 'zustand';
 import { Input } from '@/components/ui/input';
 import { FieldError } from '@/components/ui/field';
@@ -40,8 +39,7 @@ export default function SubtractAvg() {
 function SubtractAvgInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
   const bScan = useStore(store, (state) => state.bScan);
-  const setBScan = useStore(store, (state) => state.setBScan);
-  const addOperation = useStore(store, (state) => state.addOperation);
+  const operationsBusy = useUiStore.use.operationsBusy();
 
   const [selectedOption, setSelectedOption] = useState<'median' | 'mean'>(
     'median',
@@ -68,21 +66,10 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
       setShowError(true);
       return;
     }
-    const data = subtractAvg(bScan, selectedOption);
-    setBScan(data);
-    addOperation({
+    void runOperation(store, {
       type: `subtract_${selectedOption}`,
-      snapshot: data,
       windowSize: Number(internalWindowSize),
     });
-  };
-
-  const subtractAvg = (bScan: Grid2D, option: 'median' | 'mean'): Grid2D => {
-    if (option === 'median') {
-      return subtractMedian(bScan, Number(internalWindowSize));
-    } else {
-      return subtractMean(bScan, Number(internalWindowSize));
-    }
   };
 
   return (
@@ -92,7 +79,13 @@ function SubtractAvgInternal({ store }: { store: DataStore }) {
       onSubmit={handleSubtractAvgSubmit}
     >
       <div className="flex flex-row">
-        <Button variant="outline" size="icon" type="submit" className="mr-2">
+        <Button
+          variant="outline"
+          size="icon"
+          type="submit"
+          disabled={operationsBusy}
+          className="mr-2"
+        >
           <ListMinusIcon />
         </Button>
         <Label className="flex-1 gap-2">{t('subtractAvg')}</Label>

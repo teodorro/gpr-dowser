@@ -1,8 +1,8 @@
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import useFileRegistryStore from "@/stores/file-registry-store";
-import { useMemo } from "react";
-import FileTab from "./FileTab";
-import { dataSliceStores } from "@/stores/data-slice-stores";
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import useFileRegistryStore from '@/stores/file-registry-store';
+import { useMemo } from 'react';
+import FileTab from './FileTab';
+import { dataSliceStores } from '@/stores/data-slice-stores';
 
 export default function FileTabs() {
   const fileIds = useFileRegistryStore.use.fileIds();
@@ -10,7 +10,7 @@ export default function FileTabs() {
   const tabs = useMemo(() => {
     const vals = fileIds.map((id) => ({
       id,
-      label: dataSliceStores.get(id)?.getState().name ?? "",
+      label: dataSliceStores.get(id)?.getState().name ?? '',
     }));
     return vals;
   }, [fileIds]);

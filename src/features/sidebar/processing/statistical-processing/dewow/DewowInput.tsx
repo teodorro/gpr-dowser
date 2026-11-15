@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { WavesHorizontalIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { dewow } from './dewow';
+import { runOperation } from '@/features/operations/apply-operation';
+import useUiStore from '@/stores/ui-store';
 import { useStore } from 'zustand';
 
 const DEFAULT_WINDOW_SIZE = '9';
@@ -36,8 +37,7 @@ export default function DewowInput() {
 function DewowInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
   const bScan = useStore(store, (state) => state.bScan);
-  const setBScan = useStore(store, (state) => state.setBScan);
-  const addOperation = useStore(store, (state) => state.addOperation);
+  const operationsBusy = useUiStore.use.operationsBusy();
 
   const [internalWindowSize, setInternalWindowSize] =
     useState<string>(DEFAULT_WINDOW_SIZE);
@@ -54,11 +54,8 @@ function DewowInternal({ store }: { store: DataStore }) {
       setShowError(true);
       return;
     }
-    const data = dewow(bScan, Number(internalWindowSize));
-    setBScan(data);
-    addOperation({
+    void runOperation(store, {
       type: 'dewow',
-      snapshot: data,
       windowSize: Number(internalWindowSize),
     });
   };
@@ -73,7 +70,7 @@ function DewowInternal({ store }: { store: DataStore }) {
           <Button
             variant="outline"
             size="icon"
-            disabled={!isWindowSizeValid}
+            disabled={!isWindowSizeValid || operationsBusy}
             type="submit"
             className="shrink-0"
           >

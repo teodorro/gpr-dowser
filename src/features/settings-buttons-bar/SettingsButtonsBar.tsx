@@ -1,5 +1,5 @@
-import { Languages } from "./Languages";
-import { ThemeToggle } from "./ThemeToggle";
+import { Languages } from './Languages';
+import { ThemeToggle } from './ThemeToggle';
 
 export default function SettingsButtonsBar() {
   return (

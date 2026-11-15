@@ -13,13 +13,16 @@ import { RectangleVerticalIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
-import { setLeftAScansToZero } from './set-left-ascans-to-zero';
+import { reportOperationError } from '@/features/operations/apply-operation';
+import { computeOperation } from '@/features/operations/operations-client';
 
 export default function SetToZero({ store }: { store: DataStore }) {
   const { t } = useTranslation();
 
   const initialBScan = useRef<Grid2D | null>(null);
   const initialZeroBreakpoint = useRef<number | undefined>(undefined);
+  const previewRequest = useRef(0);
+  const pendingPreview = useRef<Promise<void>>(Promise.resolve());
 
   const bScan = useStore(store, (state) => state.bScan);
   const setBScan = useStore(store, (state) => state.setBScan);
@@ -59,11 +62,19 @@ export default function SetToZero({ store }: { store: DataStore }) {
     if (Number.isFinite(nextValue)) {
       setInternalZeroBreakpoint(value);
       setZeroBreakpoint(nextValue);
-      setBScan(
-        setLeftAScansToZero(
-          initialBScan.current?.clone() ?? new Grid2D(0, 0, []),
-          nextValue,
-        ),
+      const request = ++previewRequest.current;
+      pendingPreview.current = computeOperation(
+        initialBScan.current ?? new Grid2D(0, 0),
+        { type: 'set_left_ascans_to_zero', zeroBreakpoint: nextValue },
+      ).then(
+        (result) => {
+          if (request === previewRequest.current) setBScan(result.bScan);
+        },
+        (error: unknown) => {
+          if (request === previewRequest.current) {
+            reportOperationError(error, 'set_left_ascans_to_zero');
+          }
+        },
       );
     }
   };
@@ -71,10 +82,13 @@ export default function SetToZero({ store }: { store: DataStore }) {
   useEffect(() => {
     if (stopSemblanceMode === false) {
       if (zeroBreakpoint !== undefined) {
-        addOperation({
-          type: 'set_left_ascans_to_zero',
-          snapshot: bScan,
-          zeroBreakpoint,
+        // wait for the preview that is still being computed
+        void pendingPreview.current.then(() => {
+          addOperation({
+            type: 'set_left_ascans_to_zero',
+            snapshot: store.getState().bScan,
+            zeroBreakpoint,
+          });
         });
       }
     }

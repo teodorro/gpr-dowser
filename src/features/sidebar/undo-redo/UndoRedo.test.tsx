@@ -16,6 +16,7 @@ import {
 } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 import { OperationTypeList } from '@/stores/undo-redo.types';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import UndoRedo from './UndoRedo';
 
 vi.mock('react-i18next', () => ({
@@ -86,7 +87,11 @@ function renderHistory() {
   }
   dataSliceStores.set(id, store);
   useFileRegistryStore.setState({ fileIds: [id], selectedFileId: id });
-  render(<UndoRedo />);
+  render(
+    <TooltipProvider>
+      <UndoRedo />
+    </TooltipProvider>,
+  );
   const viewport = document.querySelector(
     '[data-slot="scroll-area-viewport"]',
   ) as HTMLElement;

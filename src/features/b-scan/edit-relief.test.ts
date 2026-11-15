@@ -27,10 +27,10 @@ const operations = (store: ReturnType<typeof createStore>) => [
 ];
 
 describe('editRelief', () => {
-  it('applies the curve to bScan straight away', () => {
+  it('applies the curve to bScan straight away', async () => {
     const store = createStore();
 
-    editRelief(store, [
+    await editRelief(store, [
       [0, 0],
       [2, 2],
     ]);
@@ -46,18 +46,18 @@ describe('editRelief', () => {
     ]);
   });
 
-  it('squashes edits in a row into one history step', () => {
+  it('squashes edits in a row into one history step', async () => {
     const store = createStore();
     const points: [number, number][] = [
       [0, 1],
       [2, 1],
     ];
 
-    editRelief(store, [
+    await editRelief(store, [
       [0, 0],
       [2, 2],
     ]);
-    editRelief(store, points);
+    await editRelief(store, points);
 
     expect(store.getState().position).toBe(1);
     expect(operations(store)).toEqual([
@@ -75,20 +75,20 @@ describe('editRelief', () => {
     ]);
   });
 
-  it('starts a new step after another operation', () => {
+  it('starts a new step after another operation', async () => {
     const store = createStore();
     const first: [number, number][] = [
       [0, 0],
       [2, 2],
     ];
-    editRelief(store, first);
+    await editRelief(store, first);
     store.getState().addOperation({
       type: OperationTypeList.Dewow,
       snapshot: store.getState().bScan,
       windowSize: 3,
     });
 
-    editRelief(store, FLAT);
+    await editRelief(store, FLAT);
 
     expect(store.getState().position).toBe(3);
     expect(operations(store)[2]).toEqual({
@@ -104,15 +104,15 @@ describe('editRelief', () => {
     ]);
   });
 
-  it('starts a new step after undo', () => {
+  it('starts a new step after undo', async () => {
     const store = createStore();
-    editRelief(store, [
+    await editRelief(store, [
       [0, 0],
       [2, 2],
     ]);
     store.getState().undo();
 
-    editRelief(store, [
+    await editRelief(store, [
       [0, 1],
       [2, 1],
     ]);

@@ -17,7 +17,7 @@ import { logTransformGrid2D } from '@/shared/log-transform';
 import { useTranslation } from 'react-i18next';
 import { BScanMode } from '@/stores/ui-store';
 import useUiStore from '@/stores/ui-store';
-import { splitBscan } from './splitBscan';
+import { runOperation } from '@/features/operations/apply-operation';
 import { OperationTypeList } from '@/stores/undo-redo.types';
 import CmpCurves from '../cmp/CmpCurves';
 import BScanAxes from './BScanAxes';
@@ -76,8 +76,6 @@ function BScanInternal({ store }: { store: DataStore }) {
     store,
     (s) => s.setSelectedReliefPoint,
   );
-  const setBScan = useStore(store, (s) => s.setBScan);
-  const addOperation = useStore(store, (s) => s.addOperation);
   const setHyperbolaApex = useStore(store, (s) => s.setHyperbolaApex);
 
   const vpRef = useRef<{ x: number; y: number; w: number; h: number }>({
@@ -343,7 +341,7 @@ function BScanInternal({ store }: { store: DataStore }) {
           );
         r.push([col, row]);
         r.sort((a, b) => a[0] - b[0]);
-        editRelief(store, r);
+        void editRelief(store, r);
         setSelectedReliefPoint([col, row]);
       }
     },
@@ -421,21 +419,10 @@ function BScanInternal({ store }: { store: DataStore }) {
       const row = Math.floor(wy);
 
       if (splitBscanMode) {
-        if (selectedFileId && col > 0 && col <= dims.cols) {
-          const relief = store.getState().relief;
-          const [leftBscan, rightBscanId] = splitBscan(
-            bScan,
-            col,
-            selectedFileId,
-          );
-          setBScan(leftBscan);
-          addOperation({
+        if (selectedFileId && col > 0 && col < dims.cols) {
+          void runOperation(store, {
             type: OperationTypeList.SplitBscan,
-            snapshot: leftBscan,
             splitIndex: col,
-            leftDataSliceId: selectedFileId,
-            rightDataSliceId: rightBscanId,
-            relief,
           });
           setBScanMode(splitBscanMode ? BScanMode.none : BScanMode.split);
         }
@@ -498,7 +485,7 @@ function BScanInternal({ store }: { store: DataStore }) {
               point[0] !== selectedReliefPoint[0] ||
               point[1] !== selectedReliefPoint[1],
           );
-          editRelief(store, newRelief);
+          void editRelief(store, newRelief);
           setSelectedReliefPoint(undefined);
         }
       }
@@ -546,9 +533,6 @@ function BScanInternal({ store }: { store: DataStore }) {
     setIndexSelectedAscan,
     splitBscanMode,
     selectedFileId,
-    bScan,
-    setBScan,
-    addOperation,
     setBScanMode,
     cmpMode,
     setHyperbolaApex,

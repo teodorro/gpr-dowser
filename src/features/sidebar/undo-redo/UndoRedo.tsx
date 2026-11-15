@@ -22,6 +22,8 @@ import {
   type HistorySelection,
 } from './history-drag-select';
 import { useUndoRedo } from './use-undo-redo';
+import { transferOperations } from '@/features/operations/apply-operation';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,6 +58,7 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
   const position = useStore(store, (state) => state.position);
 
   const inProgress = useUiStore.use.inProgress();
+  const operationsBusy = useUiStore.use.operationsBusy();
 
   const selectedFileId = useFileRegistryStore.use.selectedFileId();
   const fileIds = useFileRegistryStore.use.fileIds();
@@ -147,9 +150,14 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
     const fileStore = dataSliceStores.get(fileId);
     if (!fileStore) return;
 
-    for (const operation of selectedOperations.values()) {
-      fileStore.getState().addOperation(operation);
-    }
+    const operations = [...selectedOperations.values()];
+    transferOperations(fileStore, operations).then((applied) => {
+      if (applied > 0) {
+        toast.success(
+          `${t('OperationsTransferred')}: ${applied} / ${operations.length}`,
+        );
+      }
+    });
   };
 
   useEffect(() => {
@@ -228,7 +236,7 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
         <Button
           variant="outline"
           size="icon"
-          disabled={position === 0 || inProgress}
+          disabled={position === 0 || inProgress || operationsBusy}
           onClick={handleUndo}
         >
           <UndoIcon className="w-4 h-4" />
@@ -236,7 +244,7 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
         <Button
           variant="outline"
           size="icon"
-          disabled={position === history.size || inProgress}
+          disabled={position === history.size || inProgress || operationsBusy}
           onClick={handleRedo}
         >
           <RedoIcon className="w-4 h-4" />
@@ -246,7 +254,7 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" disabled={operationsBusy}>
                   <ClipboardPasteIcon className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>

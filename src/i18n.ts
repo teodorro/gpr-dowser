@@ -121,6 +121,10 @@ i18n
           PointAspectRatio: 'Point aspect ratio',
           PointWidth: 'Width',
           PointHeight: 'Height',
+          CopyOperationsToAnotherRadargram:
+            'Perform selected operations on another radargram',
+          OperationFailed: 'Operation failed',
+          OperationsTransferred: 'Operations performed',
         },
       },
       ru: {
@@ -236,6 +240,10 @@ i18n
           PointAspectRatio: 'Отношение сторон точки',
           PointWidth: 'Ширина',
           PointHeight: 'Высота',
+          CopyOperationsToAnotherRadargram:
+            'Выполнить выбранные операции на другой радарограмме',
+          OperationFailed: 'Не удалось выполнить операцию',
+          OperationsTransferred: 'Выполнено операций',
         },
       },
     },

@@ -73,6 +73,7 @@ function ButtonsBarInternal({
     sideBarVisible,
     splitBScanMode,
     inProgress,
+    operationsBusy,
     setAScanVisible,
     setBScanMode,
     setSideBarVisible,
@@ -263,7 +264,7 @@ function ButtonsBarInternal({
             variant="ghost"
             size="icon"
             onClick={handleUndo}
-            disabled={position === 0 || inProgress}
+            disabled={position === 0 || inProgress || operationsBusy}
           >
             <UndoIcon className="w-4 h-4" />
           </Button>
@@ -279,7 +280,7 @@ function ButtonsBarInternal({
             variant="ghost"
             size="icon"
             onClick={handleRedo}
-            disabled={position === history.size || inProgress}
+            disabled={position === history.size || inProgress || operationsBusy}
           >
             <RedoIcon className="w-4 h-4" />
           </Button>

@@ -4,7 +4,11 @@ import {
   OperationTypeList,
   type ReliefOperation,
 } from '@/stores/undo-redo.types';
-import applyRelief from './apply-relief';
+import {
+  reportOperationError,
+  withOperationsLock,
+} from '@/features/operations/apply-operation';
+import { computeOperation } from '@/features/operations/operations-client';
 
 type ReliefSession = {
   operation: ReliefOperation;
@@ -13,7 +17,20 @@ type ReliefSession = {
 
 const sessions = new WeakMap<DataStore, ReliefSession>();
 
-export const editRelief = (store: DataStore, points: [number, number][]) => {
+export const editRelief = (
+  store: DataStore,
+  points: [number, number][],
+): Promise<void> =>
+  withOperationsLock(() => applyReliefEdit(store, points)).then(
+    () => undefined,
+    (error: unknown) =>
+      reportOperationError(error, OperationTypeList.ApplyRelief),
+  );
+
+const applyReliefEdit = async (
+  store: DataStore,
+  points: [number, number][],
+) => {
   const state = store.getState();
 
   const session = sessions.get(store);
@@ -25,7 +42,11 @@ export const editRelief = (store: DataStore, points: [number, number][]) => {
     ? session.operation.previousPoints
     : state.relief;
 
-  const newBScan = applyRelief(base, previousPoints, points);
+  const { bScan: newBScan } = await computeOperation(base, {
+    type: OperationTypeList.ApplyRelief,
+    previousPoints,
+    points,
+  });
   const operation: ReliefOperation = {
     type: OperationTypeList.ApplyRelief,
     snapshot: newBScan,

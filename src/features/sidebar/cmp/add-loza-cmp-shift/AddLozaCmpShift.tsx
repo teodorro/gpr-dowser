@@ -4,7 +4,8 @@ import useFileRegistryStore from '@/stores/file-registry-store';
 import { AngleIcon, ChartBarDecreasingIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'zustand';
-import addLozaShift from './add-loza-shift';
+import { runOperation } from '@/features/operations/apply-operation';
+import useUiStore from '@/stores/ui-store';
 import { OperationTypeList } from '@/stores/undo-redo.types';
 import { FieldLabel } from '@/components/ui/field';
 
@@ -26,21 +27,16 @@ export default function AddLozaCmpShift() {
 function AddLozaCmpShiftInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
 
-  const bScan = useStore(store, (s) => s.bScan);
   const dx = useStore(store, (s) => s.dx);
   const dt = useStore(store, (s) => s.dt);
   const lozaMode = useStore(store, (s) => s.lozaMode);
 
   const setLozaMode = useStore(store, (s) => s.setLozaMode);
-  const setBScan = useStore(store, (s) => s.setBScan);
-  const addOperation = useStore(store, (s) => s.addOperation);
+  const operationsBusy = useUiStore.use.operationsBusy();
 
   const handleAddShiftClick = () => {
-    const newBScan = addLozaShift(bScan, dx, dt);
-    setBScan(newBScan);
-    addOperation({
+    void runOperation(store, {
       type: OperationTypeList.AddLozaCmpShift,
-      snapshot: newBScan,
       dx,
       dt,
     });
@@ -72,6 +68,7 @@ function AddLozaCmpShiftInternal({ store }: { store: DataStore }) {
           <Button
             variant="outline"
             size="icon"
+            disabled={operationsBusy}
             onClick={(e) => {
               e.preventDefault();
               handleAddShiftClick();

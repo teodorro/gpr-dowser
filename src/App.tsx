@@ -29,6 +29,7 @@ function App() {
   const aScanVisible = useUiStore.use.aScanVisible();
   const cmpTableVisible = useUiStore.use.cmpTableVisible();
   const setCmpTableVisible = useUiStore.use.setCmpTableVisible();
+  const transferRunning = useUiStore.use.transfer() !== null;
 
   useEffect(() => {
     const loadExample = async () => {
@@ -47,66 +48,68 @@ function App() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen">
-      <input
-        id="file-input"
-        type="file"
-        multiple
-        className="hidden"
-        accept=".txt, .geo, .gem"
-        onChange={(e) => loadFileHandler(e)}
-      />
-      <div className="flex flex-row gap-2 justify-between">
-        <MainMenu />
-        <SettingsButtonsBar />
-      </div>
+    <div className={transferRunning ? 'cursor-progress' : undefined}>
+      <div className="flex flex-col h-screen" inert={transferRunning}>
+        <input
+          id="file-input"
+          type="file"
+          multiple
+          className="hidden"
+          accept=".txt, .geo, .gem"
+          onChange={(e) => loadFileHandler(e)}
+        />
+        <div className="flex flex-row gap-2 justify-between">
+          <MainMenu />
+          <SettingsButtonsBar />
+        </div>
 
-      <Toaster />
-      <div className="flex flex-row flex-1 min-h-0 gap-2 p-1">
-        <Sidebar />
-        <div className="flex flex-col flex-1 min-w-0 gap-1">
-          <ButtonsBar />
-          <ProgressBar />
-          {fileIds.length > 0 && <FileTabs />}
-          <div className="flex flex-row flex-1 min-w-0 min-h-0 gap-2">
-            <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-1">
-              <div className="relative flex flex-1 min-w-0 min-h-0">
-                <BScan />
-                <div className="absolute top-0 right-0 z-10">
-                  <BScanToolbar />
-                </div>
-              </div>
-              <BScanStatusBar />
-            </div>
-            {cmpMode && (
+        <Toaster />
+        <div className="flex flex-row flex-1 min-h-0 gap-2 p-1">
+          <Sidebar />
+          <div className="flex flex-col flex-1 min-w-0 gap-1">
+            <ButtonsBar />
+            <ProgressBar />
+            {fileIds.length > 0 && <FileTabs />}
+            <div className="flex flex-row flex-1 min-w-0 min-h-0 gap-2">
               <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-1">
                 <div className="relative flex flex-1 min-w-0 min-h-0">
-                  <CmpSemblance />
+                  <BScan />
                   <div className="absolute top-0 right-0 z-10">
-                    <CmpSemblanceToolbar />
+                    <BScanToolbar />
                   </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute bottom-0 right-0 z-10"
-                    onClick={() => setCmpTableVisible(!cmpTableVisible)}
-                  >
-                    {cmpTableVisible ? <ArrowDownIcon /> : <ArrowUpIcon />}
-                  </Button>
                 </div>
-                {cmpTableVisible && (
-                  <div className="flex flex-col h-50 shrink-0 min-w-0 min-h-0 gap-1">
-                    <CmpLayersTable />
+                <BScanStatusBar />
+              </div>
+              {cmpMode && (
+                <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-1">
+                  <div className="relative flex flex-1 min-w-0 min-h-0">
+                    <CmpSemblance />
+                    <div className="absolute top-0 right-0 z-10">
+                      <CmpSemblanceToolbar />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="absolute bottom-0 right-0 z-10"
+                      onClick={() => setCmpTableVisible(!cmpTableVisible)}
+                    >
+                      {cmpTableVisible ? <ArrowDownIcon /> : <ArrowUpIcon />}
+                    </Button>
                   </div>
-                )}
-              </div>
-            )}
-            {aScanVisible && (
-              <div className="relative flex flex-col w-[14rem] shrink-0 min-h-0 gap-1">
-                <AScan />
-                <AScanToolbar />
-              </div>
-            )}
+                  {cmpTableVisible && (
+                    <div className="flex flex-col h-50 shrink-0 min-w-0 min-h-0 gap-1">
+                      <CmpLayersTable />
+                    </div>
+                  )}
+                </div>
+              )}
+              {aScanVisible && (
+                <div className="relative flex flex-col w-[14rem] shrink-0 min-h-0 gap-1">
+                  <AScan />
+                  <AScanToolbar />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

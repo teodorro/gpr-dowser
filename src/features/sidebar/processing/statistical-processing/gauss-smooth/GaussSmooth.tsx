@@ -5,8 +5,8 @@ import useFileRegistryStore from '@/stores/file-registry-store';
 import { AudioWaveformIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from 'zustand';
-import { gaussianSmooth } from './gaussian-smooth';
+import { runOperation } from '@/features/operations/apply-operation';
+import useUiStore from '@/stores/ui-store';
 import { OperationTypeList } from '@/stores/undo-redo.types';
 import { Slider } from '@/components/ui/slider';
 
@@ -25,20 +25,15 @@ export default function GaussSmooth() {
 function GaussSmoothInternal({ store }: { store: DataStore }) {
   const { t } = useTranslation();
 
-  const bScan = useStore(store, (state) => state.bScan);
-  const setBScan = useStore(store, (state) => state.setBScan);
-  const addOperation = useStore(store, (state) => state.addOperation);
+  const operationsBusy = useUiStore.use.operationsBusy();
 
   const [sigmaHorizontal, setSigmaHorizontal] = useState(0.7);
   const [sigmaVertical, setSigmaVertical] = useState(0.7);
 
   const handleGaussSmoothSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newBScan = gaussianSmooth(bScan, sigmaHorizontal, sigmaVertical);
-    setBScan(newBScan);
-    addOperation({
+    void runOperation(store, {
       type: OperationTypeList.GaussSmooth,
-      snapshot: newBScan,
       sigmaHorizontal,
       sigmaVertical,
     });
@@ -55,6 +50,7 @@ function GaussSmoothInternal({ store }: { store: DataStore }) {
             variant="outline"
             size="icon"
             type="submit"
+            disabled={operationsBusy}
             className="shrink-0"
           >
             <AudioWaveformIcon />
