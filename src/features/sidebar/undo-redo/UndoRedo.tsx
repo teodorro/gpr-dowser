@@ -254,7 +254,11 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" disabled={operationsBusy}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={operationsBusy || selectedOperations.size === 0}
+                >
                   <ClipboardPasteIcon className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -299,7 +303,7 @@ function UndoRedoInternal({ store }: { store: DataStore }) {
                   data-selected={selected || undefined}
                   className={cn(
                     'flex flex-row items-center gap-2 rounded-sm px-1 py-0.5',
-                    selected && 'bg-accent text-accent-foreground',
+                    selected && 'bg-secondary text-accent-foreground',
                   )}
                 >
                   <div className="w-4 shrink-0">
