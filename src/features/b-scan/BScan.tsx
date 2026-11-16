@@ -445,7 +445,13 @@ function BScanInternal({ store }: { store: DataStore }) {
         );
       }
 
-      if (col < 0 && row >= 0 && col >= -TIME_AXIS_WIDTH) {
+      const isRowOk = row >= 0 && row < dims.rows;
+      const isColOkIfShiftXPositive =
+        shiftX >= 0 ? col < 0 && col + TIME_AXIS_WIDTH > 0 : false;
+      const isColOkIfShiftXNegative =
+        shiftX < 0 ? col + shiftX < TIME_AXIS_WIDTH : false;
+      const isColOk = isColOkIfShiftXPositive || isColOkIfShiftXNegative;
+      if (isRowOk && isColOk) {
         setIndexTimeZero(row);
       }
     };
