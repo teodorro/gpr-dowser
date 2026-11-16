@@ -121,7 +121,9 @@ function BScanHyperbolaInternal({ store }: { store: DataStore }) {
         return [x, t];
       },
     );
-    points = points.filter((point) => point[1] < bScan.rows * dt);
+    points = points.filter(
+      (point) => point[1] < (bScan.rows - indexTimeZero) * dt,
+    );
     return points;
   }, [bScan.cols, dx, dt, hyperbolaApex, velocity, indexTimeZero, bScan.rows]);
 
