@@ -123,9 +123,19 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
               deltaTime: backshift ? cmpHalfwave * BACKSHIFT_HALFWAVES : 0,
             }),
           ] as [number, number];
-        }),
+        }).filter((point) => point[1] < (bScan.rows - indexTimeZero) * dt),
       })),
-    [cmpLayers.layers, bScan.cols, dx, lozaMode, cmpHalfwave, backshift],
+    [
+      cmpLayers.layers,
+      bScan.cols,
+      bScan.rows,
+      dx,
+      lozaMode,
+      cmpHalfwave,
+      backshift,
+      indexTimeZero,
+      dt,
+    ],
   );
 
   return (
