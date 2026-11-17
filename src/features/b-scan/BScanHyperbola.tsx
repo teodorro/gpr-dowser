@@ -118,7 +118,7 @@ function BScanHyperbolaInternal({ store }: { store: DataStore }) {
         const t = Math.sqrt(
           (4 * Math.pow(x - x0, 2)) / velocity ** 2 + Math.pow(t0, 2),
         );
-        return [x, t];
+        return [x + dx / 2, t + dt / 2];
       },
     );
     points = points.filter(
