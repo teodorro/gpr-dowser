@@ -116,13 +116,11 @@ function CmpCurvesInternal({ store }: { store: DataStore }) {
         id: layer.id,
         points: Array.from({ length: bScan.cols }, (_, i) => {
           const x = i * dx;
-          return [
-            x,
-            getCmpLinePoint(layer.time, layer.rmsVelocity, x, {
-              loza: lozaMode,
-              deltaTime: backshift ? cmpHalfwave * BACKSHIFT_HALFWAVES : 0,
-            }),
-          ] as [number, number];
+          const t = getCmpLinePoint(layer.time, layer.rmsVelocity, x, {
+            loza: lozaMode,
+            deltaTime: backshift ? cmpHalfwave * BACKSHIFT_HALFWAVES : 0,
+          });
+          return [x + dx / 2, t + dt / 2] as [number, number];
         }).filter((point) => point[1] < (bScan.rows - indexTimeZero) * dt),
       })),
     [
