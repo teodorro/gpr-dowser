@@ -39,6 +39,11 @@ i18n
           Permittivity: 'Permittivity',
           EnterPermittivity: 'Enter permittivity',
           FailedToReadFile: 'Failed to read file',
+          UnsupportedFileType:
+            'unsupported file type (expected .txt, .geo or .gem)',
+          FileHasNoTraces: 'the file contains no traces',
+          UnrecognizedTraceLayout: 'unrecognized trace layout',
+          LargeFileWarning: 'The file is large, loading may take a while',
           Depth: 'Depth, m',
           Length: 'Length, m',
           Time: 'Time, ns',
@@ -160,6 +165,11 @@ i18n
           Permittivity: 'Диэлектрическая проницаемость',
           EnterPermittivity: 'Введите диэлектрическую проницаемость',
           FailedToReadFile: 'Не удалось прочитать файл',
+          UnsupportedFileType:
+            'неподдерживаемый тип файла (ожидается .txt, .geo или .gem)',
+          FileHasNoTraces: 'в файле нет трасс',
+          UnrecognizedTraceLayout: 'неизвестная структура трасс',
+          LargeFileWarning: 'Файл большой, загрузка может занять время',
           Depth: 'Глубина, м',
           Length: 'Длина, м',
           Time: 'Время, нс',

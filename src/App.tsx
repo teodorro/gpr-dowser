@@ -42,7 +42,7 @@ function App() {
       }
       const blob = await res.blob();
       const file = new File([blob], name, { type: blob.type });
-      loadDataFile(file);
+      await loadDataFile(file);
     };
     void loadExample();
   }, []);

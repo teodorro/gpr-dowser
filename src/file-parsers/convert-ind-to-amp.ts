@@ -8,10 +8,7 @@ const amps = [
 
 export const convertIndToAmp = (ind: number): number => {
   const step = ind - 63;
-  let amp = Math.sign(step) * amps[Math.abs(step)];
-  if (isNaN(amp)) {
-    console.log("amp is NaN");
-    amp = Math.sign(step) * amps[amps.length - 1];
-  }
-  return amp;
+  // Indices past the end of the table are clipped to the largest amplitude.
+  const index = Math.min(Math.abs(step), amps.length - 1);
+  return Math.sign(step) * amps[index];
 };

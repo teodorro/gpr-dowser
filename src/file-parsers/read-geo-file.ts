@@ -1,4 +1,5 @@
-import { convertIndToAmp } from "./convert-ind-to-amp";
+import { convertIndToAmp } from './convert-ind-to-amp';
+import { FileFormatError } from './file-format-error';
 
 export const readGeoFile = (raw: Uint8Array): number[][] => {
   const aScanHeaderPart = new Uint8Array([0xa1, 0x00]);
@@ -26,7 +27,7 @@ export const readGeoFile = (raw: Uint8Array): number[][] => {
     aScanHeaderLength = 13;
     aScanDataLength = 512;
   } else {
-    throw new Error("Ошибка чтения файла");
+    throw new FileFormatError('UnrecognizedTraceLayout');
   }
 
   indices.forEach((index) => {

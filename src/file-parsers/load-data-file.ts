@@ -1,4 +1,3 @@
-import { unreachable } from '@/shared/unreachable';
 import { readKrotTxtFile } from './read-krot-txt-file';
 import Grid2D from '@/shared/grid2d';
 import {
@@ -13,156 +12,84 @@ import i18n from '@/i18n';
 import { logTransform } from '@/shared/log-transform';
 import { BScanMode } from '@/stores/ui-store';
 import useUiStore from '@/stores/ui-store';
+import { FileFormatError } from './file-format-error';
 
 type FileExtension = 'txt' | 'geo' | 'gem';
 
-export const loadDataFile = (file: File) => {
-  const extension = file.name.split('.')[
-    file.name.split('.').length - 1
-  ] as FileExtension;
+const SUPPORTED_EXTENSIONS: readonly FileExtension[] = ['txt', 'geo', 'gem'];
+
+const LARGE_FILE_BYTES = 5 * 1024 * 1024;
+
+export const getFileExtension = (name: string): FileExtension | undefined => {
+  const dot = name.lastIndexOf('.');
+  if (dot < 0) return undefined;
+  const extension = name.slice(dot + 1).toLowerCase();
+  return SUPPORTED_EXTENSIONS.find((e) => e === extension);
+};
+
+const parseFile = async (
+  file: File,
+  extension: FileExtension,
+): Promise<number[][]> => {
   switch (extension) {
     case 'txt':
-      loadTxtFile(file);
-      break;
+      return readKrotTxtFile(await file.text());
     case 'geo':
-      loadGeoFile(file);
-      break;
+      return readGeoFile(new Uint8Array(await file.arrayBuffer()));
     case 'gem':
-      loadGemFile(file);
-      break;
-    default:
-      unreachable(extension);
+      return readGemFile(new Uint8Array(await file.arrayBuffer()));
   }
 };
 
-const loadTxtFile = async (file: File) => {
+const showLoadError = (fileName: string, error: unknown) => {
+  const reason =
+    error instanceof FileFormatError
+      ? i18n.t(error.key)
+      : error instanceof Error
+        ? error.message
+        : String(error);
+  toast.error(`${i18n.t('FailedToReadFile')} ${fileName}: ${reason}`, {
+    position: 'bottom-center',
+  });
+};
+
+export const loadDataFile = async (file: File): Promise<string | undefined> => {
   try {
-    if (file.size > 5 * 1024 * 1024) {
-      toast.warning('File is large; consider streaming.', {
-        position: 'bottom-center',
-      });
+    const extension = getFileExtension(file.name);
+    if (!extension) {
+      throw new FileFormatError('UnsupportedFileType');
     }
-    const raw = await file.text();
-    const data = readKrotTxtFile(raw);
-    useUiStore.getState().setBScanMode(BScanMode.none);
+    if (file.size > LARGE_FILE_BYTES) {
+      toast.warning(i18n.t('LargeFileWarning'), { position: 'bottom-center' });
+    }
+
+    const data = await parseFile(file, extension);
+    if (data.length === 0 || !data[0] || data[0].length === 0) {
+      throw new FileFormatError('FileHasNoTraces');
+    }
+
+    const bScan = Grid2D.fromArray(data);
     const id = crypto.randomUUID();
-    const grid = Grid2D.fromArray(logTransform(data));
+    useUiStore.getState().setBScanMode(BScanMode.none);
     dataSliceStores.set(
       id,
       createDataSliceStore(id, {
         name: file.name,
         path: file.name,
-        type: 'txt',
-        bScanInitial: Grid2D.fromArray(data),
-        bScan: Grid2D.fromArray(data),
-        dt: 1,
-        dx: 0.1,
-        velocity: 0.1,
-        epsilon: 9,
-        displayBuffer: grid,
+        type: extension,
+        bScanInitial: bScan,
+        bScan: bScan.clone(),
+        displayBuffer: Grid2D.fromArray(logTransform(data)),
         relief: [
           [0, 0],
-          [data.length - 1, 0],
+          [bScan.cols - 1, 0],
         ],
       }),
     );
     useFileRegistryStore.getState().addFile(id);
-  } catch (err) {
-    toast.error(
-      `${i18n.t('FailedToReadFile')}:
-      ${err}`,
-      {
-        position: 'bottom-center',
-      },
-    );
+    return id;
+  } catch (error) {
+    showLoadError(file.name, error);
+    return undefined;
   }
-};
-
-const loadGemFile = async (file: File) => {
-  const reader = new FileReader();
-  reader.onload = () => {
-    const buffer = reader.result as ArrayBuffer;
-    const uint8 = new Uint8Array(buffer);
-    const data = readGemFile(uint8);
-    useUiStore.getState().setBScanMode(BScanMode.none);
-    const id = crypto.randomUUID();
-    const grid = Grid2D.fromArray(logTransform(data));
-    dataSliceStores.set(
-      id,
-      createDataSliceStore(id, {
-        name: file.name,
-        path: file.name,
-        type: 'gem',
-        bScanInitial: Grid2D.fromArray(data),
-        bScan: Grid2D.fromArray(data),
-        dt: 1,
-        dx: 0.1,
-        velocity: 0.1,
-        epsilon: 9,
-        displayBuffer: grid,
-        relief: [
-          [0, 0],
-          [data.length - 1, 0],
-        ],
-      }),
-    );
-    useFileRegistryStore.getState().addFile(id);
-  };
-
-  reader.onerror = (err: ProgressEvent<FileReader>) => {
-    toast.error(
-      `${i18n.t('FailedToReadFile')}:
-      ${err}`,
-      {
-        position: 'bottom-center',
-      },
-    );
-  };
-
-  reader.readAsArrayBuffer(file);
-};
-
-const loadGeoFile = async (file: File) => {
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    const buffer = reader.result as ArrayBuffer;
-    const uint8 = new Uint8Array(buffer);
-    const data = readGeoFile(uint8);
-    useUiStore.getState().setBScanMode(BScanMode.none);
-    const id = crypto.randomUUID();
-    const grid = Grid2D.fromArray(logTransform(data));
-    dataSliceStores.set(
-      id,
-      createDataSliceStore(id, {
-        name: file.name,
-        path: file.name,
-        type: 'geo',
-        bScanInitial: Grid2D.fromArray(data),
-        bScan: Grid2D.fromArray(data),
-        dt: 1,
-        dx: 0.1,
-        velocity: 0.1,
-        epsilon: 9,
-        displayBuffer: grid,
-        relief: [
-          [0, 0],
-          [grid.cols - 1, 0],
-        ],
-      }),
-    );
-    useFileRegistryStore.getState().addFile(id);
-  };
-
-  reader.onerror = (err: ProgressEvent<FileReader>) => {
-    toast.error(
-      `${i18n.t('FailedToReadFile')}:
-      ${err}`,
-      {
-        position: 'bottom-center',
-      },
-    );
-  };
-
-  reader.readAsArrayBuffer(file);
 };

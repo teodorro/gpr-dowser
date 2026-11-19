@@ -20,6 +20,16 @@ type DataSliceStore = { id: string } & FileSlice &
   HyperbolaSlice &
   ReliefSlice;
 
+// Initial values for a new store: any state field (actions are excluded).
+type DataSliceStoreState = {
+  [K in keyof DataSliceStore as DataSliceStore[K] extends (
+    ...args: never[]
+  ) => unknown
+    ? never
+    : K]: DataSliceStore[K];
+};
+export type DataSliceStoreOptions = Partial<Omit<DataSliceStoreState, 'id'>>;
+
 export const TIME_AXIS_WIDTH = 56;
 export const LENGTH_AXIS_HEIGHT = 46;
 export const DEPTH_AXIS_WIDTH = 66;
@@ -44,49 +54,47 @@ export type CmpLayer = {
 
 export const createDataSliceStore = (
   id: string,
-  options: {
-    [key: string]: unknown;
-  },
+  options: DataSliceStoreOptions = {},
 ) =>
   create<DataSliceStore>((set) => ({
     id,
 
     // FileSlice
-    name: (options.name as string) ?? '',
-    path: (options.path as string) ?? '',
-    type: (options.type as string) ?? '',
+    name: options.name ?? '',
+    path: options.path ?? '',
+    type: options.type ?? '',
     setName: (name) => set({ name }),
     setPath: (path) => set({ path }),
     setType: (type) => set({ type }),
 
     // DataSlice
-    bScanInitial: (options.bScanInitial as Grid2D) ?? new Grid2D(0, 0),
-    bScan: (options.bScan as Grid2D) ?? new Grid2D(0, 0),
+    bScanInitial: options.bScanInitial ?? new Grid2D(0, 0),
+    bScan: options.bScan ?? new Grid2D(0, 0),
     setBScanInitial: (bScanInitial) => set({ bScanInitial }),
     setBScan: (bScan) => set({ bScan }),
 
     // UnitSlice
-    dt: (options.dt as number) ?? 1,
-    dx: (options.dx as number) ?? 0.1,
-    velocity: (options.velocity as number) ?? 0.1,
-    permittivity: (options.permittivity as number) ?? 9,
+    dt: options.dt ?? 1,
+    dx: options.dx ?? 0.1,
+    velocity: options.velocity ?? 0.1,
+    permittivity: options.permittivity ?? 9,
     setDt: (dt) => set({ dt }),
     setDx: (dx) => set({ dx }),
     setVelocity: (velocity) => set({ velocity }),
     setPermittivity: (permittivity) => set({ permittivity }),
 
     // VisualSlice
-    displayBuffer: (options.displayBuffer as Grid2D) ?? new Grid2D(0, 0),
-    scale: (options.scale as number) ?? 1,
-    shiftX: (options.shiftX as number) ?? TIME_AXIS_WIDTH,
-    shiftY: (options.shiftY as number) ?? LENGTH_AXIS_HEIGHT,
-    indexX: (options.indexX as number | undefined) ?? undefined,
-    indexY: (options.indexY as number | undefined) ?? undefined,
-    indexTimeZero: (options.indexTimeZero as number) ?? 0,
-    averageAscan: (options.averageAscan as number[]) ?? [],
-    indexSelectedAscan: (options.indexSelectedAscan as number) ?? 0,
-    pointAspectRatioWidth: (options.pointAspectRatioWidth as number) ?? 1,
-    pointAspectRatioHeight: (options.pointAspectRatioHeight as number) ?? 1,
+    displayBuffer: options.displayBuffer ?? new Grid2D(0, 0),
+    scale: options.scale ?? 1,
+    shiftX: options.shiftX ?? TIME_AXIS_WIDTH,
+    shiftY: options.shiftY ?? LENGTH_AXIS_HEIGHT,
+    indexX: options.indexX ?? undefined,
+    indexY: options.indexY ?? undefined,
+    indexTimeZero: options.indexTimeZero ?? 0,
+    averageAscan: options.averageAscan ?? [],
+    indexSelectedAscan: options.indexSelectedAscan ?? 0,
+    pointAspectRatioWidth: options.pointAspectRatioWidth ?? 1,
+    pointAspectRatioHeight: options.pointAspectRatioHeight ?? 1,
     setDisplayBuffer: (displayBuffer) => set({ displayBuffer }),
     setScale: (scale) => set({ scale }),
     setShift: (shiftX, shiftY) => set({ shiftX, shiftY }),
@@ -101,8 +109,8 @@ export const createDataSliceStore = (
       set({ pointAspectRatioHeight }),
 
     // UndoRedoSlice
-    history: (options.history as Map<number, Operation>) ?? new Map(),
-    position: (options.position as number) ?? 0,
+    history: options.history ?? new Map(),
+    position: options.position ?? 0,
     undo: () =>
       set((state) => ({
         position: Math.max(0, state.position - 1),
@@ -134,18 +142,17 @@ export const createDataSliceStore = (
       }),
 
     // CmpSlice
-    cmpData: (options.cmpData as Grid2D) ?? new Grid2D(0, 0),
-    cmpDisplayBuffer: (options.cmpDisplayBuffer as Grid2D) ?? new Grid2D(0, 0),
-    cmpScale: (options.cmpScale as number) ?? 1,
-    cmpShiftX: (options.cmpShiftX as number) ?? TIME_AXIS_WIDTH,
-    cmpShiftY: (options.cmpShiftY as number) ?? LENGTH_AXIS_HEIGHT,
-    cmpIndexX: (options.cmpIndexX as number | undefined) ?? undefined,
-    cmpIndexY: (options.cmpIndexY as number | undefined) ?? undefined,
-    cmpLayers:
-      (options.cmpLayers as CmpLayersContainer) ?? new CmpLayersContainer(),
-    cmpHalfwave: (options.cmpHalfwave as number) ?? 1,
-    lozaMode: (options.lozaMode as boolean) ?? true,
-    backshift: (options.backshift as boolean) ?? true,
+    cmpData: options.cmpData ?? new Grid2D(0, 0),
+    cmpDisplayBuffer: options.cmpDisplayBuffer ?? new Grid2D(0, 0),
+    cmpScale: options.cmpScale ?? 1,
+    cmpShiftX: options.cmpShiftX ?? TIME_AXIS_WIDTH,
+    cmpShiftY: options.cmpShiftY ?? LENGTH_AXIS_HEIGHT,
+    cmpIndexX: options.cmpIndexX ?? undefined,
+    cmpIndexY: options.cmpIndexY ?? undefined,
+    cmpLayers: options.cmpLayers ?? new CmpLayersContainer(),
+    cmpHalfwave: options.cmpHalfwave ?? 1,
+    lozaMode: options.lozaMode ?? true,
+    backshift: options.backshift ?? true,
     setCmpData: (cmpData) => set({ cmpData }),
     setCmpDisplayBuffer: (cmpDisplayBuffer) => set({ cmpDisplayBuffer }),
     setCmpHalfwave: (cmpHalfwave) => set({ cmpHalfwave }),
@@ -176,15 +183,13 @@ export const createDataSliceStore = (
     setBackshift: (backshift) => set({ backshift }),
 
     // HyperbolaSlice
-    hyperbolaApex: (options.hyperbolaApex as [number, number]) ?? [0, 0],
+    hyperbolaApex: options.hyperbolaApex ?? [0, 0],
     setHyperbolaApex: (hyperbolaApex: [number, number]) =>
       set({ hyperbolaApex }),
 
     // ReliefSlice
-    relief: (options.relief as [number, number][]) ?? [],
-    selectedReliefPoint:
-      (options.selectedReliefPoint as [number, number] | undefined) ??
-      undefined,
+    relief: options.relief ?? [],
+    selectedReliefPoint: options.selectedReliefPoint ?? undefined,
     setRelief: (relief: [number, number][]) => set({ relief }),
     setSelectedReliefPoint: (
       selectedReliefPoint: [number, number] | undefined,

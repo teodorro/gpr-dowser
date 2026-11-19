@@ -34,18 +34,19 @@ export const registerSplitRight = (
     (keyAndStore) => dataSliceStores.get(keyAndStore[0])?.getState().name ?? '',
   );
   const gridRight = logTransformGrid2D(rightBScan);
+  const { name, type, dt, dx, velocity, permittivity } = dataSlice.getState();
   dataSliceStores.set(
     rightDataSliceId,
     createDataSliceStore(rightDataSliceId, {
-      name: getNextName(dataSlice.getState().name, names),
+      name: getNextName(name, names),
       path: '',
-      type: 'txt',
+      type,
       bScanInitial: rightBScan,
       bScan: rightBScan,
-      dt: 1,
-      dx: 0.1,
-      velocity: 0.1,
-      epsilon: 9,
+      dt,
+      dx,
+      velocity,
+      permittivity,
       displayBuffer: gridRight,
       relief: rightRelief,
     }),

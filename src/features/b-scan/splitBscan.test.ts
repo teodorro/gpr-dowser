@@ -40,3 +40,36 @@ describe('splitBscan relief', () => {
     ]);
   });
 });
+
+describe('splitBscan units', () => {
+  afterEach(() => dataSliceStores.clear());
+
+  it('copies file type and units of measurement to the right part', () => {
+    const bScan = new Grid2D(10, 2);
+    const store = createDataSliceStore('left', {
+      name: 'river.gem',
+      type: 'gem',
+      bScan,
+      dt: 0.5,
+      dx: 0.25,
+      velocity: 0.12,
+      permittivity: 6.25,
+      relief: [
+        [0, 0],
+        [9, 0],
+      ],
+    });
+    dataSliceStores.set('left', store);
+
+    const [, rightId] = splitBscan(bScan, 4, 'left');
+    const right = dataSliceStores.get(rightId)?.getState();
+
+    expect(right).toMatchObject({
+      type: 'gem',
+      dt: 0.5,
+      dx: 0.25,
+      velocity: 0.12,
+      permittivity: 6.25,
+    });
+  });
+});

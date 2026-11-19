@@ -1,4 +1,4 @@
-import { dataSliceStores, type DataStore } from '@/stores/data-slice-stores';
+import { dataSliceStores } from '@/stores/data-slice-stores';
 import useFileRegistryStore from '@/stores/file-registry-store';
 
 export default function AScanToolbar() {
@@ -13,12 +13,7 @@ export default function AScanToolbar() {
 
   return (
     <div className="shrink-0">
-      <AScanToolbarInternal store={store} />
+      <div className="flex flex-row gap-3 px-1 min-h-6"></div>
     </div>
   );
-}
-
-function AScanToolbarInternal({ store }: { store: DataStore }) {
-  console.log(store.getState().dt);
-  return <div className="flex flex-row gap-3 px-1 min-h-6"></div>;
 }
