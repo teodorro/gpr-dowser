@@ -1,17 +1,20 @@
-import { convertIndToAmp } from "./convert-ind-to-amp";
+import { convertIndToAmp } from './convert-ind-to-amp';
 
 export const readGemFile = (raw: Uint8Array): number[][] => {
-  const bScanLengthArray = Array.from(raw.slice(16, 18));
+  const METADATA_LENGTH = 514;
+  const METADATA_START_LENGTH = 16;
+  const ASCAN_HEADER_LENGTH = 112;
+  const ASCAN_DATA_LENGTH = 512;
+
+  const bScanLengthArray = Array.from(
+    raw.slice(METADATA_START_LENGTH, METADATA_START_LENGTH + 2),
+  );
   const bScanLength = bScanLengthArray[1] + bScanLengthArray[0] * 256;
   const bScan: number[][] = [];
 
-  const aScanLength = 512 + 112;
-  const aScanDataLength = 512;
   for (let i = 0; i < bScanLength; i++) {
-    const aScan = raw.slice(
-      514 + i * aScanLength,
-      514 + i * aScanLength + aScanDataLength,
-    );
+    const ind = METADATA_LENGTH + i * (ASCAN_HEADER_LENGTH + ASCAN_DATA_LENGTH);
+    const aScan = raw.slice(ind, ind + ASCAN_DATA_LENGTH);
     bScan.push(Array.from(aScan));
   }
 

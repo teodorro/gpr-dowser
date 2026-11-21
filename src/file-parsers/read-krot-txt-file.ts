@@ -1,9 +1,14 @@
-import { convertIndToAmp } from "./convert-ind-to-amp";
+import { convertIndToAmp } from './convert-ind-to-amp';
+
+const BREAKPOINT_INDICES_1 = 130;
+const BREAKPOINT_INDICES_2 = 260;
+const MAX_VALUE_A = 150000;
+const ZERO_VALUE_A = 88991;
 
 export const readKrotTxtFile = (raw: string): number[][] => {
-  const lines = raw.replace(/\r\n?/g, "\n").replace(/\r\n?/g, "\n").split("\n");
+  const lines = raw.replace(/\r\n?/g, '\n').replace(/\r\n?/g, '\n').split('\n');
   const cells = lines.slice(1, lines.length - 1).map((line) => {
-    const elements = line.split(";");
+    const elements = line.split(';');
     return {
       n: Number.parseInt(elements[0]),
       t: Number.parseInt(elements[1]),
@@ -20,12 +25,12 @@ export const readKrotTxtFile = (raw: string): number[][] => {
   const maxValue = Math.max(...data.map((x) => Math.max(...x)));
   const minValue = Math.min(...data.map((x) => Math.min(...x)));
 
-  if (maxValue < 130 && minValue >= 0) {
+  if (maxValue < BREAKPOINT_INDICES_1 && minValue >= 0) {
     convertIndicesToAmplitudes(data);
-  } else if (maxValue < 260 && minValue >= 0) {
+  } else if (maxValue < BREAKPOINT_INDICES_2 && minValue >= 0) {
     getRidOfTwoStepKrotFormat(data);
     convertIndicesToAmplitudes(data);
-  } else if (maxValue > 150000 && minValue >= 0) {
+  } else if (maxValue > MAX_VALUE_A && minValue >= 0) {
     setZero150000(data);
   }
 
@@ -35,7 +40,7 @@ export const readKrotTxtFile = (raw: string): number[][] => {
 const setZero150000 = (data: number[][]) => {
   data.forEach((aScan) => {
     for (let i = 0; i < aScan.length; i++) {
-      aScan[i] = aScan[i] - 88991;
+      aScan[i] = aScan[i] - ZERO_VALUE_A;
     }
   });
 };
